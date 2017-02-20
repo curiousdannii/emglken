@@ -1,0 +1,5 @@
+*.o
+/*.js
+
+cheapglk
+git/git
