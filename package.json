@@ -1,0 +1,20 @@
+{
+  "name": "emglken",
+  "version": "0.1.0",
+  "description": "Glk meets Emscripten",
+  "author": "Dannii Willis <curiousdannii@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "interactive fiction",
+    "interactive-fiction"
+  ],
+  "repository": "curiousdannii/emglken",
+  "bugs": "https://github.com/curiousdannii/emglken/issues",
+  "homepage": "https://github.com/curiousdannii/emglken",
+  "devDependencies": {
+    "glkote-term": "^0.3.0"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}

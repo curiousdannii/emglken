@@ -1,5 +1,6 @@
-*.o
 /*.js
-
 cheapglk
+node_modules
+tests/regtest.py
 git/git
+git/git.js

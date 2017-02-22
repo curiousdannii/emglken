@@ -2,11 +2,11 @@
 
 if ( typeof module === 'object' && module.exports )
 {
-	module.exports = VM;
+	module.exports = Module
 }
 if ( typeof window !== 'undefined' )
 {
-	window.Git = VM;
+	window.Git = Module
 }
 
 })()

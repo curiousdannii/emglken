@@ -9,14 +9,13 @@
 #include <stdlib.h>
 #include <glk.h>
 #include "git.h"
+#include <cheapglk.h>
 
 // emgiten.c
 
-extern void gitPrepare (const git_uint8 * game,
+extern void gitMain (const git_uint8 * game,
     git_uint32 gameSize,
     git_uint32 cacheSize,
-    git_uint32 undoSize);  
-
-extern void callStartProgram (const git_uint32 cacheSize);
+    git_uint32 undoSize);
 
 #endif // EMGITEN_H

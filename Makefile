@@ -7,7 +7,7 @@ MAKEFLAGS = "-j $(JOBS)"
 CURL = curl -L -s -S
 
 # Mark which rules are not actually generating files
-.PHONY: all clean
+.PHONY: all clean test
 
 all: git.js
 
@@ -29,6 +29,13 @@ git/git:
 	rm Git.tar.gz
 
 git.js: cheapglk git/git emglken/* git/*
-	cp git/Makefile git/emgiten.* git/*.js    git/git/
+	cp git/Makefile git/emgiten.*    git/git/
 	$(MAKE) -C git/git
 	cp git/git/git.js $@
+
+tests/regtest.py:
+	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py
+
+# Run the test suite
+test: tests/regtest.py git.js
+	cd tests && python regtest.py glulxercise.regtest

@@ -1,5 +1,4 @@
 // Emglken prefix code for Git
-
 (function(){
 
 // Utility to extend objects
@@ -17,40 +16,53 @@ function extend()
 	return old;
 }
 
-var Module = {};
-
 var default_options = {
 	cache_len: 256 * 1024,
 	undo_len: 2000 * 1000,
-};
+}
 
-var VM = {
+// Give this Emscripten module the Quixe API
+var Module = {
 
-	// prepare mimics the first half of gitMain()
+	// Store the data and options
 	prepare: function( data, options )
 	{
-		this.options = extend( {}, default_options, options );
-
-		//Module._gitPrepare( null, null, this.options.cache_len, this.options.undo_len );
-		Module.ccall( 'gitPrepare',
-			null,
-			[ 'array', 'number', 'number', 'number' ],
-			[ data, data.length, this.options.cache_len, this.options.undo_len ]
-		);
+		// If we are not given a glk option then we cannot continue
+		if ( !options.Glk )
+		{
+			throw new Error( 'A reference to Glk is required' )
+		}
+		this.GiDispa = options.GiDispa
+		this.Glk = options.Glk
+		this.data = data
+		this.options = extend( {}, default_options, options )
 	},
-	
+
+	// Call gitMain()
 	init: function()
 	{
-		Module.ccall( 'callStartProgram',
+		Module.ccall( 'gitMain',
 			null,
-			[ 'number' ],
-			[ this.options.cache_len ]
-		);
+			[ 'array', 'number', 'number', 'number' ],
+			[ this.data, this.data.length, this.options.cache_len, this.options.undo_len ]
+		)
+		delete this.data
+		Module.Glk.update()
 	},
-	
+
 	resume: function()
 	{
 		
 	},
 
-};
+	print: function( msg )
+	{
+		console.log( msg )
+	},
+
+	printErr: function( msg )
+	{
+		console.error( msg )
+	},
+
+}
