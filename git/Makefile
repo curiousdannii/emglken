@@ -5,9 +5,10 @@
 
 # Note: when using xglk, do NOT define USE_MMAP in step 2, below.
 
-GLK = cheapglk
+#GLK = cheapglk
 #GLK = glkterm
 #GLK = xglk
+GLK = emglken
 
 GLKINCLUDEDIR = ../../$(GLK)
 GLKLIBDIR = ../../$(GLK)
@@ -62,32 +63,32 @@ MAJOR = 1
 MINOR = 3
 PATCH = 5
 
-#include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
+include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
 
-CFLAGS = $(OPTIONS) -I$(GLKINCLUDEDIR)
+CFLAGS = $(OPTIONS) -I$(GLKINCLUDEDIR) -I../../cheapglk
 
-LIBS = -L$(GLKLIBDIR) $(GLKLIB) $(LINKLIBS) 
+LIBS = -L$(GLKLIBDIR) $(GLKLIB) $(LINKLIBS)
 
 HEADERS = version.h git.h config.h compiler.h \
-	memory.h opcodes.h labels.inc emgiten.h
+	memory.h opcodes.h labels.inc
 
 SOURCE = compiler.c gestalt.c git.c git_mac.c git_unix.c \
 	git_windows.c glkop.c heap.c memory.c opcodes.c \
 	operands.c peephole.c savefile.c saveundo.c \
 	search.c terp.c accel.c \
-	emgiten.c $(GLKINCLUDEDIR)/gi_dispa.c
+	$(CUSTOMGITDIR)/emgiten.c 
 
 OBJS = git.o memory.o compiler.o opcodes.o operands.o \
 	peephole.o terp.o glkop.o search.o git_unix.o \
 	savefile.o saveundo.o gestalt.o heap.o accel.o \
-	emgiten.o $(GLKINCLUDEDIR)/gi_dispa.o
+	$(CUSTOMGITDIR)/emgiten.o 
 
 TESTS = test/test.sh \
 	test/Alabaster.gblorb test/Alabaster.walk test/Alabaster.golden
 
 all: git.js
 
-git.js: $(OBJS) $(EMGLKENDIR)/* $(CUSTOMGITDIR)/pre.js
+git.js: $(OBJS) $(GLKINCLUDEDIR)/* $(CUSTOMGITDIR)/*
 	$(CC) $(OPTIONS) -o $@ $(OBJS) $(LIBS)
 
 install: git.js

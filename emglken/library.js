@@ -1,5 +1,7 @@
 // Emglken Emscripten library
 
+// These functions need GiDispa and Glk variables to be set (either globally or in a closure)
+
 mergeInto( LibraryManager.library,
 {
 
@@ -90,7 +92,7 @@ mergeInto( LibraryManager.library,
 
 	glk_exit: function()
 	{
-		Module.Glk.glk_exit()
+		Glk.glk_exit()
 	},
 
 	glk_fileref_create_by_name: function()
@@ -135,10 +137,10 @@ mergeInto( LibraryManager.library,
 
 	glk_fileref_iterate: function( fileref, rockref )
 	{
-		var RockBox = new Module.Glk.RefBox()
-		var res = Module.Glk.glk_fileref_iterate( fileref, RockBox )
+		var RockBox = new Glk.RefBox()
+		var res = Glk.glk_fileref_iterate( fileref, RockBox )
 		Module.setValue( rockref, RockBox.value, 'i32' )
-		return Module.GiDispa.class_obj_to_id( 'fileref', res )
+		return GiDispa.class_obj_to_id( 'fileref', res )
 	},
 
 	glk_gestalt: function()
@@ -438,10 +440,10 @@ mergeInto( LibraryManager.library,
 
 	glk_stream_iterate: function( str, rockref )
 	{
-		var RockBox = new Module.Glk.RefBox()
-		var res = Module.Glk.glk_stream_iterate( str, RockBox )
+		var RockBox = new Glk.RefBox()
+		var res = Glk.glk_stream_iterate( str, RockBox )
 		Module.setValue( rockref, RockBox.value, 'i32' )
-		return Module.GiDispa.class_obj_to_id( 'stream', res )
+		return GiDispa.class_obj_to_id( 'stream', res )
 	},
 
 	glk_stream_open_file: function()
@@ -591,10 +593,10 @@ mergeInto( LibraryManager.library,
 
 	glk_window_iterate: function( win, rockref )
 	{
-		var RockBox = new Module.Glk.RefBox()
-		var res = Module.Glk.glk_window_iterate( win, RockBox )
+		var RockBox = new Glk.RefBox()
+		var res = Glk.glk_window_iterate( win, RockBox )
 		Module.setValue( rockref, RockBox.value, 'i32' )
-		return Module.GiDispa.class_obj_to_id( 'window', res )
+		return GiDispa.class_obj_to_id( 'window', res )
 	},
 
 	glk_window_move_cursor: function()
@@ -604,8 +606,9 @@ mergeInto( LibraryManager.library,
 
 	glk_window_open: function( splitwin, method, size, wintype, rock )
 	{
-		var res = Module.Glk.glk_window_open( Module.GiDispa.class_obj_from_id( 'window', splitwin ), method, size, wintype, rock )
-		return Module.GiDispa.class_obj_to_id( 'window', res )
+		var res = Glk.glk_window_open( GiDispa.class_obj_from_id( 'window', splitwin ), method, size, wintype, rock )
+		console.log(GiDispa.class_obj_to_id( 'window', res ))
+		return GiDispa.class_obj_to_id( 'window', res )
 	},
 
 	glk_window_set_arrangement: function()

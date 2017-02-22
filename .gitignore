@@ -1,5 +1,8 @@
+*.o
 /*.js
 cheapglk
+emglken/libemglken.a
+emglken/Make.emglken
 node_modules
 tests/regtest.py
 git/git

@@ -22,6 +22,12 @@ cheapglk:
 	mv cheapglk-master cheapglk
 	rm cheapglk.tar.gz
 
+remglk:
+	$(CURL) -o "remglk.tar.gz" https://github.com/erkyrath/remglk/archive/master.tar.gz
+	tar xf remglk.tar.gz
+	mv remglk-master remglk
+	rm remglk.tar.gz
+
 git/git:
 	$(CURL) -o "Git.tar.gz" https://github.com/DavidKinder/Git/archive/master.tar.gz
 	tar xf Git.tar.gz
@@ -29,7 +35,7 @@ git/git:
 	rm Git.tar.gz
 
 git.js: cheapglk git/git emglken/* git/*
-	cp git/Makefile git/emgiten.*    git/git/
+	cp git/Makefile git/git/
 	$(MAKE) -C git/git
 	cp git/git/git.js $@
 

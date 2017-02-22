@@ -16,6 +16,9 @@ function extend()
 	return old;
 }
 
+var GiDispa
+var Glk
+
 var default_options = {
 	cache_len: 256 * 1024,
 	undo_len: 2000 * 1000,
@@ -32,8 +35,8 @@ var Module = {
 		{
 			throw new Error( 'A reference to Glk is required' )
 		}
-		this.GiDispa = options.GiDispa
-		this.Glk = options.Glk
+		GiDispa = options.GiDispa
+		Glk = options.Glk
 		this.data = data
 		this.options = extend( {}, default_options, options )
 	},
@@ -47,7 +50,7 @@ var Module = {
 			[ this.data, this.data.length, this.options.cache_len, this.options.undo_len ]
 		)
 		delete this.data
-		Module.Glk.update()
+		Glk.update()
 	},
 
 	resume: function()
