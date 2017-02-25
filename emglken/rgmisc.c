@@ -141,9 +141,9 @@ unsigned char glk_char_to_upper(unsigned char ch)
     return char_toupper_table[ch];
 }
 
-/*void gli_display_warning(char *msg)
+void gli_display_warning(char *msg)
 {
-    if (pref_stderr) {
+    /*if (pref_stderr) {
         fprintf(stderr, "Glk library error: %s\n", msg);
     }
     else {
@@ -152,8 +152,9 @@ unsigned char glk_char_to_upper(unsigned char ch)
         printf("}\n");
     }
     printf("\n"); // blank line after stanza *
-    fflush(stdout);
-}*/
+    fflush(stdout);*/
+    printf("Glk library error: %s\n", msg);
+}
 
 /*void gli_display_error(char *msg)
 {
@@ -162,7 +163,7 @@ unsigned char glk_char_to_upper(unsigned char ch)
     }
     else {
         printf("{\"type\":\"error\", \"message\":");
-        print_string_json(msg, stdout);
+        //print_string_json(msg, stdout);
         printf("}\n");
     }
     printf("\n"); // blank line after stanza *

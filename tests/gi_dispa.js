@@ -923,11 +923,14 @@ function retain_array(arr, useobj) {
         }
     }
 
-    if (obj === undefined)
-        throw new Error('retain_array: array is not an argument');
+    //if (obj === undefined)
+    //    throw new Error('retain_array: array is not an argument');
 
-    for (ix=0; !(retained_arrays[ix] === undefined); ix++) { };
-    retained_arrays[ix] = obj;
+    if ( obj )
+    {
+        for (ix=0; !(retained_arrays[ix] === undefined); ix++) { };
+        retained_arrays[ix] = obj;
+    }
 }
 
 /* Return information about one retained array. This is used *only*
@@ -966,28 +969,31 @@ function unretain_array(arr) {
         }
     }
 
-    if (obj === undefined)
-        throw new Error('unretain_array: array was never retained');
+    //if (obj === undefined)
+    //    throw new Error('unretain_array: array was never retained');
 
-    if (obj.arg instanceof ArgInt) {
-        for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx+=4) {
-            self.VM.WriteWord(jx, obj.arr[ix] >>> 0);
+    if ( obj )
+    {
+        if (obj.arg instanceof ArgInt) {
+            for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx+=4) {
+                self.VM.WriteWord(jx, obj.arr[ix] >>> 0);
+            }
         }
-    }
-    else if (obj.arg instanceof ArgChar) {
-        if (!obj.arg.signed) {
-            for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx++) {
-                self.VM.WriteByte(jx, obj.arr[ix] & 0xFF);
+        else if (obj.arg instanceof ArgChar) {
+            if (!obj.arg.signed) {
+                for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx++) {
+                    self.VM.WriteByte(jx, obj.arr[ix] & 0xFF);
+                }
+            }
+            else {
+                for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx++) {
+                    self.VM.WriteByte(jx, uncast_signed_char(obj.arr[ix]));
+                }
             }
         }
         else {
-            for (ix=0, jx=obj.addr; ix<obj.len; ix++, jx++) {
-                self.VM.WriteByte(jx, uncast_signed_char(obj.arr[ix]));
-            }
+            throw new Error('unretain_array: unsupported refarg type');
         }
-    }
-    else {
-        throw new Error('unretain_array: unsupported refarg type');
     }
 }
 

@@ -1059,15 +1059,15 @@ void glk_request_line_event(window_t *win, char *buf, glui32 maxlen,
         case wintype_TextBuffer:
             win->line_request = TRUE;
             win->line_request_uni = FALSE;
-            win->inputgen = generation+1;
-            win_textbuffer_init_line(win, buf, FALSE, maxlen, initlen);
+            //win->inputgen = generation+1;
+            //win_textbuffer_init_line(win, buf, FALSE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, FALSE );
             break;
         case wintype_TextGrid:
             win->line_request = TRUE;
             win->line_request_uni = FALSE;
-            win->inputgen = generation+1;
-            win_textgrid_init_line(win, buf, FALSE, maxlen, initlen);
+            //win->inputgen = generation+1;
+            //win_textgrid_init_line(win, buf, FALSE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, FALSE );
             break;
         default:
@@ -1100,15 +1100,15 @@ void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, glui3
         case wintype_TextBuffer:
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
-            win->inputgen = generation+1;
-            win_textbuffer_init_line(win, buf, TRUE, maxlen, initlen);
+            //win->inputgen = generation+1;
+            //win_textbuffer_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
         case wintype_TextGrid:
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
-            win->inputgen = generation+1;
-            win_textgrid_init_line(win, buf, TRUE, maxlen, initlen);
+            //win->inputgen = generation+1;
+            //win_textgrid_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
         default:

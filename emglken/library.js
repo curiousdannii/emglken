@@ -296,7 +296,7 @@ mergeInto( LibraryManager.library,
 					return
 				}
 				Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-				Module.setValue( data + 4, GiDispa.class_obj_to_id( 'window', glk_event.get_field( 0 ) ), 'i32' )
+				Module.setValue( data + 4, GiDispa.class_obj_to_id( 'window', glk_event.get_field( 1 ) ), 'i32' )
 				Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
 				Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
 				resume()

@@ -59,6 +59,6 @@ void gitMain (const git_uint8 * game, git_uint32 gameSize, git_uint32 cacheSize,
     
     // Shut everything down cleanly.
     shutdownUndo();
-    shutdownMemory();getchar();
+    shutdownMemory();
     glk_exit();
 }
