@@ -1194,18 +1194,6 @@ void glk_cancel_mouse_event(window_t *win)
     return;
 }
 
-void gli_window_put_char(window_t *win, glui32 ch)
-{
-    switch (win->type) {
-        case wintype_TextBuffer:
-            win_textbuffer_putchar(win, ch);
-            break;
-        case wintype_TextGrid:
-            win_textgrid_putchar(win, ch);
-            break;
-    }
-}
-
 void glk_window_clear(window_t *win)
 {
     glem_window_clear( win->updatetag );

@@ -216,6 +216,7 @@ stream_t *gli_stream_open_window(window_t *win)
         return NULL;
 
     str->win = win;
+    str->tag = glem_get_window_stream_tag( win->updatetag );
     
     return str;
 }
@@ -675,7 +676,7 @@ static void gli_put_char(stream_t *str, unsigned char ch)
                 gli_strict_warning("put_char: window has pending line request");
                 break;
             }
-            gli_window_put_char(str->win, ch);
+            glem_put_char_stream_uni( str->tag, ch );
             if (str->win->echostr)
                 gli_put_char(str->win->echostr, ch);
             break;
@@ -739,7 +740,7 @@ static void gli_put_char_uni(stream_t *str, glui32 ch)
                 gli_strict_warning("put_char_uni: window has pending line request");
                 break;
             }
-            gli_window_put_char(str->win, ch);
+            glem_put_char_stream_uni( str->tag, ch );
             if (str->win->echostr)
                 gli_put_char_uni(str->win->echostr, ch);
             break;
@@ -833,7 +834,9 @@ static void gli_put_buffer(stream_t *str, char *buf, glui32 len)
                 break;
             }
             for (lx=0, cx=(unsigned char *)buf; lx<len; lx++, cx++) {
-                gli_window_put_char(str->win, *cx);
+                //gli_window_put_char(str->win, *cx);
+                gli_strict_warning("gli_put_buffer for windows not implemented");
+                break;
             }
             if (str->win->echostr)
                 gli_put_buffer(str->win->echostr, buf, len);

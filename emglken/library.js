@@ -106,6 +106,11 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_get_line_stream_uni is not implemented' )
 	},
 
+	glem_get_window_stream_tag: function( wintag )
+	{
+		return GiDispa.class_obj_from_id( 'window', wintag ).str.disprock
+	},
+
 	glem_image_draw: function( wintag, image, val1, val2 )
 	{
 		return Glk.glk_image_draw( GiDispa.class_obj_from_id( 'window', wintag ), image, val1, val2 )
@@ -149,24 +154,9 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_put_buffer_stream is not implemented' )
 	},
 
-	glk_put_char: function()
+	glem_put_char_stream_uni: function( str, ch )
 	{
-		throw new Error( 'glk_put_char is not implemented' )
-	},
-
-	glk_put_char_stream: function()
-	{
-		throw new Error( 'glk_put_char_stream is not implemented' )
-	},
-
-	glk_put_char_stream_uni: function()
-	{
-		throw new Error( 'glk_put_char_stream_uni is not implemented' )
-	},
-
-	glk_put_char_uni: function()
-	{
-		throw new Error( 'glk_put_char_uni is not implemented' )
+		Glk.glk_put_char_stream_uni( GiDispa.class_obj_from_id( 'stream', str ), ch )
 	},
 
 	glk_put_string: function()
