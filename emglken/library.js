@@ -60,36 +60,6 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_char_to_upper is not implemented' )
 	},
 
-	glk_current_simple_time: function()
-	{
-		throw new Error( 'glk_current_simple_time is not implemented' )
-	},
-
-	glk_current_time: function()
-	{
-		throw new Error( 'glk_current_time is not implemented' )
-	},
-
-	glk_date_to_simple_time_local: function()
-	{
-		throw new Error( 'glk_date_to_simple_time_local is not implemented' )
-	},
-
-	glk_date_to_simple_time_utc: function()
-	{
-		throw new Error( 'glk_date_to_simple_time_utc is not implemented' )
-	},
-
-	glk_date_to_time_local: function()
-	{
-		throw new Error( 'glk_date_to_time_local is not implemented' )
-	},
-
-	glk_date_to_time_utc: function()
-	{
-		throw new Error( 'glk_date_to_time_utc is not implemented' )
-	},
-
 	glk_exit: function()
 	{
 		Glk.glk_exit()
@@ -403,16 +373,6 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_set_window is not implemented' )
 	},
 
-	glk_simple_time_to_date_local: function()
-	{
-		throw new Error( 'glk_simple_time_to_date_local is not implemented' )
-	},
-
-	glk_simple_time_to_date_utc: function()
-	{
-		throw new Error( 'glk_simple_time_to_date_utc is not implemented' )
-	},
-
 	glk_sound_load_hint: function()
 	{
 		throw new Error( 'glk_sound_load_hint is not implemented' )
@@ -504,21 +464,6 @@ mergeInto( LibraryManager.library,
 	glk_stylehint_set: function()
 	{
 		throw new Error( 'glk_stylehint_set is not implemented' )
-	},
-
-	glk_tick: function()
-	{
-		throw new Error( 'glk_tick is not implemented' )
-	},
-
-	glk_time_to_date_local: function()
-	{
-		throw new Error( 'glk_time_to_date_local is not implemented' )
-	},
-
-	glk_time_to_date_utc: function()
-	{
-		throw new Error( 'glk_time_to_date_utc is not implemented' )
 	},
 
 	glk_window_clear: function()

@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../cheapglk/glk.h"
-#include "../emglken/emglken.h"
-#include "git/git.h"
+#include "glk.h"
+#include "emglken.h"
+#include "git.h"
 
 // emgiten.c
 

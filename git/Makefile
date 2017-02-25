@@ -13,8 +13,6 @@ GLK = emglken
 GLKINCLUDEDIR = ../../$(GLK)
 GLKLIBDIR = ../../$(GLK)
 GLKMAKEFILE = Make.$(GLK)
-EMGLKENDIR = ../../emglken
-CUSTOMGITDIR = ..
 
 # -----------------------------------------------------------------
 # Step 2: pick a C compiler.
@@ -25,9 +23,9 @@ CUSTOMGITDIR = ..
 
 # Emscripten
 CC = emcc \
-	--js-library $(EMGLKENDIR)/library.js \
-	--pre-js $(CUSTOMGITDIR)/pre.js \
-	--post-js $(CUSTOMGITDIR)/post.js \
+	--js-library $(GLKINCLUDEDIR)/library.js \
+	--pre-js pre.js \
+	--post-js post.js \
 	-s EXPORT_NAME='"Git"' \
 	-s EXPORTED_FUNCTIONS='["_gitMain"]' 
 
@@ -65,7 +63,7 @@ PATCH = 5
 
 include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
 
-CFLAGS = $(OPTIONS) -I$(GLKINCLUDEDIR) -I../../cheapglk
+CFLAGS = $(OPTIONS) -I$(GLKINCLUDEDIR)
 
 LIBS = -L$(GLKLIBDIR) $(GLKLIB) $(LINKLIBS)
 
@@ -76,19 +74,19 @@ SOURCE = compiler.c gestalt.c git.c git_mac.c git_unix.c \
 	git_windows.c glkop.c heap.c memory.c opcodes.c \
 	operands.c peephole.c savefile.c saveundo.c \
 	search.c terp.c accel.c \
-	$(CUSTOMGITDIR)/emgiten.c 
+	emgiten.c 
 
 OBJS = git.o memory.o compiler.o opcodes.o operands.o \
 	peephole.o terp.o glkop.o search.o git_unix.o \
 	savefile.o saveundo.o gestalt.o heap.o accel.o \
-	$(CUSTOMGITDIR)/emgiten.o 
+	emgiten.o 
 
 TESTS = test/test.sh \
 	test/Alabaster.gblorb test/Alabaster.walk test/Alabaster.golden
 
 all: git.js
 
-git.js: $(OBJS) $(GLKINCLUDEDIR)/* $(CUSTOMGITDIR)/*
+git.js: $(OBJS) $(GLKINCLUDEDIR)/* ../*
 	$(CC) $(OPTIONS) -o $@ $(OBJS) $(LIBS)
 
 install: git.js

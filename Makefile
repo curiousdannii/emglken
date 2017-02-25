@@ -13,20 +13,10 @@ all: git.js
 
 clean:
 	$(RM) -r ./*.js
-	$(RM) -r cheapglk
 	$(RM) -r git/git
 
-cheapglk:
-	$(CURL) -o "cheapglk.tar.gz" https://github.com/erkyrath/cheapglk/archive/master.tar.gz
-	tar xf cheapglk.tar.gz
-	mv cheapglk-master cheapglk
-	rm cheapglk.tar.gz
-
-remglk:
-	$(CURL) -o "remglk.tar.gz" https://github.com/erkyrath/remglk/archive/master.tar.gz
-	tar xf remglk.tar.gz
-	mv remglk-master remglk
-	rm remglk.tar.gz
+emglken/Make.emglken:
+	$(MAKE) -C emglken
 
 git/git:
 	$(CURL) -o "Git.tar.gz" https://github.com/DavidKinder/Git/archive/master.tar.gz
@@ -34,8 +24,8 @@ git/git:
 	mv Git-master git/git
 	rm Git.tar.gz
 
-git.js: cheapglk git/git emglken/* git/*
-	cp git/Makefile git/git/
+git.js: emglken/Make.emglken git/git emglken/* git/*
+	-cp git/* git/git/
 	$(MAKE) -C git/git
 	cp git/git/git.js $@
 
