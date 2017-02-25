@@ -42,7 +42,6 @@ extern void win_textgrid_destroy(window_textgrid_t *dwin);
 extern void win_textgrid_redraw(window_t *win);
 //extern data_content_t *win_textgrid_update(window_t *win);
 extern void win_textgrid_putchar(window_t *win, glui32 ch);
-extern void win_textgrid_clear(window_t *win);
 extern void win_textgrid_move_cursor(window_t *win, int xpos, int ypos);
 extern void win_textgrid_init_line(window_t *win, void *buf, int unicode, int maxlen, int initlen);
 extern void win_textgrid_prepare_input(window_t *win, glui32 *buf, glui32 len);

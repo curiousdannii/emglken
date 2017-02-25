@@ -43,51 +43,7 @@ void win_graphics_destroy(window_graphics_t *dwin)
     free(dwin);
 }
 
-/*void win_graphics_clear(window_t *win)
-{
-    window_graphics_t *dwin = win->data;
-
-    // If the background color has been set, we must retain that entry.
-    //   (The last setcolor, if there are several.) *
-
-    data_specialspan_t *setcolspan = NULL;
-    int setcolmarked = FALSE;
-
-    // Discard all the content entries, except for the last setcolor. *
-    long px;
-    for (px=0; px<dwin->numcontent; px++) {
-        data_specialspan_t *span = dwin->content[px];
-        dwin->content[px] = NULL;
-
-        if (span->type == specialtype_SetColor) {
-            if (setcolspan)
-                data_specialspan_free(setcolspan);
-            setcolspan = span;
-            setcolmarked = (px >= dwin->updatemark);
-        }
-        else {
-            data_specialspan_free(span);
-        }
-    }
-
-    dwin->numcontent = 0;
-    dwin->updatemark = 0;
-
-    // Put back the setcolor (if found). Note that contentsize is at
-    //   least 4. *
-    if (setcolspan) {
-        dwin->content[dwin->numcontent] = setcolspan;
-        dwin->numcontent++;
-        if (!setcolmarked)
-            dwin->updatemark++;
-    }
-
-    // Clear to background color. *
-    data_specialspan_t *fillspan = data_specialspan_alloc(specialtype_Fill);
-    dwin->content[dwin->numcontent] = fillspan;
-    dwin->numcontent++;
-}
-
+/*
 void win_graphics_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics)
 {
     window_graphics_t *dwin = win->data;
@@ -102,20 +58,6 @@ void win_graphics_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics
     dwin->graphheight = height - metrics->graphicsmarginy;
     if (dwin->graphheight < 0)
         dwin->graphheight = 0;
-}
-
-void win_graphics_putspecial(window_t *win, data_specialspan_t *span)
-{
-    window_graphics_t *dwin = win->data;
-
-    if (dwin->numcontent >= dwin->contentsize) {
-        dwin->contentsize *= 2;
-        dwin->content = (data_specialspan_t **)realloc(dwin->content,
-            dwin->contentsize * sizeof(data_specialspan_t *));
-    }
-    
-    dwin->content[dwin->numcontent] = span;
-    dwin->numcontent++;
 }
 
 data_content_t *win_graphics_update(window_t *win)

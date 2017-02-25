@@ -50,7 +50,6 @@ extern void win_textbuffer_redraw(window_t *win);
 //extern data_content_t *win_textbuffer_update(window_t *win);
 extern void win_textbuffer_putchar(window_t *win, glui32 ch);
 //extern void win_textbuffer_putspecial(window_t *win, data_specialspan_t *special);
-extern void win_textbuffer_clear(window_t *win);
 extern void win_textbuffer_trim_buffer(window_t *win);
 extern void win_textbuffer_set_paging(window_t *win, int forcetoend);
 extern void win_textbuffer_init_line(window_t *win, void *buf, int unicode, int maxlen, int initlen);

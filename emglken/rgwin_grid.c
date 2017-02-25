@@ -257,27 +257,6 @@ void win_textgrid_putchar(window_t *win, glui32 ch)
         canonicalized next time a character is printed. */
 }
 
-void win_textgrid_clear(window_t *win)
-{
-    int ix, jx;
-    window_textgrid_t *dwin = win->data;
-    
-    for (jx=0; jx<dwin->height; jx++) {
-        tgline_t *ln = &(dwin->lines[jx]);
-        for (ix=0; ix<dwin->width; ix++) {
-            ln->chars[ix] = ' ';
-            ln->styles[ix] = style_Normal;
-            ln->links[ix] = 0;
-        }
-        ln->dirty = TRUE;
-    }
-
-    dwin->alldirty = TRUE;
-    
-    dwin->curx = 0;
-    dwin->cury = 0;
-}
-
 void win_textgrid_move_cursor(window_t *win, int xpos, int ypos)
 {
     window_textgrid_t *dwin = win->data;

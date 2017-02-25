@@ -317,28 +317,6 @@ static void set_last_run(window_textbuffer_t *dwin, glui32 style, glui32 hyperli
 
 }
 
-/*void win_textbuffer_clear(window_t *win)
-{
-    window_textbuffer_t *dwin = win->data;
-    long px;
-
-    for (px=0; px<dwin->numspecials; px++) {
-        data_specialspan_free(dwin->specials[px]);
-        dwin->specials[px] = NULL;
-    }
-    dwin->numspecials = 0;
-
-    dwin->numchars = 0;
-
-    dwin->numruns = 1;
-    dwin->runs[0].style = win->style;
-    dwin->runs[0].hyperlink = win->hyperlink;
-    dwin->runs[0].specialnum = -1;
-    dwin->runs[0].pos = 0;
-    
-    dwin->updatemark = 0;
-}*/
-
 /*void win_textbuffer_trim_buffer(window_t *win)
 {
     window_textbuffer_t *dwin = win->data;

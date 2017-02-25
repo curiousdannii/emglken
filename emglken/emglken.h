@@ -211,7 +211,7 @@ extern void gli_display_warning(char *msg);
 extern void gli_display_error(char *msg);
 extern glui32 gli_window_current_generation(void);
 extern window_t *gli_window_find_by_tag(glui32 tag);
-extern window_t *gli_new_window(glui32 type, glui32 rock);
+extern window_t *gli_new_window(glui32 type, glui32 rock, glui32 windowtag);
 extern void gli_delete_window(window_t *win);
 extern window_t *gli_window_iterate_treeorder(window_t *win);
 //extern void gli_window_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics);
@@ -244,6 +244,18 @@ extern void gli_streams_close_all(void);
 extern fileref_t *gli_new_fileref(char *filename, glui32 usage, 
     glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
+
+/* Functions implemented in library.js */
+
+extern glui32 glem_image_draw(glui32 win, glui32 image, glsi32 val1, glsi32 val2);
+extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height);
+extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
+extern void glem_request_char_event(glui32 wintag);
+extern void glem_request_char_event_uni(glui32 wintag);
+extern void glem_window_clear(glui32 wintag);
+extern void glem_window_close(glui32 wintag);
+extern void glem_window_set_background_color(glui32 wintag, glui32 color);
+
 
 /* A macro that I can't think of anywhere else to put it. */
 

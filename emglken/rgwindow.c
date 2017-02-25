@@ -22,9 +22,6 @@
 /* The update generation number. */
 static glui32 generation = 0;
 
-/* Used to generate window updatetag values. */
-static glui32 tagcounter = 0;
-
 /* Linked list of all windows */
 static window_t *gli_windowlist = NULL; 
 
@@ -54,7 +51,6 @@ void gli_initialize_windows(/*data_metrics_t *newmetrics*/)
 
     generation = 0;
     srandom(time(NULL));
-    tagcounter = (random() % 15) + 16;
     gli_rootwin = NULL;
     gli_focuswin = NULL;
     
@@ -81,14 +77,6 @@ void gli_fast_exit()
     exit(0);
 }
 
-/*static void compute_content_box(grect_t *box)
-{
-    box->left = metrics.outspacingx;
-    box->top = metrics.outspacingy;
-    box->right = metrics.width - metrics.outspacingx;
-    box->bottom = metrics.height - metrics.outspacingy;
-}*/
-
 glui32 gli_window_current_generation()
 {
     return generation;
@@ -104,7 +92,7 @@ window_t *gli_window_find_by_tag(glui32 tag)
     return NULL;
 }
 
-window_t *gli_new_window(glui32 type, glui32 rock)
+window_t *gli_new_window(glui32 type, glui32 rock, glui32 updatetag)
 {
     window_t *win = (window_t *)malloc(sizeof(window_t));
     if (!win)
@@ -113,8 +101,7 @@ window_t *gli_new_window(glui32 type, glui32 rock)
     win->magicnum = MAGIC_WINDOW_NUM;
     win->rock = rock;
     win->type = type;
-    win->updatetag = tagcounter;
-    tagcounter += 3;
+    win->updatetag = updatetag;
     
     win->parent = NULL; /* for now */
     win->data = NULL; /* for now */
@@ -180,8 +167,8 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
 {
     window_t *newwin, *pairwin, *oldparent;
     window_pair_t *dpairwin;
-    //grect_t box;
     glui32 val;
+    glui32 windowtag, pairwintag;
     
     if (!gli_rootwin) {
         if (splitwin) {
@@ -190,8 +177,6 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
         }
         /* ignore method and size now */
         oldparent = NULL;
-        
-        //compute_content_box(&box);
     }
     else {
     
@@ -212,8 +197,6 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
             gli_strict_warning("window_open: invalid method (bad direction)");
             return 0;
         }
-
-        //box = splitwin->bbox;
         
         oldparent = splitwin->parent;
         if (oldparent && oldparent->type != wintype_Pair) {
@@ -228,7 +211,16 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
         return 0;
     }
     
-    newwin = gli_new_window(wintype, rock);
+    if (splitwin) {
+        windowtag = glem_new_window(splitwin->updatetag, method, size, wintype, rock, &pairwintag);
+    }
+    else {
+        windowtag = glem_new_window(0, method, size, wintype, rock, &pairwintag);
+    }
+    if (!windowtag) {
+        return 0;
+    }
+    newwin = gli_new_window(wintype, rock, windowtag);
     if (!newwin) {
         gli_strict_warning("window_open: unable to create window");
         return 0;
@@ -265,11 +257,10 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
     
     if (!splitwin) {
         gli_rootwin = newwin;
-        //gli_window_rearrange(newwin, &box, &metrics);
     }
     else {
         /* create pairwin, with newwin as the key */
-        pairwin = gli_new_window(wintype_Pair, 0);
+        pairwin = gli_new_window(wintype_Pair, 0, pairwintag);
         dpairwin = win_pair_create(pairwin, method, newwin, size);
         pairwin->data = dpairwin;
             
@@ -290,8 +281,6 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
         else {
             gli_rootwin = pairwin;
         }
-        
-        //gli_window_rearrange(pairwin, &box, &metrics);
     }
     
     return newwin;
@@ -358,6 +347,8 @@ void glk_window_close(window_t *win, stream_result_t *result)
         gli_strict_warning("window_close: invalid ref");
         return;
     }
+    
+    glem_window_close( win->updatetag );
         
     if (win == gli_rootwin || win->parent == NULL) {
         /* close the root window, which means all windows. */
@@ -948,7 +939,7 @@ static glui32 *dup_buffer(void *buf, int len, int unicode)
    ### This ignores the generation number and just resends everything
    we've got.
 */
-void gli_windows_refresh(glui32 fromgen)
+/*void gli_windows_refresh(glui32 fromgen)
 {
     window_t *win;
     for (win=gli_windowlist; win; win=win->next) {
@@ -965,7 +956,7 @@ void gli_windows_refresh(glui32 fromgen)
             dwin->updatemark = 0;
         }
     }
-}
+}*/
 
 /* Some trivial switch functions which make up for the fact that we're not
     doing this in C++. */
@@ -1048,28 +1039,7 @@ void gli_window_accept_line(window_t *win)
 
 void glk_request_char_event(window_t *win)
 {
-    if (!win) {
-        gli_strict_warning("request_char_event: invalid ref");
-        return;
-    }
-    
-    if (win->char_request || win->line_request) {
-        gli_strict_warning("request_char_event: window already has keyboard request");
-        return;
-    }
-    
-    switch (win->type) {
-        case wintype_TextBuffer:
-        case wintype_TextGrid:
-            win->char_request = TRUE;
-            win->char_request_uni = FALSE;
-            win->inputgen = generation+1;
-            break;
-        default:
-            gli_strict_warning("request_char_event: window does not support keyboard input");
-            break;
-    }
-    
+    glem_request_char_event( win->updatetag );
 }
 
 void glk_request_line_event(window_t *win, char *buf, glui32 maxlen, 
@@ -1109,28 +1079,7 @@ void glk_request_line_event(window_t *win, char *buf, glui32 maxlen,
 
 void glk_request_char_event_uni(window_t *win)
 {
-    if (!win) {
-        gli_strict_warning("request_char_event: invalid ref");
-        return;
-    }
-    
-    if (win->char_request || win->line_request) {
-        gli_strict_warning("request_char_event: window already has keyboard request");
-        return;
-    }
-    
-    switch (win->type) {
-        case wintype_TextBuffer:
-        case wintype_TextGrid:
-            win->char_request = TRUE;
-            win->char_request_uni = TRUE;
-            win->inputgen = generation+1;
-            break;
-        default:
-            gli_strict_warning("request_char_event: window does not support keyboard input");
-            break;
-    }
-    
+    glem_request_char_event_uni( win->updatetag );
 }
 
 void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, 
@@ -1259,27 +1208,7 @@ void gli_window_put_char(window_t *win, glui32 ch)
 
 void glk_window_clear(window_t *win)
 {
-    if (!win) {
-        gli_strict_warning("window_clear: invalid ref");
-        return;
-    }
-    
-    if (win->line_request) {
-        gli_strict_warning("window_clear: window has pending line request");
-        return;
-    }
-
-    switch (win->type) {
-        case wintype_TextBuffer:
-            win_textbuffer_clear(win);
-            break;
-        case wintype_TextGrid:
-            win_textgrid_clear(win);
-            break;
-        case wintype_Graphics:
-            win_graphics_clear(win);
-            break;
-    }
+    glem_window_clear( win->updatetag );
 }
 
 void glk_window_move_cursor(window_t *win, glui32 xpos, glui32 ypos)
@@ -1349,119 +1278,23 @@ void glk_set_terminators_line_event(window_t *win, glui32 *keycodes,
 
 #ifdef GLK_MODULE_IMAGE
 
-/*glui32 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
+glui32 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 {
     if (!pref_graphicssupport) {
         gli_strict_warning("image_draw: graphics not supported.");
         return FALSE;
     }
+    return glem_image_draw( win->updatetag, image, val1, val2);
+}
 
-    giblorb_map_t *map = giblorb_get_resource_map();
-    if (!map)
-        return FALSE; // Not running from a blorb file *
-
-    giblorb_image_info_t info;
-    giblorb_err_t err = giblorb_load_image_info(map, image, &info);
-    if (err)
-        return FALSE;
-
-    if (win->type == wintype_TextBuffer) {
-        data_specialspan_t *special = data_specialspan_alloc(specialtype_Image);
-        special->image = image;
-        special->chunktype = info.chunktype;
-        special->width = info.width;
-        special->height = info.height;
-        special->alttext = info.alttext;
-        special->alignment = val1;
-        special->hyperlink = win->hyperlink;
-        win_textbuffer_putspecial(win, special);
-        return TRUE;
-    }
-    else if (win->type == wintype_Graphics) {
-        data_specialspan_t *special = data_specialspan_alloc(specialtype_Image);
-        special->image = image;
-        special->chunktype = info.chunktype;
-        special->width = info.width;
-        special->height = info.height;
-        special->xpos = val1;
-        special->ypos = val2;
-        special->alttext = info.alttext;
-        win_graphics_putspecial(win, special);
-        return TRUE;
-    }
-
-    return FALSE;
-}*/
-
-/*glui32 glk_image_draw_scaled(winid_t win, glui32 image, 
+glui32 glk_image_draw_scaled(winid_t win, glui32 image, 
     glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
     if (!pref_graphicssupport) {
         gli_strict_warning("image_draw_scaled: graphics not supported.");
         return FALSE;
     }
-
-    // Same as above, except we use the passed-in width and height values *
-
-    giblorb_map_t *map = giblorb_get_resource_map();
-    if (!map)
-        return FALSE; // Not running from a blorb file *
-
-    giblorb_image_info_t info;
-    giblorb_err_t err = giblorb_load_image_info(map, image, &info);
-    if (err)
-        return FALSE;
-
-    if (win->type == wintype_TextBuffer) {
-        data_specialspan_t *special = data_specialspan_alloc(specialtype_Image);
-        special->image = image;
-        special->chunktype = info.chunktype;
-        special->width = width;
-        special->height = height;
-        special->alttext = info.alttext;
-        special->alignment = val1;
-        special->hyperlink = win->hyperlink;
-        win_textbuffer_putspecial(win, special);
-        return TRUE;
-    }
-    else if (win->type == wintype_Graphics) {
-        data_specialspan_t *special = data_specialspan_alloc(specialtype_Image);
-        special->image = image;
-        special->chunktype = info.chunktype;
-        special->width = width;
-        special->height = height;
-        special->xpos = val1;
-        special->ypos = val2;
-        special->alttext = info.alttext;
-        win_graphics_putspecial(win, special);
-        return TRUE;
-    }
-
-    return FALSE;
-}*/
-
-glui32 glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
-{
-    if (width)
-        *width = 0;
-    if (height)
-        *height = 0;
-
-    giblorb_map_t *map = giblorb_get_resource_map();
-    if (!map)
-        return FALSE; /* Not running from a blorb file */
-
-    giblorb_image_info_t info;
-    giblorb_err_t err = giblorb_load_image_info(map, image, &info);
-    if (err)
-        return FALSE;
-
-    if (width)
-        *width = info.width;
-    if (height)
-        *height = info.height;
-
-    return TRUE;
+    return glem_image_draw_scaled( win->updatetag, image, val1, val2, width, height);
 }
 
 /*void glk_window_flow_break(winid_t win)
@@ -1521,22 +1354,10 @@ glui32 glk_image_get_info(glui32 image, glui32 *width, glui32 *height)
     win_graphics_putspecial(win, special);
 }*/
 
-/*void glk_window_set_background_color(winid_t win, glui32 color)
+void glk_window_set_background_color(winid_t win, glui32 color)
 {
-    if (!win) {
-        gli_strict_warning("window_set_background_color: invalid ref");
-        return;
-    }
-    if (win->type != wintype_Graphics) {
-        gli_strict_warning("window_set_background_color: not a graphics window");
-        return;
-    }
-
-    data_specialspan_t *special = data_specialspan_alloc(specialtype_SetColor);
-    special->hascolor = TRUE;
-    special->color = color;
-    win_graphics_putspecial(win, special);
-}*/
+    glem_window_set_background_color( win->updatetag, color );
+}
 
 #endif /* GLK_MODULE_IMAGE */
 
