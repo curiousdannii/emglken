@@ -250,6 +250,7 @@ extern void gli_delete_fileref(fileref_t *fref);
 extern glui32 glem_image_draw(glui32 win, glui32 image, glsi32 val1, glsi32 val2);
 extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
+extern void glem_select(glui32 *data);
 extern void glem_request_char_event(glui32 wintag);
 extern void glem_request_char_event_uni(glui32 wintag);
 extern void glem_window_clear(glui32 wintag);

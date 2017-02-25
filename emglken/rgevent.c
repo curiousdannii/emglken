@@ -34,7 +34,7 @@ void gli_initialize_events()
     last_timing_msec = 0;
 }
 
-/*void glk_select(event_t *event)
+void glk_select(event_t *event)
 {
     curevent = event;
     gli_event_clearevent(curevent);
@@ -42,119 +42,20 @@ void gli_initialize_events()
     if (gli_debugger)
         gidebug_announce_cycle(gidebug_cycle_InputWait);
 
-    gli_windows_update(NULL, TRUE);
-    
-    while (curevent->type == evtype_None) {
-        data_event_t *data = data_event_read();
-        window_t *win = NULL;
-        glui32 val;
+    glui32 data[4];
 
-        if (data->gen != gli_window_current_generation() && data->dtag != dtag_Refresh)
-            gli_fatal_error("Input generation number does not match.");
+    glem_select( data );
+    gli_event_store( data[0], gli_window_find_by_tag( data[1] ), data[2], data[3] );
 
-        switch (data->dtag) {
-            case dtag_Refresh:
-                // Repeat the current display state and keep waiting for
-                //   a (real) event. 
-                gli_windows_refresh(data->gen);
-                gli_windows_update(NULL, FALSE);
-                break;
-
-            case dtag_Arrange:
-                gli_windows_metrics_change(data->metrics);
-                break;
-
-            case dtag_Redraw:
-                if (data->window)
-                    win = gli_window_find_by_tag(data->window);
-                else
-                    win = NULL;
-                gli_event_store(evtype_Redraw, win, 0, 0);
-                break;
-
-            case dtag_Line:
-                win = gli_window_find_by_tag(data->window);
-                if (!win)
-                    break;
-                if (!win->line_request)
-                    break;
-                gli_window_prepare_input(win, data->linevalue, data->linelen);
-                gli_window_accept_line(win);
-                win->inputgen = 0;
-                break;
-
-            case dtag_Char:
-                win = gli_window_find_by_tag(data->window);
-                if (!win)
-                    break;
-                if (!win->char_request)
-                    break;
-                val = data->charvalue;
-                if (!win->char_request_uni) {
-                    // Filter out non-Latin-1 characters, except we also
-                    //   accept special chars. 
-                    if (val >= 256 && val < 0xffffffff-keycode_MAXVAL)
-                        val = '?';
-                }
-                win->char_request = FALSE;
-                win->char_request_uni = FALSE;
-                win->inputgen = 0;
-                gli_event_store(evtype_CharInput, win, val, 0);
-                break;
-
-            case dtag_Hyperlink:
-                win = gli_window_find_by_tag(data->window);
-                if (!win)
-                    break;
-                if (!win->hyperlink_request)
-                    break;
-                win->hyperlink_request = FALSE;
-                gli_event_store(evtype_Hyperlink, win, data->linkvalue, 0);
-                break;
-
-            case dtag_Timer:
-                gettimeofday(&timing_start, NULL);
-                gli_event_store(evtype_Timer, NULL, 0, 0);
-                break;
-
-            case dtag_DebugInput:
-                if (gli_debugger) {
-                    // If debug support is compiled in *and* turned on:
-                    //   process the command, send an update, and
-                    //   continue the glk_select. 
-                    char *allocbuf = alloc_utf_buffer(data->linevalue, data->linelen);
-                    gidebug_perform_command(allocbuf);
-                    free(allocbuf);
-
-                    gli_event_clearevent(curevent);
-                    gli_windows_update(NULL, TRUE);
-                    break;
-                }
-                // ...else fall through to default behavior. 
-
-            default:
-                // Ignore the event. (The constant is not defined by Glk;
-                //   we use it to represent any event whose textual name
-                //   is unrecognized.) 
-                gli_event_store(0x7FFFFFFF, NULL, 0, 0);
-                break;
-        }
-
-        data_event_free(data);
-    }
-    
-    // An event has occurred; glk_select() is over. 
-    gli_windows_trim_buffers();
     curevent = NULL;
 
     if (gli_debugger)
         gidebug_announce_cycle(gidebug_cycle_InputAccept);
-}*/
+}
 
 void glk_select_poll(event_t *event)
 {
     curevent = event;
-    gli_event_clearevent(curevent);
 
     /* We can only sensibly check for unfired timer events. */
     /* ### This is not consistent with the modern understanding that

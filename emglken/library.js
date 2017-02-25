@@ -28,6 +28,7 @@ mergeInto( LibraryManager.library,
 	glk_exit: function()
 	{
 		Glk.glk_exit()
+		Glk.update()
 	},
 
 	glk_fileref_create_by_name: function()
@@ -283,14 +284,27 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_schannel_unpause is not implemented' )
 	},
 
-	glk_select: function()
+	glem_select__deps: ['$EmterpreterAsync'],
+	glem_select: function( data )
 	{
-		throw new Error( 'glk_select is not implemented' )
-	},
-
-	glk_select_poll: function()
-	{
-		throw new Error( 'glk_select_poll is not implemented' )
+		EmterpreterAsync.handle( function( resume )
+		{
+			var glk_event = new Glk.RefStruct()
+			Glk.glk_select( glk_event )
+			Module.glem_select_callback = function()
+			{
+				if ( ABORT )
+				{
+					return
+				}
+				Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
+				Module.setValue( data + 4, GiDispa.class_obj_to_id( 'window', glk_event.get_field( 0 ) ), 'i32' )
+				Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
+				Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
+				resume()
+			}
+			Glk.update()
+		})
 	},
 
 	glk_set_echo_line_event: function()

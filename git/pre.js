@@ -44,18 +44,19 @@ var Module = {
 	// Call gitMain()
 	init: function()
 	{
-		Module.ccall( 'gitMain',
+		Module.ccall(
+			'gitMain',
 			null,
 			[ 'array', 'number', 'number', 'number' ],
-			[ this.data, this.data.length, this.options.cache_len, this.options.undo_len ]
+			[ this.data, this.data.length, this.options.cache_len, this.options.undo_len ],
+			{ async: true }
 		)
 		delete this.data
-		Glk.update()
 	},
 
 	resume: function()
 	{
-		
+		Module.glem_select_callback()
 	},
 
 	print: function( msg )

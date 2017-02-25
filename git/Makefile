@@ -26,12 +26,12 @@ CC = emcc \
 	--js-library $(GLKINCLUDEDIR)/library.js \
 	--pre-js pre.js \
 	--post-js post.js \
+	-s EMTERPRETIFY=1 \
+	-s EMTERPRETIFY_ASYNC=1 \
 	-s EXPORT_NAME='"Git"' \
 	-s EXPORTED_FUNCTIONS='["_gitMain"]' 
 
 #	-s MODULARIZE=1
-#	-s EMTERPRETIFY=1 \
-#	-s EMTERPRETIFY_ASYNC=1 \
 
 OPTIONS =
 
