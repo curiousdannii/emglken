@@ -15,7 +15,7 @@ clean:
 	$(RM) -r ./*.js
 	$(RM) -r git/git
 
-emglken/Make.emglken:
+emglken/Make.emglken: emglken/*.c emglken/*.h
 	$(MAKE) -C emglken
 
 git/git:

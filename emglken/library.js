@@ -179,14 +179,17 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_put_string_stream_uni is not implemented' )
 	},
 
-	glem_request_char_event: function( wintag )
+	glem_request_char_event: function( wintag, unicode )
 	{
-		Glk.glk_request_char_event( GiDispa.class_obj_from_id( 'window', wintag ) )
-	},
-
-	glem_request_char_event_uni: function( wintag )
-	{
-		Glk.glk_request_char_event_uni( GiDispa.class_obj_from_id( 'window', wintag ) )
+		var win = GiDispa.class_obj_from_id( 'window', wintag )
+		if ( unicode )
+		{
+			Glk.glk_request_char_event_uni( win )
+		}
+		else
+		{
+			Glk.glk_request_char_event( win )
+		}
 	},
 
 	glk_request_hyperlink_event: function()
@@ -194,14 +197,19 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_request_hyperlink_event is not implemented' )
 	},
 
-	glk_request_line_event: function()
+	glem_request_line_event: function( wintag, bufaddr, maxlen, initlen, unicode )
 	{
-		throw new Error( 'glk_request_line_event is not implemented' )
-	},
-
-	glk_request_line_event_uni: function()
-	{
-		throw new Error( 'glk_request_line_event_uni is not implemented' )
+		var win = GiDispa.class_obj_from_id( 'window', wintag )
+		if ( unicode )
+		{
+			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, maxlen * 4 )
+			Glk.glk_request_line_event_uni( win, buf, initlen )
+		}
+		else
+		{
+			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, maxlen )
+			Glk.glk_request_line_event( win, buf, initlen )
+		}
 	},
 
 	glk_request_mouse_event: function()
@@ -475,11 +483,6 @@ mergeInto( LibraryManager.library,
 	glem_window_set_background_color: function( wintag, color )
 	{
 		Glk.glk_window_set_background_color( GiDispa.class_obj_from_id( 'window', wintag ), color )
-	},
-
-	glk_window_set_echo_stream: function()
-	{
-		throw new Error( 'glk_window_set_echo_stream is not implemented' )
 	},
 
 })

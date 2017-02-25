@@ -254,8 +254,8 @@ extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
 extern void glem_put_char_stream_uni(glui32 str, glui32 ch);
 extern void glem_select(glui32 *data);
-extern void glem_request_char_event(glui32 wintag);
-extern void glem_request_char_event_uni(glui32 wintag);
+extern void glem_request_char_event(glui32 wintag, int unicode);
+extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_window_clear(glui32 wintag);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_set_background_color(glui32 wintag, glui32 color);
