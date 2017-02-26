@@ -28,6 +28,7 @@ CC = emcc \
 	--post-js post.js \
 	-s EMTERPRETIFY=1 \
 	-s EMTERPRETIFY_ASYNC=1 \
+	-s EMTERPRETIFY_WHITELIST='["_glem_select","_gidispatch_call","_gitMain","_git_perform_glk","_glk_select","_startProgram"]' \
 	-s EXPORT_NAME='"Git"' \
 	-s EXPORTED_FUNCTIONS='["_gitMain"]' 
 
