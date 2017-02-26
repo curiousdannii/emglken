@@ -60,7 +60,7 @@ void glk_exit()
     if (gli_debugger)
         gidebug_announce_cycle(gidebug_cycle_End);
 
-    exit(0);
+    glem_exit(0);
 }
 
 void glk_set_interrupt_handler(void (*func)(void))

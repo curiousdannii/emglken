@@ -10,6 +10,9 @@ void gitMain (const git_uint8 * game, git_uint32 gameSize, git_uint32 cacheSize,
     git_uint32 version;
     enum IOMode ioMode = IO_NULL;
     
+    // Initialise emglken
+    init_emglken();
+
     init_accel ();
 
     // Initialise the Glk dispatch layer.

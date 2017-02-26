@@ -248,6 +248,7 @@ extern void gli_delete_fileref(fileref_t *fref);
 
 /* Functions implemented in library.js */
 
+extern void glem_exit();
 extern glui32 glem_get_window_stream_tag(glui32 wintag);
 extern glui32 glem_image_draw(glui32 win, glui32 image, glsi32 val1, glsi32 val2);
 extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height);
@@ -259,6 +260,7 @@ extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glu
 extern void glem_window_clear(glui32 wintag);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_set_background_color(glui32 wintag, glui32 color);
+extern void init_emglken();
 
 
 /* A macro that I can't think of anywhere else to put it. */

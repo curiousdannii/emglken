@@ -25,7 +25,7 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_cancel_mouse_event is not implemented' )
 	},
 
-	glk_exit: function()
+	glem_exit: function()
 	{
 		Glk.glk_exit()
 		Glk.update()
