@@ -61,6 +61,7 @@ void glk_exit()
         gidebug_announce_cycle(gidebug_cycle_End);
 
     glem_exit(0);
+    exit(0);
 }
 
 void glk_set_interrupt_handler(void (*func)(void))

@@ -5,6 +5,15 @@
 mergeInto( LibraryManager.library,
 {
 
+	git_powf: function( base, exp )
+	{
+		if ( base === 1 || ( base === -1 && ( exp === Infinity || exp === -Infinity ) ) )
+		{
+			return 1
+		}
+		return Math.pow( base, exp )
+	},
+
 	glk_cancel_char_event: function()
 	{
 		throw new Error( 'glk_cancel_char_event is not implemented' )

@@ -31,9 +31,10 @@ CC = emcc \
 	-s EXPORT_NAME='"Git"' \
 	-s EXPORTED_FUNCTIONS='["_gitMain"]' 
 
+#	-s PRECISE_F32=1
 #	-s MODULARIZE=1
 
-OPTIONS =
+OPTIONS = -DUSE_OWN_POWF
 
 # Best settings for GCC 2.95. This generates faster code than
 # GCC 3, so you should use this setup if possible.
