@@ -223,7 +223,7 @@ extern void gli_windows_trim_buffers(void);
 extern void gli_window_put_char(window_t *win, glui32 ch);
 extern void gli_windows_unechostream(stream_t *str);
 extern void gli_window_prepare_input(window_t *win, glui32 *buf, glui32 len);
-extern void gli_window_accept_line(window_t *win);
+extern void gli_window_accept_line(window_t *win, glui32 len);
 extern void gli_print_spaces(int len);
 
 extern void gcmd_win_change_focus(window_t *win, glui32 arg);

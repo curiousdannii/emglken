@@ -43,11 +43,9 @@ void glk_select(event_t *event)
         gidebug_announce_cycle(gidebug_cycle_InputWait);
 
     glui32 data[4];
-    window_t *win = NULL;
 
     glem_select( data );
-    gli_event_store( data[0], gli_window_find_by_tag( data[1] ), data[2], data[3] );
-    win = event->win;
+    window_t *win = gli_window_find_by_tag( data[1] );
 
     switch ( data[0] )
     {
@@ -56,8 +54,8 @@ void glk_select(event_t *event)
                 break;
             if (!win->line_request)
                 break;
-            win->line_request = FALSE;
-            win->line_request_uni = FALSE;
+            //gli_window_prepare_input( win, NULL, data[2] );
+            gli_window_accept_line( win, data[2] );
             break;
 
         case evtype_CharInput:
@@ -67,6 +65,7 @@ void glk_select(event_t *event)
                 break;
             win->char_request = FALSE;
             win->char_request_uni = FALSE;
+            gli_event_store( evtype_CharInput, win, data[2], 0 );
             break;
 
         case evtype_Hyperlink:
@@ -75,6 +74,11 @@ void glk_select(event_t *event)
             if (!win->hyperlink_request)
                 break;
             win->hyperlink_request = FALSE;
+            gli_event_store( evtype_Hyperlink, win, data[2], 0 );
+            break;
+
+        default:
+            gli_event_store( data[0], win, data[2], data[3] );
             break;
     }
 

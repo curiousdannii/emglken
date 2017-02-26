@@ -996,14 +996,14 @@ void gli_window_prepare_input(window_t *win, glui32 *buf, glui32 len)
     }
 }
 
-void gli_window_accept_line(window_t *win)
+void gli_window_accept_line(window_t *win, glui32 len)
 {
     switch (win->type) {
         case wintype_TextGrid:
-            win_textgrid_accept_line(win);
+            win_textgrid_accept_line(win, len);
             break;
         case wintype_TextBuffer:
-            win_textbuffer_accept_line(win);
+            win_textbuffer_accept_line(win, len);
             break;
     }
 }
@@ -1059,15 +1059,13 @@ void glk_request_line_event(window_t *win, char *buf, glui32 maxlen,
         case wintype_TextBuffer:
             win->line_request = TRUE;
             win->line_request_uni = FALSE;
-            //win->inputgen = generation+1;
-            //win_textbuffer_init_line(win, buf, FALSE, maxlen, initlen);
+            win_textbuffer_init_line(win, buf, FALSE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, FALSE );
             break;
         case wintype_TextGrid:
             win->line_request = TRUE;
             win->line_request_uni = FALSE;
-            //win->inputgen = generation+1;
-            //win_textgrid_init_line(win, buf, FALSE, maxlen, initlen);
+            win_textgrid_init_line(win, buf, FALSE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, FALSE );
             break;
         default:
@@ -1101,14 +1099,14 @@ void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, glui3
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
             //win->inputgen = generation+1;
-            //win_textbuffer_init_line(win, buf, TRUE, maxlen, initlen);
+            win_textbuffer_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
         case wintype_TextGrid:
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
             //win->inputgen = generation+1;
-            //win_textgrid_init_line(win, buf, TRUE, maxlen, initlen);
+            win_textgrid_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
         default:

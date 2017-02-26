@@ -280,15 +280,15 @@ void win_textgrid_init_line(window_t *win, void *buf, int unicode,
     window_textgrid_t *dwin = win->data;
     
     /* Canonicalize the cursor position a little. */
-    if (dwin->curx >= dwin->width) {
+    /*if (dwin->curx >= dwin->width) {
         dwin->curx = 0;
         dwin->cury++;
     }
     if (dwin->cury >= dwin->height) {
-        /* Outside the window; put the cursor in the bottom right. */
+        // Outside the window; put the cursor in the bottom right. *
         dwin->curx = dwin->width-1;
         dwin->cury = dwin->height-1;
-    }
+    }*/
 
     dwin->inbuf = buf;
     dwin->inunicode = unicode;
@@ -296,10 +296,10 @@ void win_textgrid_init_line(window_t *win, void *buf, int unicode,
     if (maxlen > (dwin->width - dwin->curx))
         maxlen = (dwin->width - dwin->curx);
     dwin->inmax = maxlen;
-    dwin->inecho = win->echo_line_input;
-    dwin->intermkeys = win->terminate_line_input;
-    dwin->origstyle = win->style;
-    win->style = style_Input;
+    //dwin->inecho = win->echo_line_input;
+    //dwin->intermkeys = win->terminate_line_input;
+    //dwin->origstyle = win->style;
+    //win->style = style_Input;
     
     if (initlen > maxlen)
         initlen = maxlen;
@@ -340,9 +340,9 @@ void win_textgrid_prepare_input(window_t *win, glui32 *buf, glui32 len)
     }
 }
 
-void win_textgrid_accept_line(window_t *win)
+void win_textgrid_accept_line(window_t *win, glui32 len)
 {
-    long len;
+    //long len;
     void *inbuf;
     int inmax, inoriglen, inunicode, inecho;
     glui32 termkey = 0;
@@ -357,10 +357,10 @@ void win_textgrid_accept_line(window_t *win)
     inoriglen = dwin->inoriglen;
     inarrayrock = dwin->inarrayrock;
     inunicode = dwin->inunicode;
-    inecho = dwin->inecho;
+    //inecho = dwin->inecho;
 
-    len = dwin->incurpos;
-    if (inecho && win->echostr) {
+    //len = dwin->incurpos;
+    /*if (inecho && win->echostr) {
         if (!inunicode)
             gli_stream_echo_line(win->echostr, (char *)inbuf, len);
         else
@@ -368,7 +368,7 @@ void win_textgrid_accept_line(window_t *win)
     }
     
     if (inecho) {
-        /* Add the typed text to the grid. */
+        // Add the typed text to the grid. *
         int ix;
         if (!inunicode) {
             for (ix=0; ix<len; ix++) {
@@ -385,9 +385,9 @@ void win_textgrid_accept_line(window_t *win)
 
         dwin->cury = dwin->cury+1;
         dwin->curx = 0;
-    }
+    }*/
     
-    win->style = dwin->origstyle;
+    //win->style = dwin->origstyle;
 
     /* ### set termkey */
 

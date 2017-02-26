@@ -415,13 +415,13 @@ void win_textbuffer_init_line(window_t *win, void *buf, int unicode,
     dwin->inunicode = unicode;
     dwin->inmax = maxlen;
     dwin->incurpos = initlen;
-    dwin->inecho = win->echo_line_input;
-    dwin->intermkeys = win->terminate_line_input;
-    dwin->origstyle = win->style;
-    dwin->orighyperlink = win->hyperlink;
-    win->style = style_Input;
-    win->hyperlink = 0;
-    set_last_run(dwin, win->style, 0);
+    //dwin->inecho = win->echo_line_input;
+    //dwin->intermkeys = win->terminate_line_input;
+    //dwin->origstyle = win->style;
+    //dwin->orighyperlink = win->hyperlink;
+    //win->style = style_Input;
+    //win->hyperlink = 0;
+    //set_last_run(dwin, win->style, 0);
     
     if (gli_register_arr) {
         char *typedesc = (dwin->inunicode ? "&+#!Iu" : "&+#!Cn");
@@ -442,7 +442,7 @@ void win_textbuffer_prepare_input(window_t *win, glui32 *buf, glui32 len)
 
     dwin->incurpos = len;
 
-    if (!dwin->inunicode) {
+    /*if (!dwin->inunicode) {
         char *inbuf = ((char *)dwin->inbuf);
         for (ix=0; ix<len; ix++) {
             glui32 ch = buf[ix];
@@ -456,12 +456,12 @@ void win_textbuffer_prepare_input(window_t *win, glui32 *buf, glui32 len)
         for (ix=0; ix<len; ix++) {
             inbuf[ix] = buf[ix];
         }
-    }
+    }*/
 }
 
-void win_textbuffer_accept_line(window_t *win)
+void win_textbuffer_accept_line(window_t *win, glui32 len)
 {
-    long len;
+    //long len;
     void *inbuf;
     int inmax, inunicode, inecho;
     glui32 termkey = 0;
@@ -475,10 +475,10 @@ void win_textbuffer_accept_line(window_t *win)
     inmax = dwin->inmax;
     inarrayrock = dwin->inarrayrock;
     inunicode = dwin->inunicode;
-    inecho = dwin->inecho;
+    //inecho = dwin->inecho;
 
-    len = dwin->incurpos;
-    if (inecho && win->echostr) {
+    //len = dwin->incurpos;
+    /*if (inecho && win->echostr) {
         if (!inunicode)
             gli_stream_echo_line(win->echostr, (char *)inbuf, len);
         else
@@ -486,7 +486,7 @@ void win_textbuffer_accept_line(window_t *win)
     }
     
     if (inecho) {
-        /* Add the typed text to the buffer. */
+        // Add the typed text to the buffer. *
         int ix;
         if (!inunicode) {
             for (ix=0; ix<len; ix++) {
@@ -500,11 +500,11 @@ void win_textbuffer_accept_line(window_t *win)
                 win_textbuffer_putchar(win, ch);
             }
         }
-    }
+    }*/
     
-    win->style = dwin->origstyle;
-    win->hyperlink = dwin->orighyperlink;
-    set_last_run(dwin, win->style, win->hyperlink);
+    //win->style = dwin->origstyle;
+    //win->hyperlink = dwin->orighyperlink;
+    //set_last_run(dwin, win->style, win->hyperlink);
 
     /* ### set termkey */
 
@@ -516,8 +516,8 @@ void win_textbuffer_accept_line(window_t *win)
     dwin->inecho = FALSE;
     dwin->intermkeys = 0;
 
-    if (inecho)
-        win_textbuffer_putchar(win, '\n');
+    //if (inecho)
+    //    win_textbuffer_putchar(win, '\n');
 
     if (gli_unregister_arr) {
         char *typedesc = (inunicode ? "&+#!Iu" : "&+#!Cn");
