@@ -1147,6 +1147,7 @@ void glk_cancel_char_event(window_t *win)
             /* do nothing */
             break;
     }
+    glem_cancel_char_event( win->updatetag );
 }
 
 void glk_cancel_line_event(window_t *win, event_t *ev)
@@ -1181,6 +1182,7 @@ void glk_cancel_line_event(window_t *win, event_t *ev)
             /* do nothing */
             break;
     }
+    glem_cancel_line_event( win->updatetag );
 }
 
 void glk_cancel_mouse_event(window_t *win)
@@ -1190,6 +1192,7 @@ void glk_cancel_mouse_event(window_t *win)
         return;
     }
     
+    glem_cancel_mouse_event( win->updatetag );
     /* But, in fact, we can't do much about this. */
     
     return;
@@ -1392,6 +1395,7 @@ void glk_cancel_hyperlink_event(winid_t win)
             gli_strict_warning("cancel_hyperlink_event: window does not support hyperlink input");
             break;
     }
+    glem_cancel_hyperlink_event( win->updatetag );
 }
 
 #endif /* GLK_MODULE_HYPERLINKS */

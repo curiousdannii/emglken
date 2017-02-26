@@ -131,6 +131,7 @@ struct glk_stream_struct {
 struct glk_fileref_struct {
     glui32 magicnum;
     glui32 rock;
+    glui32 tag;
 
     char *filename;
     int filetype;
@@ -248,7 +249,17 @@ extern void gli_delete_fileref(fileref_t *fref);
 
 /* Functions implemented in library.js */
 
+extern void glem_cancel_char_event(glui32 wintag);
+extern void glem_cancel_hyperlink_event(glui32 wintag);
+extern void glem_cancel_line_event(glui32 wintag);
+extern void glem_cancel_mouse_event(glui32 wintag);
 extern void glem_exit();
+extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
+extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
+extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
+extern void glem_fileref_delete_file(glui32 tag);
+extern void glem_fileref_destroy(glui32 tag);
+extern glui32 glem_fileref_does_file_exist(glui32 tag);
 extern glui32 glem_get_window_stream_tag(glui32 wintag);
 extern glui32 glem_image_draw(glui32 win, glui32 image, glsi32 val1, glsi32 val2);
 extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height);

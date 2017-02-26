@@ -14,24 +14,24 @@ mergeInto( LibraryManager.library,
 		return Math.pow( base, exp )
 	},
 
-	glk_cancel_char_event: function()
+	glem_cancel_char_event: function( wintag )
 	{
-		throw new Error( 'glk_cancel_char_event is not implemented' )
+		Glk.glk_cancel_char_event( GiDispa.class_obj_from_id( 'window', wintag ) )
 	},
 
-	glk_cancel_hyperlink_event: function()
+	glem_cancel_hyperlink_event: function( wintag )
 	{
-		throw new Error( 'glk_cancel_hyperlink_event is not implemented' )
+		Glk.glk_cancel_hyperlink_event( GiDispa.class_obj_from_id( 'window', wintag ) )
 	},
 
-	glk_cancel_line_event: function()
+	glem_cancel_line_event: function( wintag )
 	{
-		throw new Error( 'glk_cancel_line_event is not implemented' )
+		Glk.glk_cancel_line_event( GiDispa.class_obj_from_id( 'window', wintag ) )
 	},
 
-	glk_cancel_mouse_event: function()
+	glem_cancel_mouse_event: function( wintag )
 	{
-		throw new Error( 'glk_cancel_mouse_event is not implemented' )
+		Glk.glk_cancel_mouse_event( GiDispa.class_obj_from_id( 'window', wintag ) )
 	},
 
 	glem_exit: function()
@@ -40,9 +40,10 @@ mergeInto( LibraryManager.library,
 		Glk.update()
 	},
 
-	glk_fileref_create_by_name: function()
+	glem_fileref_create_by_name: function( usage, name, rock )
 	{
-		throw new Error( 'glk_fileref_create_by_name is not implemented' )
+		var fref = Glk.glk_fileref_create_by_name( usage, Module.intArrayToString( name ), rock )
+		return GiDispa.class_obj_to_id( 'fileref', fref )
 	},
 
 	glk_fileref_create_by_prompt: function()
@@ -50,34 +51,31 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_fileref_create_by_prompt is not implemented' )
 	},
 
-	glk_fileref_create_from_fileref: function()
+	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
-		throw new Error( 'glk_fileref_create_from_fileref is not implemented' )
+		var fref = Glk.glk_fileref_create_from_fileref( usage, GiDispa.class_obj_from_id( 'fileref', oldtag ), rock )
+		return GiDispa.class_obj_to_id( 'fileref', fref )
 	},
 
-	glk_fileref_create_temp: function()
+	glem_fileref_create_temp: function( usage, rock )
 	{
-		throw new Error( 'glk_fileref_create_temp is not implemented' )
+		var fref = Glk.glk_fileref_create_temp( usage, rock )
+		return GiDispa.class_obj_to_id( 'fileref', fref )
 	},
 
-	glk_fileref_delete_file: function()
+	glem_fileref_delete_file: function( tag )
 	{
-		throw new Error( 'glk_fileref_delete_file is not implemented' )
+		Glk.glk_fileref_delete_file( GiDispa.class_obj_from_id( 'fileref', tag ) )
 	},
 
-	glk_fileref_destroy: function()
+	glem_fileref_destroy: function( tag )
 	{
-		throw new Error( 'glk_fileref_destroy is not implemented' )
+		Glk.glk_fileref_destroy( GiDispa.class_obj_from_id( 'fileref', tag ) )
 	},
 
-	glk_fileref_does_file_exist: function()
+	glem_fileref_does_file_exist: function( tag )
 	{
-		throw new Error( 'glk_fileref_does_file_exist is not implemented' )
-	},
-
-	glk_fileref_get_rock: function()
-	{
-		throw new Error( 'glk_fileref_get_rock is not implemented' )
+		return Glk.glk_fileref_does_file_exist( GiDispa.class_obj_from_id( 'fileref', tag ) )
 	},
 
 	glk_gestalt_ext: function()

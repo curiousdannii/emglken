@@ -80,6 +80,7 @@ void gli_delete_fileref(fileref_t *fref)
     if (next)
         next->prev = prev;
     
+    glem_fileref_destroy( fref->tag );
     free(fref);
 }
 
@@ -121,6 +122,8 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
         return NULL;
     }
     
+    fref->tag = glem_fileref_create_temp( usage, rock );
+
     return fref;
 }
 
@@ -140,6 +143,8 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
         return NULL;
     }
     
+    fref->tag = glem_fileref_create_from_fileref( usage, oldfref->tag, rock );
+
     return fref;
 }
 
@@ -147,11 +152,11 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     glui32 rock)
 {
     fileref_t *fref;
-    char buf[BUFLEN];
-    char buf2[2*BUFLEN+10];
-    int len;
-    char *cx;
-    char *suffix;
+    //char buf[BUFLEN];
+    //char buf2[2*BUFLEN+10];
+    //int len;
+    //char *cx;
+    //char *suffix;
     
     /* The new spec recommendations: delete all characters in the
        string "/\<>:|?*" (including quotes). Truncate at the first
@@ -159,7 +164,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
        an appropriate suffix: ".glkdata", ".glksave", ".txt".
     */
     
-    for (cx=name, len=0; (*cx && *cx!='.' && len<BUFLEN-1); cx++) {
+    /*for (cx=name, len=0; (*cx && *cx!='.' && len<BUFLEN-1); cx++) {
         switch (*cx) {
             case '"':
             case '\\':
@@ -183,14 +188,16 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     }
     
     suffix = gli_suffix_for_usage(usage);
-    sprintf(buf2, "%s/%s%s", workingdir, buf, suffix);
+    sprintf(buf2, "%s/%s%s", workingdir, buf, suffix);*/
 
-    fref = gli_new_fileref(buf2, usage, rock);
+    fref = gli_new_fileref(name, usage, rock);
     if (!fref) {
         gli_strict_warning("fileref_create_by_name: unable to create fileref.");
         return NULL;
     }
     
+    fref->tag = glem_fileref_create_by_name( usage, name, rock );
+
     return fref;
 }
 
@@ -336,16 +343,7 @@ glui32 glk_fileref_does_file_exist(fileref_t *fref)
         return FALSE;
     }
     
-    /* This is sort of Unix-specific, but probably any stdio library
-        will implement at least this much of stat(). */
-    
-    if (stat(fref->filename, &buf))
-        return 0;
-    
-    if (S_ISREG(buf.st_mode))
-        return 1;
-    else
-        return 0;
+    return glem_fileref_does_file_exist( fref->tag );
 }
 
 void glk_fileref_delete_file(fileref_t *fref)
@@ -355,10 +353,7 @@ void glk_fileref_delete_file(fileref_t *fref)
         return;
     }
     
-    /* If you don't have the unlink() function, obviously, change it
-        to whatever file-deletion function you do have. */
-        
-    unlink(fref->filename);
+    glem_fileref_delete_file( fref->tag );
 }
 
 /* This should only be called from startup code. */
