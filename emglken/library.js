@@ -72,7 +72,6 @@ var emglken = {
 	glem_fileref_create_by_name: function( usage, name, rock )
 	{
 		var fref = Glk.glk_fileref_create_by_name( usage, Module.intArrayToString( name ), rock )
-		return GiDispa.class_obj_to_id( 'fileref', fref )
 		return _class_obj_to_id_fileref( fref )
 	},
 
@@ -83,8 +82,6 @@ var emglken = {
 
 	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
-		var fref = Glk.glk_fileref_create_from_fileref( usage, GiDispa.class_obj_from_id( 'fileref', oldtag ), rock )
-		return GiDispa.class_obj_to_id( 'fileref', fref )
 		var fref = Glk.glk_fileref_create_from_fileref( usage, _class_obj_from_id_fileref( oldtag ), rock )
 		return _class_obj_to_id_fileref( fref )
 	},
@@ -92,7 +89,6 @@ var emglken = {
 	glem_fileref_create_temp: function( usage, rock )
 	{
 		var fref = Glk.glk_fileref_create_temp( usage, rock )
-		return GiDispa.class_obj_to_id( 'fileref', fref )
 		return _class_obj_to_id_fileref( fref )
 	},
 
@@ -116,34 +112,47 @@ var emglken = {
 		throw new Error( 'glk_gestalt_ext is not implemented' )
 	},
 
-	glk_get_buffer_stream: function()
+	glem_get_buffer_stream: function( tag, bufaddr, len, unicode )
 	{
-		throw new Error( 'glk_get_buffer_stream is not implemented' )
+		var str = _class_obj_from_id_stream( tag )
+		if ( unicode )
+		{
+			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
+			return Glk.glk_get_buffer_stream_uni( str, buf )
+		}
+		else
+		{
+			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
+			return Glk.glk_get_buffer_stream( str, buf )
+		}
 	},
 
-	glk_get_buffer_stream_uni: function()
+	glem_get_char_stream: function( tag, unicode )
 	{
-		throw new Error( 'glk_get_buffer_stream_uni is not implemented' )
+		var str = _class_obj_from_id_stream( tag )
+		if ( unicode )
+		{
+			return Glk.glk_get_char_stream_uni( str )
+		}
+		else
+		{
+			return Glk.glk_get_char_stream( str )
+		}
 	},
 
-	glk_get_char_stream: function()
+	glem_get_line_stream: function( tag, bufaddr, len, unicode )
 	{
-		throw new Error( 'glk_get_char_stream is not implemented' )
-	},
-
-	glk_get_char_stream_uni: function()
-	{
-		throw new Error( 'glk_get_char_stream_uni is not implemented' )
-	},
-
-	glk_get_line_stream: function()
-	{
-		throw new Error( 'glk_get_line_stream is not implemented' )
-	},
-
-	glk_get_line_stream_uni: function()
-	{
-		throw new Error( 'glk_get_line_stream_uni is not implemented' )
+		var str = _class_obj_from_id_stream( tag )
+		if ( unicode )
+		{
+			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
+			return Glk.glk_get_line_stream_uni( str, buf )
+		}
+		else
+		{
+			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
+			return Glk.glk_get_line_stream( str, buf )
+		}
 	},
 
 	glem_get_window_stream_tag: function( wintag )
@@ -174,49 +183,24 @@ var emglken = {
 		return _class_obj_to_id_window( win )
 	},
 
-	glk_put_buffer: function()
+	glem_put_buffer_stream: function( tag, bufaddr, len, unicode )
 	{
-		throw new Error( 'glk_put_buffer is not implemented' )
-	},
-
-	glk_put_buffer_stream_uni: function()
-	{
-		throw new Error( 'glk_put_buffer_stream_uni is not implemented' )
-	},
-
-	glk_put_buffer_uni: function()
-	{
-		throw new Error( 'glk_put_buffer_uni is not implemented' )
-	},
-
-	glk_put_buffer_stream: function()
-	{
-		throw new Error( 'glk_put_buffer_stream is not implemented' )
+		var str = _class_obj_from_id_stream( tag )
+		if ( unicode )
+		{
+			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
+			Glk.glk_put_buffer_stream_uni( str, buf )
+		}
+		else
+		{
+			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
+			Glk.glk_put_buffer_stream( str, buf )
+		}
 	},
 
 	glem_put_char_stream_uni: function( str, ch )
 	{
 		Glk.glk_put_char_stream_uni( _class_obj_from_id_stream( str ), ch )
-	},
-
-	glk_put_string: function()
-	{
-		throw new Error( 'glk_put_string is not implemented' )
-	},
-
-	glk_put_string_uni: function()
-	{
-		throw new Error( 'glk_put_string_uni is not implemented' )
-	},
-
-	glk_put_string_stream: function()
-	{
-		throw new Error( 'glk_put_string_stream is not implemented' )
-	},
-
-	glk_put_string_stream_uni: function()
-	{
-		throw new Error( 'glk_put_string_stream_uni is not implemented' )
 	},
 
 	glem_request_char_event: function( wintag, unicode )
@@ -262,67 +246,7 @@ var emglken = {
 		throw new Error( 'glk_request_timer_events is not implemented' )
 	},
 
-	glk_schannel_create: function()
-	{
-		throw new Error( 'glk_schannel_create is not implemented' )
-	},
-
-	glk_schannel_create_ext: function()
-	{
-		throw new Error( 'glk_schannel_create_ext is not implemented' )
-	},
-
-	glk_schannel_destroy: function()
-	{
-		throw new Error( 'glk_schannel_destroy is not implemented' )
-	},
-
-	glk_schannel_get_rock: function()
-	{
-		throw new Error( 'glk_schannel_get_rock is not implemented' )
-	},
-
-	glk_schannel_pause: function()
-	{
-		throw new Error( 'glk_schannel_pause is not implemented' )
-	},
-
-	glk_schannel_play: function()
-	{
-		throw new Error( 'glk_schannel_play is not implemented' )
-	},
-
-	glk_schannel_play_ext: function()
-	{
-		throw new Error( 'glk_schannel_play_ext is not implemented' )
-	},
-
-	glk_schannel_play_multi: function()
-	{
-		throw new Error( 'glk_schannel_play_multi is not implemented' )
-	},
-
-	glk_schannel_set_volume: function()
-	{
-		throw new Error( 'glk_schannel_set_volume is not implemented' )
-	},
-
-	glk_schannel_set_volume_ext: function()
-	{
-		throw new Error( 'glk_schannel_set_volume_ext is not implemented' )
-	},
-
-	glk_schannel_stop: function()
-	{
-		throw new Error( 'glk_schannel_stop is not implemented' )
-	},
-
-	glk_schannel_unpause: function()
-	{
-		throw new Error( 'glk_schannel_unpause is not implemented' )
-	},
-
-	glem_select__deps: ['$EmterpreterAsync'],
+	glem_select__deps: ['$EmterpreterAsync', 'class_obj_to_id_window'],
 	glem_select: function( data )
 	{
 		EmterpreterAsync.handle( function( resume )
@@ -363,11 +287,6 @@ var emglken = {
 	glk_set_terminators_line_event: function()
 	{
 		throw new Error( 'glk_set_terminators_line_event is not implemented' )
-	},
-
-	glk_sound_load_hint: function()
-	{
-		throw new Error( 'glk_sound_load_hint is not implemented' )
 	},
 
 	glem_stream_close: function( tag )
@@ -417,26 +336,6 @@ var emglken = {
 	glem_stream_set_position: function( tag, pos, seekmode )
 	{
 		Glk.glk_stream_set_position( _class_obj_from_id_stream( tag ), pos, seekmode )
-	},
-
-	glk_style_distinguish: function()
-	{
-		throw new Error( 'glk_style_distinguish is not implemented' )
-	},
-
-	glk_style_measure: function()
-	{
-		throw new Error( 'glk_style_measure is not implemented' )
-	},
-
-	glk_stylehint_clear: function()
-	{
-		throw new Error( 'glk_stylehint_clear is not implemented' )
-	},
-
-	glk_stylehint_set: function()
-	{
-		throw new Error( 'glk_stylehint_set is not implemented' )
 	},
 
 	glem_window_clear: function( wintag )

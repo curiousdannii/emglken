@@ -98,10 +98,6 @@ void gli_delete_stream(stream_t *str)
             /* nothing necessary; the array belongs to gi_blorb.c. */
             break;
         case strtype_File:
-            /* close the FILE */
-            /*fclose(str->file);
-            str->file = NULL;
-            str->lastop = 0;*/
             break;
     }
 
@@ -230,63 +226,18 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
 {
     stream_t *str;
     char modestr[16];
+    glui32 tag;
 
-    return 0;
-
-    /*if (!fref) {
+    if (!fref) {
         gli_strict_warning("stream_open_file: invalid fileref ref.");
         return 0;
     }
     
-    // The spec says that Write, ReadWrite, and WriteAppend create the
-       file if necessary. However, fopen(filename, "r+") doesn't create
-       a file. So we have to pre-create it in the ReadWrite and
-       WriteAppend cases. (We use "a" so as not to truncate, and "b" 
-       because we're going to close it immediately, so it doesn't matter.) *
+    tag = glem_stream_open_file( fref->tag, fmode, rock, FALSE );
 
-    // Another Unix quirk: in r+ mode, you're not supposed to flip from
-       reading to writing or vice versa without doing an fseek. We will
-       track the most recent operation (as lastop) -- Write, Read, or
-       0 if either is legal next. *
-
-    if (fmode == filemode_ReadWrite || fmode == filemode_WriteAppend) {
-        fl = fopen(fref->filename, "ab");
-        if (!fl) {
-            gli_strict_warning("stream_open_file: unable to open file.");
-            return 0;
-        }
-
-        fclose(fl);
-    }
-    
-    switch (fmode) {
-        case filemode_Write:
-            strcpy(modestr, "w");
-            break;
-        case filemode_Read:
-            strcpy(modestr, "r");
-            break;
-        case filemode_ReadWrite:
-            strcpy(modestr, "r+");
-            break;
-        case filemode_WriteAppend:
-            // Can't use "a" here, because then fseek wouldn't work.
-               Instead we use "r+" and then fseek to the end. *
-            strcpy(modestr, "r+");
-            break;
-    }
-    
-    if (!fref->textmode)
-        strcat(modestr, "b");
-        
-    fl = fopen(fref->filename, modestr);
-    if (!fl) {
-        gli_strict_warning("stream_open_file: unable to open file.");
+    if ( !tag ) {
+        gli_strict_warning("stream_open_file: unable to create stream.");
         return 0;
-    }
-    
-    if (fmode == filemode_WriteAppend) {
-        fseek(fl, 0, 2); // ...to the end. *
     }
 
     str = gli_new_stream(strtype_File, 
@@ -300,8 +251,9 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
     
     str->isbinary = !fref->textmode;
     str->lastop = 0;
+    str->tag = tag;
     
-    return str;*/
+    return str;
 }
 
 #ifdef GLK_MODULE_UNICODE
@@ -349,9 +301,36 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
 strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
     glui32 rock)
 {
-    strid_t str = glk_stream_open_file(fref, fmode, rock);
-    // Unlovely, but it works in this library *
+    stream_t *str;
+    char modestr[16];
+    glui32 tag;
+
+    if (!fref) {
+        gli_strict_warning("stream_open_file_uni: invalid fileref ref.");
+        return 0;
+    }
+
+    tag = glem_stream_open_file( fref->tag, fmode, rock, TRUE );
+
+    if ( !tag ) {
+        gli_strict_warning("stream_open_file_uni: unable to create stream.");
+        return 0;
+    }
+
+    str = gli_new_stream(strtype_File, 
+        (fmode == filemode_Read || fmode == filemode_ReadWrite), 
+        !(fmode == filemode_Read), 
+        rock);
+    if (!str) {
+        gli_strict_warning("stream_open_file_uni: unable to create stream.");
+        return 0;
+    }
+
+    str->isbinary = !fref->textmode;
+    str->lastop = 0;
+    str->tag = tag;
     str->unicode = TRUE;
+
     return str;
 }
 
@@ -467,38 +446,6 @@ strid_t glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
 
 #endif /* GLK_MODULE_RESOURCE_STREAM */
 
-/*strid_t gli_stream_open_pathname(char *pathname, int writemode, 
-    int textmode, glui32 rock)
-{
-    char modestr[16];
-    stream_t *str;
-    FILE *fl;
-    
-    if (!writemode)
-        strcpy(modestr, "r");
-    else
-        strcpy(modestr, "w");
-    if (!textmode)
-        strcat(modestr, "b");
-        
-    fl = fopen(pathname, modestr);
-    if (!fl) {
-        return 0;
-    }
-
-    str = gli_new_stream(strtype_File, 
-        !writemode, writemode, rock);
-    if (!str) {
-        fclose(fl);
-        return 0;
-    }
-    
-    str->file = fl;
-    str->lastop = 0;
-    
-    return str;
-}*/
-
 strid_t glk_stream_iterate(strid_t str, glui32 *rock)
 {
     if (!str) {
@@ -598,15 +545,7 @@ void glk_stream_set_position(stream_t *str, glsi32 pos, glui32 seekmode)
             /* do nothing; don't pass to echo stream */
             break;
         case strtype_File:
-            /* Either reading or writing is legal after an fseek. */
-            /*str->lastop = 0;
-            if (str->unicode) {
-                // Use 4 here, rather than sizeof(glui32). *
-                pos *= 4;
-            }
-            fseek(str->file, pos, 
-                ((seekmode == seekmode_Current) ? 1 :
-                ((seekmode == seekmode_End) ? 2 : 0)));*/
+            glem_stream_set_position( str->tag, pos, seekmode );
             break;
     }   
 }
@@ -628,13 +567,7 @@ glui32 glk_stream_get_position(stream_t *str)
                 return (str->ubufptr - str->ubuf);
             }
         case strtype_File:
-            /*if (!str->unicode) {
-                return ftell(str->file);
-            }
-            else {
-                // Use 4 here, rather than sizeof(glui32). *
-                return ftell(str->file) / 4;
-            }*/
+            return glem_stream_get_position( str->tag );
         case strtype_Window:
         default:
             return 0;
@@ -688,23 +621,7 @@ static void gli_put_char(stream_t *str, unsigned char ch)
                 gli_put_char(str->win->echostr, ch);
             break;
         case strtype_File:
-            /*gli_stream_ensure_op(str, filemode_Write);
-            if (!str->unicode) {
-                putc(ch, str->file);
-            }
-            else {
-                if (!str->isbinary) {
-                    // cheap UTF-8 stream *
-                    gli_putchar_utf8(ch, str->file);
-                }
-                else {
-                    // cheap big-endian stream *
-                    putc(0, str->file);
-                    putc(0, str->file);
-                    putc(0, str->file);
-                    putc(ch, str->file);
-                }
-            }*/
+            glem_put_char_stream_uni( str->tag, ch );
             break;
         case strtype_Resource:
             /* resource streams are never writable */
@@ -752,25 +669,7 @@ static void gli_put_char_uni(stream_t *str, glui32 ch)
                 gli_put_char_uni(str->win->echostr, ch);
             break;
         case strtype_File:
-            /*gli_stream_ensure_op(str, filemode_Write);
-            if (!str->unicode) {
-                if (ch >= 0x100)
-                    ch = '?';
-                putc(ch, str->file);
-            }
-            else {
-                if (!str->isbinary) {
-                    // cheap UTF-8 stream *
-                    gli_putchar_utf8(ch, str->file);
-                }
-                else {
-                    // cheap big-endian stream *
-                    putc(((ch >> 24) & 0xFF), str->file);
-                    putc(((ch >> 16) & 0xFF), str->file);
-                    putc(((ch >>  8) & 0xFF), str->file);
-                    putc( (ch        & 0xFF), str->file);
-                }
-            }*/
+            glem_put_char_stream_uni( str->tag, ch );
             break;
         case strtype_Resource:
             /* resource streams are never writable */
@@ -840,36 +739,12 @@ static void gli_put_buffer(stream_t *str, char *buf, glui32 len)
                 gli_strict_warning("put_buffer: window has pending line request");
                 break;
             }
-            for (lx=0, cx=(unsigned char *)buf; lx<len; lx++, cx++) {
-                //gli_window_put_char(str->win, *cx);
-                gli_strict_warning("gli_put_buffer for windows not implemented");
-                break;
-            }
+            glem_put_buffer_stream( str->tag, buf, len, FALSE );
             if (str->win->echostr)
                 gli_put_buffer(str->win->echostr, buf, len);
             break;
         case strtype_File:
-            /*gli_stream_ensure_op(str, filemode_Write);
-            if (!str->unicode) {
-                fwrite((unsigned char *)buf, 1, len, str->file);
-            }
-            else {
-                if (!str->isbinary) {
-                    // cheap UTF-8 stream *
-                    for (lx=0; lx<len; lx++)
-                        gli_putchar_utf8(((unsigned char *)buf)[lx], str->file);
-                }
-                else {
-                    // cheap big-endian stream *
-                    for (lx=0; lx<len; lx++) {
-                        unsigned char ch = ((unsigned char *)buf)[lx];
-                        putc(((ch >> 24) & 0xFF), str->file);
-                        putc(((ch >> 16) & 0xFF), str->file);
-                        putc(((ch >>  8) & 0xFF), str->file);
-                        putc( (ch        & 0xFF), str->file);
-                    }
-                }
-            }*/
+            glem_put_buffer_stream( str->tag, buf, len, FALSE );
             break;
         case strtype_Resource:
             /* resource streams are never writable */
@@ -1018,56 +893,7 @@ static glsi32 gli_get_char(stream_t *str, int want_unicode)
                 }
             }
         case strtype_File: 
-            /*gli_stream_ensure_op(str, filemode_Read);
-            if (!str->unicode) {
-                int res;
-                res = getc(str->file);
-                if (res != -1) {
-                    str->readcount++;
-                    return (glsi32)res;
-                }
-                else {
-                    return -1;
-                }
-            }
-            else if (str->isbinary) {
-                // cheap big-endian stream *
-                int res;
-                glui32 ch;
-                res = getc(str->file);
-                if (res == -1)
-                    return -1;
-                ch = (res & 0xFF);
-                res = getc(str->file);
-                if (res == -1)
-                    return -1;
-                ch = (ch << 8) | (res & 0xFF);
-                res = getc(str->file);
-                if (res == -1)
-                    return -1;
-                ch = (ch << 8) | (res & 0xFF);
-                res = getc(str->file);
-                if (res == -1)
-                    return -1;
-                ch = (ch << 8) | (res & 0xFF);
-                str->readcount++;
-                if (!want_unicode && ch >= 0x100)
-                    return '?';
-                return (glsi32)ch;
-            }
-            else {
-                // slightly less cheap UTF-8 stream *
-                glui32 val0, val1, val2, val3;
-                int res;
-                glui32 ch;
-                int flag = UTF8_DECODE_INLINE(&ch, (res=getc(str->file), res == -1), (res & 0xFF), val0, val1, val2, val3);
-                if (!flag)
-                    return -1;
-                str->readcount++;
-                if (!want_unicode && ch >= 0x100)
-                    return '?';
-                return (glsi32)ch;
-            }*/
+            return glem_get_char_stream( str->tag, want_unicode );
         case strtype_Window:
         default:
             return -1;
@@ -1194,85 +1020,18 @@ static glui32 gli_get_buffer(stream_t *str, char *cbuf, glui32 *ubuf,
             str->readcount += len;
             return len;
         case strtype_File: 
-            /*gli_stream_ensure_op(str, filemode_Read);
-            if (!str->unicode) {
-                if (cbuf) {
-                    glui32 res;
-                    res = fread(cbuf, 1, len, str->file);
-                    str->readcount += res;
-                    return res;
-                }
-                else {
-                    glui32 lx;
-                    for (lx=0; lx<len; lx++) {
-                        int res;
-                        glui32 ch;
-                        res = getc(str->file);
-                        if (res == -1)
-                            break;
-                        ch = (res & 0xFF);
-                        str->readcount++;
-                        ubuf[lx] = ch;
-                    }
-                    return lx;
-                }
+            if ( cbuf )
+            {
+                glui32 res = glem_get_buffer_stream( str->tag, cbuf, len, FALSE );
+                str->readcount += res;
+                return res;
             }
-            else if (str->isbinary) {
-                // cheap big-endian stream *
-                glui32 lx;
-                for (lx=0; lx<len; lx++) {
-                    int res;
-                    glui32 ch;
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    str->readcount++;
-                    if (cbuf) {
-                        if (ch >= 0x100)
-                            ch = '?';
-                        cbuf[lx] = ch;
-                    }
-                    else {
-                        ubuf[lx] = ch;
-                    }
-                }
-                return lx;
+            else
+            {
+                glui32 res = glem_get_buffer_stream( str->tag, ubuf, len, TRUE );
+                str->readcount += res;
+                return res;
             }
-            else {
-                // slightly less cheap UTF-8 stream *
-                glui32 lx;
-                for (lx=0; lx<len; lx++) {
-                    glui32 val0, val1, val2, val3;
-                    int res;
-                    glui32 ch;
-                    int flag = UTF8_DECODE_INLINE(&ch, (res=getc(str->file), res == -1), (res & 0xFF), val0, val1, val2, val3);
-                    if (!flag)
-                        break;
-                    str->readcount++;
-                    if (cbuf) {
-                        if (ch >= 0x100)
-                            ch = '?';
-                        cbuf[lx] = ch;
-                    }
-                    else {
-                        ubuf[lx] = ch;
-                    }
-                }
-                return lx;
-            }*/
         case strtype_Window:
         default:
             return 0;
@@ -1417,115 +1176,18 @@ static glui32 gli_get_line(stream_t *str, char *cbuf, glui32 *ubuf,
             str->readcount += lx;
             return lx;
         case strtype_File: 
-            /*gli_stream_ensure_op(str, filemode_Read);
-            if (!str->unicode) {
-                if (cbuf) {
-                    char *res;
-                    res = fgets(cbuf, len, str->file);
-                    if (!res) {
-                        return 0;
-                    }
-                    else {
-                        glui32 lx = strlen(cbuf);
-                        str->readcount += lx;
-                        return lx;
-                    }
-                }
-                else {
-                    glui32 lx;
-                    if (len == 0)
-                        return 0;
-                    len -= 1; // for the terminal null *
-                    gotnewline = FALSE;
-                    for (lx=0; lx<len && !gotnewline; lx++) {
-                        int res;
-                        glui32 ch;
-                        res = getc(str->file);
-                        if (res == -1)
-                            break;
-                        ch = (res & 0xFF);
-                        str->readcount++;
-                        ubuf[lx] = ch;
-                        gotnewline = (ch == '\n');
-                    }
-                    ubuf[lx] = '\0';
-                    return lx;
-                }
+            if ( cbuf )
+            {
+                glui32 res = glem_get_line_stream( str->tag, cbuf, len, FALSE );
+                str->readcount += res;
+                return res;
             }
-            else if (str->isbinary) {
-                // cheap big-endian stream *
-                glui32 lx;
-                if (len == 0)
-                    return 0;
-                len -= 1; // for the terminal null *
-                gotnewline = FALSE;
-                for (lx=0; lx<len && !gotnewline; lx++) {
-                    int res;
-                    glui32 ch;
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    res = getc(str->file);
-                    if (res == -1)
-                        break;
-                    ch = (ch << 8) | (res & 0xFF);
-                    str->readcount++;
-                    if (cbuf) {
-                        if (ch >= 0x100)
-                            ch = '?';
-                        cbuf[lx] = ch;
-                    }
-                    else {
-                        ubuf[lx] = ch;
-                    }
-                    gotnewline = (ch == '\n');
-                }
-                if (cbuf)
-                    cbuf[lx] = '\0';
-                else 
-                    ubuf[lx] = '\0';
-                return lx;
+            else
+            {
+                glui32 res = glem_get_line_stream( str->tag, ubuf, len, TRUE );
+                str->readcount += res;
+                return res;
             }
-            else {
-                // slightly less cheap UTF-8 stream *
-                glui32 lx;
-                if (len == 0)
-                    return 0;
-                len -= 1; // for the terminal null *
-                gotnewline = FALSE;
-                for (lx=0; lx<len && !gotnewline; lx++) {
-                    glui32 val0, val1, val2, val3;
-                    int res;
-                    glui32 ch;
-                    int flag = UTF8_DECODE_INLINE(&ch, (res=getc(str->file), res == -1), (res & 0xFF), val0, val1, val2, val3);
-                    if (!flag)
-                        break;
-                    str->readcount++;
-                    if (cbuf) {
-                        if (ch >= 0x100)
-                            ch = '?';
-                        cbuf[lx] = ch;
-                    }
-                    else {
-                        ubuf[lx] = ch;
-                    }
-                    gotnewline = (ch == '\n');
-                }
-                if (cbuf)
-                    cbuf[lx] = '\0';
-                else 
-                    ubuf[lx] = '\0';
-                return lx;
-            }*/
         case strtype_Window:
         default:
             return 0;
@@ -1625,6 +1287,7 @@ void glk_put_string_stream_uni(stream_t *str, glui32 *us)
 
 void glk_put_buffer_uni(glui32 *buf, glui32 len)
 {
+    /* TODO: Make this more efficient */
     glui32 ix;
     for (ix=0; ix<len; ix++) {
         gli_put_char_uni(gli_currentstr, buf[ix]);
