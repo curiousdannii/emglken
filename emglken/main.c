@@ -14,16 +14,6 @@
 #include "glkstart.h"
 
 /* Declarations of preferences flags. */
-int pref_printversion = FALSE;
-int pref_stderr = FALSE;
-int pref_fixedmetrics = FALSE;
-int pref_screenwidth = 80;
-int pref_screenheight = 50;
-int pref_timersupport = FALSE;
-int pref_hyperlinksupport = FALSE;
-int pref_graphicssupport = FALSE;
-int pref_graphicswinsupport = FALSE;
-char *pref_resourceurl = NULL;
 #if GIDEBUG_LIBRARY_SUPPORT
 int gli_debugger = FALSE;
 #endif /* GIDEBUG_LIBRARY_SUPPORT */

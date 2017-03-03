@@ -768,7 +768,7 @@ static void gli_set_hyperlink(stream_t *str, glui32 linkval)
     if (!str || !str->writable)
         return;
 
-    if (!pref_hyperlinksupport)
+    if (!glk_gestalt(gestalt_Hyperlinks, 0))
         return;
     
     switch (str->type) {

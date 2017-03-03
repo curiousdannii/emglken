@@ -271,6 +271,8 @@ void win_textgrid_move_cursor(window_t *win, int xpos, int ypos)
         
     dwin->curx = xpos;
     dwin->cury = ypos;
+    
+    glem_window_move_cursor( win->updatetag, xpos, ypos );
 }
 
 /* Prepare the window for line input. */

@@ -110,9 +110,6 @@ window_t *gli_new_window(glui32 type, glui32 rock, glui32 updatetag)
     win->line_request = FALSE;
     win->line_request_uni = FALSE;
     win->char_request_uni = FALSE;
-    win->hyperlink_request = FALSE;
-    win->echo_line_input = TRUE;
-    win->terminate_line_input = 0;
     win->style = style_Normal;
     win->hyperlink = 0;
 
@@ -206,7 +203,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
     
     }
 
-    if (wintype == wintype_Graphics && !pref_graphicswinsupport) {
+    if (wintype == wintype_Graphics && !glk_gestalt(gestalt_Graphics, 0)) {
         /* Graphics windows not supported; silently return null */
         return 0;
     }
@@ -454,22 +451,7 @@ void glk_window_get_arrangement(window_t *win, glui32 *method, glui32 *size,
         return;
     }
     
-    dwin = win->data;
-    
-    val = dwin->dir | dwin->division;
-    if (!dwin->hasborder)
-        val |= winmethod_NoBorder;
-    
-    if (size)
-        *size = dwin->size;
-    if (keywin) {
-        if (dwin->key)
-            *keywin = dwin->key;
-        else
-            *keywin = NULL;
-    }
-    if (method)
-        *method = val;
+    glem_window_get_arrangement( win->updatetag, method, size, keywin );
 }
 
 void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size, 
@@ -546,7 +528,7 @@ void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size,
     dwin->vertical = (dwin->dir == winmethod_Left || dwin->dir == winmethod_Right);
     dwin->backward = (dwin->dir == winmethod_Left || dwin->dir == winmethod_Above);
     
-    //gli_window_rearrange(win, &box, &metrics);
+    glem_window_set_arrangement( win->updatetag, method, size, key );
 }
 
 winid_t glk_window_iterate(winid_t win, glui32 *rock)
@@ -660,51 +642,15 @@ glui32 glk_window_get_type(window_t *win)
     return win->type;
 }
 
-/*void glk_window_get_size(window_t *win, glui32 *width, glui32 *height)
-{
-    glui32 wid = 0;
-    glui32 hgt = 0;
-    int val, boxwidth, boxheight;
-    
+void glk_window_get_size(window_t *win, glui32 *width, glui32 *height)
+{    
     if (!win) {
         gli_strict_warning("window_get_size: invalid ref");
         return;
     }
     
-    switch (win->type) {
-        case wintype_Blank:
-        case wintype_Pair:
-            // always zero *
-            break;
-        case wintype_TextGrid:
-            boxwidth = win->bbox.right - win->bbox.left;
-            boxheight = win->bbox.bottom - win->bbox.top;
-            val = floor((boxwidth-metrics.gridmarginx) / metrics.gridcharwidth);
-            wid = ((val >= 0) ? val : 0);
-            val = floor((boxheight-metrics.gridmarginy) / metrics.gridcharheight);
-            hgt = ((val >= 0) ? val : 0);
-            break;
-        case wintype_TextBuffer:
-            boxwidth = win->bbox.right - win->bbox.left;
-            boxheight = win->bbox.bottom - win->bbox.top;
-            val = floor((boxwidth-metrics.buffermarginx) / metrics.buffercharwidth);
-            wid = ((val >= 0) ? val : 0);
-            val = floor((boxheight-metrics.buffermarginy) / metrics.buffercharheight);
-            hgt = ((val >= 0) ? val : 0);
-            break;
-        case wintype_Graphics:
-            boxwidth = win->bbox.right - win->bbox.left;
-            boxheight = win->bbox.bottom - win->bbox.top;
-            wid = boxwidth - metrics.graphicsmarginx;
-            hgt = boxheight - metrics.graphicsmarginy;
-            break;
-    }
-
-    if (width)
-        *width = wid;
-    if (height)
-        *height = hgt;
-}*/
+    glem_window_get_size( win->updatetag, width, height );
+}
 
 strid_t glk_window_get_stream(window_t *win)
 {
@@ -796,194 +742,6 @@ static glui32 *dup_buffer(void *buf, int len, int unicode)
 
 #endif /* GIDEBUG_LIBRARY_SUPPORT */
 
-
-/* This constructs an update object for the library state. (It's in
-   rgwindow.c because most of the work is window-related.)
-
-   This clears all the dirty flags, constructs an update, sends it to
-   stdout, and flushes. 
-
-   If special is provided, it goes into the update. It will be freed
-   after sending.
-*/
-/*void gli_windows_update(data_specialreq_t *special, int newgeneration)
-{
-    window_t *win;
-    int ix;
-    data_update_t *update = data_update_alloc();
-
-    if (newgeneration)
-        generation++;
-    update->gen = generation;
-
-    if (geometry_changed) {
-        geometry_changed = FALSE;
-
-        update->usewindows = TRUE;
-
-        for (win=gli_windowlist, ix=0; win; win=win->next, ix++) {
-            if (win->type == wintype_Pair)
-                continue;
-            data_window_t *dat = data_window_alloc(win->updatetag,
-                win->type, win->rock);
-            dat->size = win->bbox;
-            if (win->type == wintype_TextGrid) {
-                window_textgrid_t *dwin = win->data;
-                dat->gridwidth = dwin->width;
-                dat->gridheight = dwin->height;
-            }
-            if (win->type == wintype_Graphics) {
-                window_graphics_t *dwin = win->data;
-                dat->gridwidth = dwin->graphwidth;
-                dat->gridheight = dwin->graphheight;
-            }
-            gen_list_append(&update->windows, dat);
-        }
-    }
-    
-    for (win=gli_windowlist; win; win=win->next) {
-        data_content_t *dat = NULL;
-        switch (win->type) {
-            case wintype_TextGrid:
-                dat = win_textgrid_update(win);
-                break;
-            case wintype_TextBuffer:
-                dat = win_textbuffer_update(win);
-                break;
-            case wintype_Graphics:
-                dat = win_graphics_update(win);
-                break;
-        }
-
-        if (dat) {
-            gen_list_append(&update->contents, dat);
-        }
-    }
-
-    update->useinputs = TRUE;
-    for (win=gli_windowlist; win; win=win->next) {
-        data_input_t *dat = NULL;
-        if (win->char_request) {
-            dat = data_input_alloc(win->updatetag, evtype_CharInput);
-            dat->gen = win->inputgen;
-            if (win->type == wintype_TextGrid) {
-                window_textgrid_t *dwin = win->data;
-                // Canonicalize position first? *
-                dat->cursorpos = TRUE;
-                dat->xpos = dwin->curx;
-                dat->ypos = dwin->cury;
-            }
-        }
-        else if (win->line_request) {
-            dat = data_input_alloc(win->updatetag, evtype_LineInput);
-            dat->gen = win->inputgen;
-            if (win->type == wintype_TextBuffer) {
-                window_textbuffer_t *dwin = win->data;
-                dat->maxlen = dwin->inmax;
-                if (dwin->incurpos) {
-                    dat->initlen = dwin->incurpos;
-                    dat->initstr = dup_buffer(dwin->inbuf, dwin->incurpos, dwin->inunicode);
-                }
-            }
-            else if (win->type == wintype_TextGrid) {
-                window_textgrid_t *dwin = win->data;
-                // Canonicalize position first? *
-                dat->cursorpos = TRUE;
-                dat->xpos = dwin->curx;
-                dat->ypos = dwin->cury;
-                dat->maxlen = dwin->inmax;
-                if (dwin->incurpos) {
-                    dat->initlen = dwin->incurpos;
-                    dat->initstr = dup_buffer(dwin->inbuf, dwin->incurpos, dwin->inunicode);
-                }
-            }
-        }
-
-        if (win->hyperlink_request) {
-            if (!dat)
-                dat = data_input_alloc(win->updatetag, evtype_None);
-            dat->hyperlink = TRUE;
-        }
-
-        if (dat) {
-            gen_list_append(&update->inputs, dat);
-        }
-    }
-
-    glui32 timing_msec = 0;
-    if (gli_timer_need_update(&timing_msec)) {
-        update->includetimer = TRUE;
-        update->timer = timing_msec;
-    }
-
-    update->specialreq = special;
-
-#if GIDEBUG_LIBRARY_SUPPORT
-    for (ix=0; ix<debug_output_cache.count; ix++) {
-        gen_list_append(&update->debuglines, debug_output_cache.list[ix]);
-        debug_output_cache.list[ix] = NULL;
-    }
-    debug_output_cache.count = 0;
-#endif // GIDEBUG_LIBRARY_SUPPORT *
-
-    data_update_print(update);
-    printf("\n"); // blank line after stanza *
-    fflush(stdout);
-
-    data_update_free(update);
-}*/
-
-/* Set dirty flags on everything, as if the client hasn't seen any
-   updates since the given generation number.
-
-   ### This ignores the generation number and just resends everything
-   we've got.
-*/
-/*void gli_windows_refresh(glui32 fromgen)
-{
-    window_t *win;
-    for (win=gli_windowlist; win; win=win->next) {
-        if (win->type == wintype_TextBuffer) {
-            window_textbuffer_t *dwin = win->data;
-            dwin->updatemark = 0;
-        }
-        else if (win->type == wintype_TextGrid) {
-            window_textgrid_t *dwin = win->data;
-            dwin->alldirty = TRUE;
-        }
-        else if (win->type == wintype_Graphics) {
-            window_graphics_t *dwin = win->data;
-            dwin->updatemark = 0;
-        }
-    }
-}*/
-
-/* Some trivial switch functions which make up for the fact that we're not
-    doing this in C++. */
-
-/*void gli_window_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics)
-{
-    geometry_changed = TRUE;
-
-    switch (win->type) {
-        case wintype_Blank:
-            win_blank_rearrange(win, box, metrics);
-            break;
-        case wintype_Pair:
-            win_pair_rearrange(win, box, metrics);
-            break;
-        case wintype_TextGrid:
-            win_textgrid_rearrange(win, box, metrics);
-            break;
-        case wintype_TextBuffer:
-            win_textbuffer_rearrange(win, box, metrics);
-            break;
-        case wintype_Graphics:
-            win_graphics_rearrange(win, box, metrics);
-            break;
-    }
-}*/
-
 void gli_window_prepare_input(window_t *win, glui32 *buf, glui32 len)
 {
     switch (win->type) {
@@ -1007,35 +765,6 @@ void gli_window_accept_line(window_t *win, glui32 len)
             break;
     }
 }
-
-/*void gli_windows_metrics_change(data_metrics_t *newmetrics)
-{
-    metrics = *newmetrics;
-
-    if (gli_rootwin) {
-        grect_t box;
-        //compute_content_box(&box);
-        gli_window_rearrange(gli_rootwin, &box, &metrics);
-    }
-    
-    gli_event_store(evtype_Arrange, NULL, 0, 0);
-}*/
-
-/*void gli_windows_trim_buffers()
-{
-    window_t *win;
-    
-    for (win=gli_windowlist; win; win=win->next) {
-        switch (win->type) {
-            case wintype_TextBuffer:
-                win_textbuffer_trim_buffer(win);
-                break;
-            case wintype_Graphics:
-                win_graphics_trim_buffer(win);
-                break;
-        }
-    }
-}*/
 
 void glk_request_char_event(window_t *win)
 {
@@ -1125,7 +854,7 @@ void glk_request_mouse_event(window_t *win)
         return;
     }
     
-    /* But, in fact, we can't do much about this. */
+    glem_request_mouse_event( win->updatetag );
     
     return;
 }
@@ -1229,7 +958,7 @@ void glk_set_echo_line_event(window_t *win, glui32 val)
         return;
     }
     
-    win->echo_line_input = (val != 0);
+    glem_set_echo_line_event( win->updatetag, val );
 }
 
 #endif /* GLK_MODULE_LINE_ECHO */
@@ -1239,31 +968,13 @@ void glk_set_echo_line_event(window_t *win, glui32 val)
 void glk_set_terminators_line_event(window_t *win, glui32 *keycodes, 
     glui32 count)
 {
-    int ix;
-    glui32 res, val;
 
     if (!win) {
         gli_strict_warning("set_terminators_line_event: invalid ref");
         return;
     }
     
-    /* We only allow escape and the function keys as line input terminators.
-       We encode those in a bitmask. */
-    res = 0;
-    if (keycodes) {
-        for (ix=0; ix<count; ix++) {
-            if (keycodes[ix] == keycode_Escape) {
-                res |= 0x10000;
-            }
-            else {
-                val = keycode_Func1 + 1 - keycodes[ix];
-                if (val >= 1 && val <= 12)
-                    res |= (1 << val);
-            }
-        }
-    }
-
-    win->terminate_line_input = res;
+    glem_set_terminators_line_event( win->updatetag, keycodes, count );
 }
 
 #endif /* GLK_MODULE_LINE_TERMINATORS */
@@ -1272,7 +983,7 @@ void glk_set_terminators_line_event(window_t *win, glui32 *keycodes,
 
 glui32 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 {
-    if (!pref_graphicssupport) {
+    if (!glk_gestalt(gestalt_Graphics, 0)) {
         gli_strict_warning("image_draw: graphics not supported.");
         return FALSE;
     }
@@ -1282,27 +993,24 @@ glui32 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
 glui32 glk_image_draw_scaled(winid_t win, glui32 image, 
     glsi32 val1, glsi32 val2, glui32 width, glui32 height)
 {
-    if (!pref_graphicssupport) {
+    if (!glk_gestalt(gestalt_Graphics, 0)) {
         gli_strict_warning("image_draw_scaled: graphics not supported.");
         return FALSE;
     }
     return glem_image_draw_scaled( win->updatetag, image, val1, val2, width, height);
 }
 
-/*void glk_window_flow_break(winid_t win)
+void glk_window_flow_break(winid_t win)
 {
     if (!win) {
         gli_strict_warning("flow_break: invalid ref");
         return;
     }
     
-    if (win->type == wintype_TextBuffer) {
-        data_specialspan_t *special = data_specialspan_alloc(specialtype_FlowBreak);
-        win_textbuffer_putspecial(win, special);
-    }
-}*/
+    glem_window_flow_break( win->updatetag );
+}
 
-/*void glk_window_erase_rect(winid_t win, 
+void glk_window_erase_rect(winid_t win, 
     glsi32 left, glsi32 top, glui32 width, glui32 height)
 {
     if (!win) {
@@ -1313,17 +1021,11 @@ glui32 glk_image_draw_scaled(winid_t win, glui32 image,
         gli_strict_warning("window_erase_rect: not a graphics window");
         return;
     }
+    
+    glem_window_erase_rect( win->updatetag, left, top, width, height );
+}
 
-    data_specialspan_t *special = data_specialspan_alloc(specialtype_Fill);
-    special->hasdimensions = TRUE;
-    special->xpos = left;
-    special->ypos = top;
-    special->width = width;
-    special->height = height;
-    win_graphics_putspecial(win, special);
-}*/
-
-/*void glk_window_fill_rect(winid_t win, glui32 color, 
+void glk_window_fill_rect(winid_t win, glui32 color, 
     glsi32 left, glsi32 top, glui32 width, glui32 height)
 {
     if (!win) {
@@ -1335,16 +1037,8 @@ glui32 glk_image_draw_scaled(winid_t win, glui32 image,
         return;
     }
 
-    data_specialspan_t *special = data_specialspan_alloc(specialtype_Fill);
-    special->hasdimensions = TRUE;
-    special->xpos = left;
-    special->ypos = top;
-    special->width = width;
-    special->height = height;
-    special->hascolor = TRUE;
-    special->color = color;
-    win_graphics_putspecial(win, special);
-}*/
+    glem_window_fill_rect( win->updatetag, color, left, top, width, height );
+}
 
 void glk_window_set_background_color(winid_t win, glui32 color)
 {
@@ -1362,18 +1056,10 @@ void glk_request_hyperlink_event(winid_t win)
         return;
     }
 
-    if (!pref_hyperlinksupport)
+    if (!glk_gestalt(gestalt_HyperlinkInput, 0))
         return;
 
-    switch (win->type) {
-        case wintype_TextBuffer:
-        case wintype_TextGrid:
-            win->hyperlink_request = TRUE;
-            break;
-        default:
-            gli_strict_warning("request_hyperlink_event: window does not support hyperlink input");
-            break;
-    }
+    glem_request_hyperlink_event( win->updatetag );
 }
 
 void glk_cancel_hyperlink_event(winid_t win)
@@ -1383,18 +1069,9 @@ void glk_cancel_hyperlink_event(winid_t win)
         return;
     }
 
-    if (!pref_hyperlinksupport)
+    if (!glk_gestalt(gestalt_HyperlinkInput, 0))
         return;
 
-    switch (win->type) {
-        case wintype_TextBuffer:
-        case wintype_TextGrid:
-            win->hyperlink_request = FALSE;
-            break;
-        default:
-            gli_strict_warning("cancel_hyperlink_event: window does not support hyperlink input");
-            break;
-    }
     glem_cancel_hyperlink_event( win->updatetag );
 }
 

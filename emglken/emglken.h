@@ -1,4 +1,4 @@
-/* emglken.h: Private header file or Emglken
+/* emglken.h: Private header file for Emglken
     Designed by Andrew Plotkin <erkyrath@eblong.com>
     http://eblong.com/zarf/glk/
 */
@@ -63,10 +63,6 @@ struct glk_window_struct {
     int line_request_uni;
     int char_request;
     int char_request_uni;
-    int hyperlink_request;
-
-    int echo_line_input; /* applies to future line inputs, not the current */
-    glui32 terminate_line_input; /* ditto; this is a bitmask of flags */
 
     glui32 style;
     glui32 hyperlink;
@@ -157,16 +153,6 @@ extern void (*gli_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t 
 extern gidispatch_rock_t (*gli_register_arr)(void *array, glui32 len, char *typecode);
 extern void (*gli_unregister_arr)(void *array, glui32 len, char *typecode, 
     gidispatch_rock_t objrock);
-
-extern int pref_stderr;
-extern int pref_printversion;
-extern int pref_screenwidth;
-extern int pref_screenheight;
-extern int pref_timersupport;
-extern int pref_hyperlinksupport;
-extern int pref_graphicssupport;
-extern int pref_graphicswinsupport;
-extern char *pref_resourceurl;
 
 #if GIDEBUG_LIBRARY_SUPPORT
 /* Has the user requested debug support? */
@@ -259,19 +245,30 @@ extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
 extern void glem_put_buffer_stream(glui32 str, void *buf, glui32 len, int unicode);
 extern void glem_put_char_stream_uni(glui32 str, glui32 ch);
+extern void glem_request_char_event(glui32 wintag, int unicode);
+extern void glem_request_hyperlink_event(glui32 tag);
+extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
+extern void glem_request_mouse_event(glui32 tag);
 extern void glem_select(glui32 *data);
+extern void glem_set_echo_line_event(glui32 tag, glui32 val);
 extern void glem_set_hyperlink_stream(glui32 tag, glui32 linkval);
 extern void glem_set_style_stream(glui32 tag, glui32 style);
+extern void glem_set_terminators_line_event(glui32 tag, glui32 *keycodes, glui32 count);
 extern void glem_stream_close(glui32 tag);
 extern glui32 glem_stream_get_position(glui32 tag);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
 extern void glem_stream_set_current(glui32 tag);
 extern void glem_stream_set_position(glui32 tag, glsi32 pos, glui32 seekmode);
-extern void glem_request_char_event(glui32 wintag, int unicode);
-extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_window_clear(glui32 wintag);
 extern void glem_window_close(glui32 wintag);
+extern void glem_window_erase_rect(glui32 wintag, glsi32 left, glsi32 top, glui32 width, glui32 height);
+extern void glem_window_fill_rect(glui32 wintag, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height);
+extern void glem_window_flow_break(glui32 wintag);
+extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, winid_t *keywinptr);
+extern void glem_window_get_size(glui32 wintag, glui32 *widthptr, glui32 *heightptr);
+extern void glem_window_move_cursor(glui32 wintag, glui32 xpos, glui32 ypos);
+extern void glem_window_set_arrangement(glui32 wintag, glui32 method, glui32 size, winid_t keywin);
 extern void glem_window_set_background_color(glui32 wintag, glui32 color);
 extern void init_emglken();
 

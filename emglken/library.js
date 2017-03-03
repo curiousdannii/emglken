@@ -34,24 +34,24 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
-	glem_cancel_char_event: function( wintag )
+	glem_cancel_char_event: function( tag )
 	{
-		Glk.glk_cancel_char_event( _class_obj_from_id_window( wintag ) )
+		Glk.glk_cancel_char_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_cancel_hyperlink_event: function( wintag )
+	glem_cancel_hyperlink_event: function( tag )
 	{
-		Glk.glk_cancel_hyperlink_event( _class_obj_from_id_window( wintag ) )
+		Glk.glk_cancel_hyperlink_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_cancel_line_event: function( wintag )
+	glem_cancel_line_event: function( tag )
 	{
-		Glk.glk_cancel_line_event( _class_obj_from_id_window( wintag ) )
+		Glk.glk_cancel_line_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_cancel_mouse_event: function( wintag )
+	glem_cancel_mouse_event: function( tag )
 	{
-		Glk.glk_cancel_mouse_event( _class_obj_from_id_window( wintag ) )
+		Glk.glk_cancel_mouse_event( _class_obj_from_id_window( tag ) )
 	},
 
 	glem_exit: function()
@@ -114,9 +114,10 @@ var emglken = {
 		return Glk.glk_fileref_does_file_exist( _class_obj_from_id_fileref( tag ) )
 	},
 
-	glk_gestalt_ext: function()
+	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
 	{
-		throw new Error( 'glk_gestalt_ext is not implemented' )
+		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, arrlen * 4 )
+		return Glk.glk_gestalt_ext( sel, val, arr )
 	},
 
 	glem_get_buffer_stream: function( tag, bufaddr, len, unicode )
@@ -162,24 +163,35 @@ var emglken = {
 		}
 	},
 
-	glem_get_window_stream_tag: function( wintag )
+	glem_get_window_stream_tag: function( tag )
 	{
-		return _class_obj_from_id_window( wintag ).str.disprock
+		return _class_obj_from_id_window( tag ).str.disprock
 	},
 
-	glem_image_draw: function( wintag, image, val1, val2 )
+	glem_image_draw: function( tag, image, val1, val2 )
 	{
-		return Glk.glk_image_draw( _class_obj_from_id_window( wintag ), image, val1, val2 )
+		return Glk.glk_image_draw( _class_obj_from_id_window( tag ), image, val1, val2 )
 	},
 
-	glem_image_draw_scaled: function( wintag, image, val1, val2, width, height )
+	glem_image_draw_scaled: function( tag, image, val1, val2, width, height )
 	{
-		return Glk.glk_image_draw_scaled( _class_obj_from_id_window( wintag ), image, val1, val2, width, height )
+		return Glk.glk_image_draw_scaled( _class_obj_from_id_window( tag ), image, val1, val2, width, height )
 	},
 
-	glk_image_get_info: function()
+	glk_image_get_info: function( image, width, height )
 	{
-		throw new Error( 'glk_image_get_info is not implemented' )
+		var widthBox = new Glk.RefBox()
+		var heightBox = new Glk.RefBox()
+		var res =  Glk.glk_image_get_info( image, widthBox, heightBox )
+		if ( width )
+		{
+			Module.setValue( width, widthBox.value, 'i32' )
+		}
+		if ( height )
+		{
+			Module.setValue( height, heightBox.value, 'i32' )
+		}
+		return res
 	},
 
 	glem_new_window: function( splitwin, method, size, wintype, rock, pairwintag )
@@ -210,9 +222,9 @@ var emglken = {
 		Glk.glk_put_char_stream_uni( _class_obj_from_id_stream( str ), ch )
 	},
 
-	glem_request_char_event: function( wintag, unicode )
+	glem_request_char_event: function( tag, unicode )
 	{
-		var win = _class_obj_from_id_window( wintag )
+		var win = _class_obj_from_id_window( tag )
 		if ( unicode )
 		{
 			Glk.glk_request_char_event_uni( win )
@@ -223,14 +235,14 @@ var emglken = {
 		}
 	},
 
-	glk_request_hyperlink_event: function()
+	glem_request_hyperlink_event: function( tag )
 	{
-		throw new Error( 'glk_request_hyperlink_event is not implemented' )
+		Glk.glk_request_hyperlink_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_request_line_event: function( wintag, bufaddr, maxlen, initlen, unicode )
+	glem_request_line_event: function( tag, bufaddr, maxlen, initlen, unicode )
 	{
-		var win = _class_obj_from_id_window( wintag )
+		var win = _class_obj_from_id_window( tag )
 		if ( unicode )
 		{
 			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, maxlen * 4 )
@@ -243,14 +255,14 @@ var emglken = {
 		}
 	},
 
-	glk_request_mouse_event: function()
+	glem_request_mouse_event: function( tag )
 	{
-		throw new Error( 'glk_request_mouse_event is not implemented' )
+		Glk.glk_request_mouse_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glk_request_timer_events: function()
+	glk_request_timer_events: function( ms )
 	{
-		throw new Error( 'glk_request_timer_events is not implemented' )
+		Glk.glk_request_timer_events( ms )
 	},
 
 	glem_select__deps: ['$EmterpreterAsync', 'class_obj_to_id_window'],
@@ -276,9 +288,9 @@ var emglken = {
 		})
 	},
 
-	glk_set_echo_line_event: function()
+	glem_set_echo_line_event: function( tag, val )
 	{
-		throw new Error( 'glk_set_echo_line_event is not implemented' )
+		Glk.glk_set_echo_line_event( _class_obj_from_id_window( tag ), val )
 	},
 
 	glem_set_hyperlink_stream: function( tag, linkval )
@@ -291,9 +303,10 @@ var emglken = {
 		Glk.glk_set_style_stream( _class_obj_from_id_stream( tag ), style )
 	},
 
-	glk_set_terminators_line_event: function()
+	glem_set_terminators_line_event: function( tag, arraddr, count )
 	{
-		throw new Error( 'glk_set_terminators_line_event is not implemented' )
+		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, count * 4 )
+		Glk.glk_set_terminators_line_event( _class_obj_from_id_window( tag ), arr )
 	},
 
 	glem_stream_close: function( tag )
@@ -345,54 +358,79 @@ var emglken = {
 		Glk.glk_stream_set_position( _class_obj_from_id_stream( tag ), pos, seekmode )
 	},
 
-	glem_window_clear: function( wintag )
+	glem_window_clear: function( tag )
 	{
-		Glk.glk_window_clear( _class_obj_from_id_window( wintag ) )
+		Glk.glk_window_clear( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_window_close: function( wintag )
+	glem_window_close: function( tag )
 	{
-		Glk.glk_window_close( _class_obj_from_id_window( wintag ) )
+		Glk.glk_window_close( _class_obj_from_id_window( tag ) )
 	},
 
-	glk_window_erase_rect: function()
+	glem_window_erase_rect: function( tag, left, top, width, height )
 	{
-		throw new Error( 'glk_window_erase_rect is not implemented' )
+		Glk.glk_window_erase_rect( _class_obj_from_id_window( tag ), left, top, width, height )
 	},
 
-	glk_window_fill_rect: function()
+	glem_window_fill_rect: function( tag, color, left, top, width, height )
 	{
-		throw new Error( 'glk_window_fill_rect is not implemented' )
+		Glk.glk_window_fill_rect( _class_obj_from_id_window( tag ), color, left, top, width, height )
 	},
 
-	glk_window_flow_break: function()
+	glem_window_flow_break: function( tag )
 	{
-		throw new Error( 'glk_window_flow_break is not implemented' )
+		Glk.glk_window_flow_break( _class_obj_from_id_window( tag ) )
 	},
 
-	glk_window_get_arrangement: function()
+	glem_window_get_arrangement: function( tag, methodptr, sizeptr, keywinptr )
 	{
-		throw new Error( 'glk_window_get_arrangement is not implemented' )
+		var methodBox = new Glk.RefBox()
+		var sizeBox = new Glk.RefBox()
+		var keywinBox = new Glk.RefBox()
+		Glk.glk_window_get_arrangement( _class_obj_from_id_window( tag ), methodBox, sizeBox, keywinBox )
+		if ( methodptr )
+		{
+			Module.setValue( methodptr, methodBox.value, 'i32' )
+		}
+		if ( sizeptr )
+		{
+			Module.setValue( sizeptr, sizeBox.value, 'i32' )
+		}
+		if ( keywinptr )
+		{
+			Module.setValue( keywinptr, keywinBox.value, 'i32' )
+		}
 	},
 
-	glk_window_get_size: function()
+	glem_window_get_size: function( tag, width, height )
 	{
-		throw new Error( 'glk_window_get_size is not implemented' )
+		var widthBox = new Glk.RefBox()
+		var heightBox = new Glk.RefBox()
+		Glk.glk_window_get_size( _class_obj_from_id_window( tag ), width, height )
+		if ( width )
+		{
+			Module.setValue( width, widthBox.value, 'i32' )
+		}
+		if ( height )
+		{
+			Module.setValue( height, heightBox.value, 'i32' )
+		}
 	},
 
-	glk_window_move_cursor: function()
+	glem_window_move_cursor: function( tag, xpos, ypos )
 	{
-		throw new Error( 'glk_window_move_cursor is not implemented' )
+		Glk.glk_window_move_cursor( _class_obj_from_id_window( tag ), xpos, ypos )
 	},
 
-	glk_window_set_arrangement: function()
+	glem_window_set_arrangement: function( tag, method, size, key )
 	{
-		throw new Error( 'glk_window_set_arrangement is not implemented' )
+		Glk.glk_window_set_arrangement( _class_obj_from_id_window( tag ), method, size, key )
 	},
 
-	glem_window_set_background_color: function( wintag, color )
+	glem_window_set_background_color: function( tag, color )
 	{
-		Glk.glk_window_set_background_color( _class_obj_from_id_window( wintag ), color )
+		Glk.glk_window_set_background_color( _class_obj_from_id_window( tag ), color )
 	},
 
 }
@@ -405,7 +443,7 @@ function addDeps( object, deps )
 		{
 			if ( !object[item + '__deps'] )
 			{
-				object[item + '__deps'] = deps;
+				object[item + '__deps'] = deps
 			}
 		}
 	}

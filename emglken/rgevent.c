@@ -68,15 +68,6 @@ void glk_select(event_t *event)
             gli_event_store( evtype_CharInput, win, data[2], 0 );
             break;
 
-        case evtype_Hyperlink:
-            if (!win)
-                break;
-            if (!win->hyperlink_request)
-                break;
-            win->hyperlink_request = FALSE;
-            gli_event_store( evtype_Hyperlink, win, data[2], 0 );
-            break;
-
         default:
             gli_event_store( data[0], win, data[2], data[3] );
             break;
@@ -193,7 +184,7 @@ void gli_event_store(glui32 type, window_t *win, glui32 val1, glui32 val2)
 
 void glk_request_timer_events(glui32 millisecs)
 {
-    if (!pref_timersupport)
+    if (!glk_gestalt(gestalt_Timer, 0))
         return;
     timing_msec = millisecs;
     gettimeofday(&timing_start, NULL);
@@ -220,7 +211,7 @@ static glsi32 gli_timer_request_since_start()
 {
     struct timeval tv;
 
-    if (!pref_timersupport)
+    if (!glk_gestalt(gestalt_Timer, 0))
         return -1;
     if (!timing_msec)
         return -1;
