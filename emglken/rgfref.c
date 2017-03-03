@@ -114,7 +114,7 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
     fileref_t *fref;
     
     sprintf(filename, "/tmp/glktempfref-XXXXXX");
-    mktemp(filename);
+    //mktemp(filename);
     
     fref = gli_new_fileref(filename, usage, rock);
     if (!fref) {
