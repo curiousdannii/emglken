@@ -234,17 +234,12 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
     }
     
     tag = glem_stream_open_file( fref->tag, fmode, rock, FALSE );
-
-    if ( !tag ) {
-        gli_strict_warning("stream_open_file: unable to create stream.");
-        return 0;
-    }
-
     str = gli_new_stream(strtype_File, 
         (fmode == filemode_Read || fmode == filemode_ReadWrite), 
         !(fmode == filemode_Read), 
         rock);
-    if (!str) {
+    if ( !str || !tag )
+    {
         gli_strict_warning("stream_open_file: unable to create stream.");
         return 0;
     }
@@ -311,17 +306,12 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
     }
 
     tag = glem_stream_open_file( fref->tag, fmode, rock, TRUE );
-
-    if ( !tag ) {
-        gli_strict_warning("stream_open_file_uni: unable to create stream.");
-        return 0;
-    }
-
     str = gli_new_stream(strtype_File, 
         (fmode == filemode_Read || fmode == filemode_ReadWrite), 
         !(fmode == filemode_Read), 
         rock);
-    if (!str) {
+    if ( !str || !tag )
+    {
         gli_strict_warning("stream_open_file_uni: unable to create stream.");
         return 0;
     }

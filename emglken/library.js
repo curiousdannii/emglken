@@ -34,15 +34,6 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
-	git_powf: function( base, exp )
-	{
-		if ( base === 1 || ( base === -1 && ( exp === Infinity || exp === -Infinity ) ) )
-		{
-			return 1
-		}
-		return Math.pow( base, exp )
-	},
-
 	glem_cancel_char_event: function( wintag )
 	{
 		Glk.glk_cancel_char_event( _class_obj_from_id_window( wintag ) )
@@ -75,9 +66,25 @@ var emglken = {
 		return _class_obj_to_id_fileref( fref )
 	},
 
-	glk_fileref_create_by_prompt: function()
+	glem_fileref_create_by_prompt__deps: ['$EmterpreterAsync', 'class_obj_to_id_fileref'],
+	glem_fileref_create_by_prompt: function( usage, fmode, rock )
 	{
-		throw new Error( 'glk_fileref_create_by_prompt is not implemented' )
+		return EmterpreterAsync.handle( function( resume )
+		{
+			Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
+			Module.glem_callback = function( fref )
+			{
+				if ( ABORT )
+				{
+					return
+				}
+				resume( function()
+				{
+					return _class_obj_to_id_fileref( fref )
+				})
+			}
+			Glk.update()
+		})
 	},
 
 	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
@@ -178,7 +185,7 @@ var emglken = {
 	glem_new_window: function( splitwin, method, size, wintype, rock, pairwintag )
 	{
 		var win = Glk.glk_window_open( _class_obj_from_id_window( splitwin ), method, size, wintype, rock )
-		var pairwin = Glk.glk_window_get_parent( win )
+		var pairwin = win ? Glk.glk_window_get_parent( win ) : 0
 		Module.setValue( pairwintag, _class_obj_to_id_window( pairwin ), 'i32' )
 		return _class_obj_to_id_window( win )
 	},
@@ -253,7 +260,7 @@ var emglken = {
 		{
 			var glk_event = new Glk.RefStruct()
 			Glk.glk_select( glk_event )
-			Module.glem_select_callback = function()
+			Module.glem_callback = function()
 			{
 				if ( ABORT )
 				{

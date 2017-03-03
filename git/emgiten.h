@@ -11,11 +11,11 @@
 #include "emglken.h"
 #include "git.h"
 
-// emgiten.c
-
-extern void gitMain (const git_uint8 * game,
+extern void emgiten (const git_uint8 * game,
     git_uint32 gameSize,
     git_uint32 cacheSize,
     git_uint32 undoSize);
+
+extern float git_powf(float x, float y);
 
 #endif // EMGITEN_H

@@ -2,10 +2,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "emgiten.h"
 
-// Copied from git.c, with an additional glk_exit call
-void gitMain (const git_uint8 * game, git_uint32 gameSize, git_uint32 cacheSize, git_uint32 undoSize)
+// Copied from gitMain from git.c, with an additional glk_exit call
+void emgiten (const git_uint8 * game, git_uint32 gameSize, git_uint32 cacheSize, git_uint32 undoSize)
 {
     git_uint32 version;
     enum IOMode ioMode = IO_NULL;
@@ -64,4 +65,13 @@ void gitMain (const git_uint8 * game, git_uint32 gameSize, git_uint32 cacheSize,
     shutdownUndo();
     shutdownMemory();
     glk_exit();
+}
+
+float git_powf(float base, float exp)
+{
+    if ( base == 1.0 || ( base == -1.0 && ( exp == INFINITY || exp == -INFINITY ) ) )
+    {
+        return 1.0;
+    }
+    return pow( base, exp );
 }

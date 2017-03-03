@@ -39,13 +39,22 @@ var Module = {
 		Glk = options.Glk
 		this.data = data
 		this.options = extend( {}, default_options, options )
+
+		// Cache the game signature
+		var signature = ''
+		var i = 0
+		while ( i < 64 )
+		{
+			signature += ( this.data[i] < 0x10 ? '0' : '' ) + this.data[i++].toString( 16 )
+		}
+		this.signature = signature
 	},
 
-	// Call gitMain()
+	// Call emgiten()
 	init: function()
 	{
-		Module.ccall(
-			'gitMain',
+		this.ccall(
+			'emgiten',
 			null,
 			[ 'array', 'number', 'number', 'number' ],
 			[ this.data, this.data.length, this.options.cache_len, this.options.undo_len ],
@@ -54,19 +63,14 @@ var Module = {
 		delete this.data
 	},
 
-	resume: function()
+	resume: function( res )
 	{
-		Module.glem_select_callback()
+		this.glem_callback( res )
 	},
 
-	print: function( msg )
+	get_signature: function()
 	{
-		console.log( msg )
-	},
-
-	printErr: function( msg )
-	{
-		console.error( msg )
+		return this.signature
 	},
 
 }

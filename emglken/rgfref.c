@@ -152,43 +152,6 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     glui32 rock)
 {
     fileref_t *fref;
-    //char buf[BUFLEN];
-    //char buf2[2*BUFLEN+10];
-    //int len;
-    //char *cx;
-    //char *suffix;
-    
-    /* The new spec recommendations: delete all characters in the
-       string "/\<>:|?*" (including quotes). Truncate at the first
-       period. Change to "null" if there's nothing left. Then append
-       an appropriate suffix: ".glkdata", ".glksave", ".txt".
-    */
-    
-    /*for (cx=name, len=0; (*cx && *cx!='.' && len<BUFLEN-1); cx++) {
-        switch (*cx) {
-            case '"':
-            case '\\':
-            case '/':
-            case '>':
-            case '<':
-            case ':':
-            case '|':
-            case '?':
-            case '*':
-                break;
-            default:
-                buf[len++] = *cx;
-        }
-    }
-    buf[len] = '\0';
-
-    if (len == 0) {
-        strcpy(buf, "null");
-        len = strlen(buf);
-    }
-    
-    suffix = gli_suffix_for_usage(usage);
-    sprintf(buf2, "%s/%s%s", workingdir, buf, suffix);*/
 
     fref = gli_new_fileref(name, usage, rock);
     if (!fref) {
@@ -201,7 +164,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     return fref;
 }
 
-/*frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
+frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     glui32 rock)
 {
     fileref_t *fref;
@@ -210,99 +173,19 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     char *cx;
     int val, gotdot;
     int gotresp;
-
-    // Set up special request. 
-    data_specialreq_t *special = data_specialreq_alloc(fmode, (usage & fileusage_TypeMask));
-    special->gameid = NULL;
-
-#ifdef GI_DISPA_GAME_ID_AVAILABLE
-    cx = gidispatch_get_game_id();
-    if (cx) {
-        special->gameid = strdup(cx);
-    }
-#endif // GI_DISPA_GAME_ID_AVAILABLE 
+    glui32 tag;
     
-    // This will look a lot like glk_select(), but we're waiting only for
-    //   a special-input response. 
-    gli_windows_update(special, TRUE);
-
-    gotresp = FALSE;
-    val = 0; // length of buf 
-
-    while (!gotresp) {
-        data_event_t *data = data_event_read();
-
-        if (data->gen != gli_window_current_generation())
-            gli_fatal_error("Input generation number does not match.");
-
-        if (data->dtag == dtag_SpecialResponse) {
-            gotresp = TRUE;
-            if (data->linelen && data->linevalue) {
-                for (val=0; val<data->linelen && val<BUFLEN; val++) {
-                    glui32 ch = data->linevalue[val];
-                    if (ch > 0xFF)
-                        ch = '-';
-                    buf[val] = ch;
-                }
-            }
-        }
-
-        data_event_free(data);
-    }
-    
-    if (!val) {
-        // The player cancelled input. 
-        return NULL;
-    }
-    
-    // Trim whitespace from end and beginning. 
-    buf[val] = '\0';
-    while (val 
-        && (buf[val-1] == '\n' 
-            || buf[val-1] == '\r' 
-            || buf[val-1] == ' '))
-        val--;
-    buf[val] = '\0';
-    
-    for (cx = buf; *cx == ' '; cx++) { }
-    
-    val = strlen(cx);
-    if (!val) {
-        // The player just hit return. 
-        return NULL;
-    }
-
-    if (cx[0] == '/')
-        strcpy(newbuf, cx);
-    else
-        sprintf(newbuf, "%s/%s", workingdir, cx);
-    
-    // If there is no dot-suffix, add a standard one. 
-    val = strlen(newbuf);
-    gotdot = FALSE;
-    while (val && (buf[val-1] != '/')) {
-        if (buf[val-1] == '.') {
-            gotdot = TRUE;
-            break;
-        }
-        val--;
-    }
-    if (!gotdot) {
-        char *suffix = gli_suffix_for_usage(usage);
-        strcat(newbuf, suffix);
-    }
-
-    // We don't do an overwrite check, because that would be another
-    //   interchange. 
-
+    tag = glem_fileref_create_by_prompt( usage, fmode, rock );
     fref = gli_new_fileref(newbuf, usage, rock);
-    if (!fref) {
+    if ( !fref || !tag )
+    {
         gli_strict_warning("fileref_create_by_prompt: unable to create fileref.");
         return NULL;
     }
+    fref->tag = tag;
     
     return fref;
-}*/
+}
 
 frefid_t glk_fileref_iterate(fileref_t *fref, glui32 *rock)
 {
