@@ -9,7 +9,7 @@
 #include "gi_dispa.h"
 #include "gi_debug.h"
 
-#define LIBRARY_VERSION "0.2.6"
+#define LIBRARY_VERSION "0.1.0"
 
 /* We define our own TRUE and FALSE and NULL, because ANSI
     is a strange world. */
@@ -34,18 +34,9 @@
 
 /* Some useful type declarations. */
 
-/*typedef struct grect_struct {
-    int left, top;
-    int right, bottom;
-} grect_t;*/
-
 #define grect_set_from_size(boxref, wid, hgt)   \
     ((boxref)->left = 0, (boxref)->top = 0,     \
      (boxref)->right = (wid), (boxref)->bottom = (hgt))
-
-//typedef struct data_metrics_struct data_metrics_t;
-//typedef struct data_content_struct data_content_t;
-//typedef struct data_specialreq_struct data_specialreq_t;
 
 typedef struct glk_window_struct window_t;
 typedef struct glk_stream_struct stream_t;
@@ -61,7 +52,6 @@ struct glk_window_struct {
     glui32 type;
     glui32 updatetag; /* numeric tag for the window in output */
     
-    //grect_t bbox; /* content rectangle, excluding borders */
     window_t *parent; /* pair window which contains this one */
     void *data; /* one of the window_*_t structures */
     
@@ -105,7 +95,6 @@ struct glk_stream_struct {
     window_t *win;
     
     /* for strtype_File */
-    FILE *file; 
     glui32 lastop; /* 0, filemode_Write, or filemode_Read */
     
     /* for strtype_Resource */
@@ -266,6 +255,14 @@ extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
 extern void glem_put_char_stream_uni(glui32 str, glui32 ch);
 extern void glem_select(glui32 *data);
+extern void glem_set_hyperlink_stream(glui32 tag, glui32 linkval);
+extern void glem_set_style_stream(glui32 tag, glui32 style);
+extern void glem_stream_close(glui32 tag);
+extern glui32 glem_stream_get_position(glui32 tag);
+extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
+extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
+extern void glem_stream_set_current(glui32 tag);
+extern void glem_stream_set_position(glui32 tag, glui32 pos, glui32 seekmode);
 extern void glem_request_char_event(glui32 wintag, int unicode);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_window_clear(glui32 wintag);

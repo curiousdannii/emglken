@@ -2,8 +2,37 @@
 
 // These functions need GiDispa and Glk variables to be set (either globally or in a closure)
 
-mergeInto( LibraryManager.library,
-{
+var emglken = {
+
+	class_obj_from_id_fileref: function( tag )
+	{
+		return GiDispa.class_obj_from_id( 'fileref', tag )
+	},
+
+	class_obj_from_id_stream: function( tag )
+	{
+		return GiDispa.class_obj_from_id( 'stream', tag )
+	},
+
+	class_obj_from_id_window: function( tag )
+	{
+		return GiDispa.class_obj_from_id( 'window', tag )
+	},
+
+	class_obj_to_id_fileref: function( tag )
+	{
+		return GiDispa.class_obj_to_id( 'fileref', tag )
+	},
+
+	class_obj_to_id_stream: function( tag )
+	{
+		return GiDispa.class_obj_to_id( 'stream', tag )
+	},
+
+	class_obj_to_id_window: function( tag )
+	{
+		return GiDispa.class_obj_to_id( 'window', tag )
+	},
 
 	git_powf: function( base, exp )
 	{
@@ -16,22 +45,22 @@ mergeInto( LibraryManager.library,
 
 	glem_cancel_char_event: function( wintag )
 	{
-		Glk.glk_cancel_char_event( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_cancel_char_event( _class_obj_from_id_window( wintag ) )
 	},
 
 	glem_cancel_hyperlink_event: function( wintag )
 	{
-		Glk.glk_cancel_hyperlink_event( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_cancel_hyperlink_event( _class_obj_from_id_window( wintag ) )
 	},
 
 	glem_cancel_line_event: function( wintag )
 	{
-		Glk.glk_cancel_line_event( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_cancel_line_event( _class_obj_from_id_window( wintag ) )
 	},
 
 	glem_cancel_mouse_event: function( wintag )
 	{
-		Glk.glk_cancel_mouse_event( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_cancel_mouse_event( _class_obj_from_id_window( wintag ) )
 	},
 
 	glem_exit: function()
@@ -44,6 +73,7 @@ mergeInto( LibraryManager.library,
 	{
 		var fref = Glk.glk_fileref_create_by_name( usage, Module.intArrayToString( name ), rock )
 		return GiDispa.class_obj_to_id( 'fileref', fref )
+		return _class_obj_to_id_fileref( fref )
 	},
 
 	glk_fileref_create_by_prompt: function()
@@ -55,27 +85,30 @@ mergeInto( LibraryManager.library,
 	{
 		var fref = Glk.glk_fileref_create_from_fileref( usage, GiDispa.class_obj_from_id( 'fileref', oldtag ), rock )
 		return GiDispa.class_obj_to_id( 'fileref', fref )
+		var fref = Glk.glk_fileref_create_from_fileref( usage, _class_obj_from_id_fileref( oldtag ), rock )
+		return _class_obj_to_id_fileref( fref )
 	},
 
 	glem_fileref_create_temp: function( usage, rock )
 	{
 		var fref = Glk.glk_fileref_create_temp( usage, rock )
 		return GiDispa.class_obj_to_id( 'fileref', fref )
+		return _class_obj_to_id_fileref( fref )
 	},
 
 	glem_fileref_delete_file: function( tag )
 	{
-		Glk.glk_fileref_delete_file( GiDispa.class_obj_from_id( 'fileref', tag ) )
+		Glk.glk_fileref_delete_file( _class_obj_from_id_fileref( tag ) )
 	},
 
 	glem_fileref_destroy: function( tag )
 	{
-		Glk.glk_fileref_destroy( GiDispa.class_obj_from_id( 'fileref', tag ) )
+		Glk.glk_fileref_destroy( _class_obj_from_id_fileref( tag ) )
 	},
 
 	glem_fileref_does_file_exist: function( tag )
 	{
-		return Glk.glk_fileref_does_file_exist( GiDispa.class_obj_from_id( 'fileref', tag ) )
+		return Glk.glk_fileref_does_file_exist( _class_obj_from_id_fileref( tag ) )
 	},
 
 	glk_gestalt_ext: function()
@@ -115,17 +148,17 @@ mergeInto( LibraryManager.library,
 
 	glem_get_window_stream_tag: function( wintag )
 	{
-		return GiDispa.class_obj_from_id( 'window', wintag ).str.disprock
+		return _class_obj_from_id_window( wintag ).str.disprock
 	},
 
 	glem_image_draw: function( wintag, image, val1, val2 )
 	{
-		return Glk.glk_image_draw( GiDispa.class_obj_from_id( 'window', wintag ), image, val1, val2 )
+		return Glk.glk_image_draw( _class_obj_from_id_window( wintag ), image, val1, val2 )
 	},
 
 	glem_image_draw_scaled: function( wintag, image, val1, val2, width, height )
 	{
-		return Glk.glk_image_draw_scaled( GiDispa.class_obj_from_id( 'window', wintag ), image, val1, val2, width, height )
+		return Glk.glk_image_draw_scaled( _class_obj_from_id_window( wintag ), image, val1, val2, width, height )
 	},
 
 	glk_image_get_info: function()
@@ -135,10 +168,10 @@ mergeInto( LibraryManager.library,
 
 	glem_new_window: function( splitwin, method, size, wintype, rock, pairwintag )
 	{
-		var win = Glk.glk_window_open( GiDispa.class_obj_from_id( 'window', splitwin ), method, size, wintype, rock )
+		var win = Glk.glk_window_open( _class_obj_from_id_window( splitwin ), method, size, wintype, rock )
 		var pairwin = Glk.glk_window_get_parent( win )
-		Module.setValue( pairwintag, GiDispa.class_obj_to_id( 'window', pairwin ), 'i32' )
-		return GiDispa.class_obj_to_id( 'window', win )
+		Module.setValue( pairwintag, _class_obj_to_id_window( pairwin ), 'i32' )
+		return _class_obj_to_id_window( win )
 	},
 
 	glk_put_buffer: function()
@@ -163,7 +196,7 @@ mergeInto( LibraryManager.library,
 
 	glem_put_char_stream_uni: function( str, ch )
 	{
-		Glk.glk_put_char_stream_uni( GiDispa.class_obj_from_id( 'stream', str ), ch )
+		Glk.glk_put_char_stream_uni( _class_obj_from_id_stream( str ), ch )
 	},
 
 	glk_put_string: function()
@@ -188,7 +221,7 @@ mergeInto( LibraryManager.library,
 
 	glem_request_char_event: function( wintag, unicode )
 	{
-		var win = GiDispa.class_obj_from_id( 'window', wintag )
+		var win = _class_obj_from_id_window( wintag )
 		if ( unicode )
 		{
 			Glk.glk_request_char_event_uni( win )
@@ -206,7 +239,7 @@ mergeInto( LibraryManager.library,
 
 	glem_request_line_event: function( wintag, bufaddr, maxlen, initlen, unicode )
 	{
-		var win = GiDispa.class_obj_from_id( 'window', wintag )
+		var win = _class_obj_from_id_window( wintag )
 		if ( unicode )
 		{
 			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, maxlen * 4 )
@@ -303,7 +336,7 @@ mergeInto( LibraryManager.library,
 					return
 				}
 				Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-				Module.setValue( data + 4, GiDispa.class_obj_to_id( 'window', glk_event.get_field( 1 ) ), 'i32' )
+				Module.setValue( data + 4, _class_obj_to_id_window( glk_event.get_field( 1 ) ), 'i32' )
 				Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
 				Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
 				resume()
@@ -317,24 +350,14 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_set_echo_line_event is not implemented' )
 	},
 
-	glk_set_hyperlink: function()
+	glem_set_hyperlink_stream: function( tag, linkval )
 	{
-		throw new Error( 'glk_set_hyperlink is not implemented' )
+		Glk.glk_set_hyperlink_stream( _class_obj_from_id_stream( tag ), linkval )
 	},
 
-	glk_set_hyperlink_stream: function()
+	glem_set_style_stream: function( tag, style )
 	{
-		throw new Error( 'glk_set_hyperlink_stream is not implemented' )
-	},
-
-	glk_set_style: function()
-	{
-		throw new Error( 'glk_set_style is not implemented' )
-	},
-
-	glk_set_style_stream: function()
-	{
-		throw new Error( 'glk_set_style_stream is not implemented' )
+		Glk.glk_set_style_stream( _class_obj_from_id_stream( tag ), style )
 	},
 
 	glk_set_terminators_line_event: function()
@@ -342,74 +365,58 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_set_terminators_line_event is not implemented' )
 	},
 
-	glk_set_window: function()
-	{
-		throw new Error( 'glk_set_window is not implemented' )
-	},
-
 	glk_sound_load_hint: function()
 	{
 		throw new Error( 'glk_sound_load_hint is not implemented' )
 	},
 
-	glk_stream_close: function()
+	glem_stream_close: function( tag )
 	{
-		throw new Error( 'glk_stream_close is not implemented' )
+		Glk.glk_stream_close( _class_obj_from_id_stream( tag ), null )
 	},
 
-	glk_stream_get_current: function()
+	glem_stream_get_position: function( tag )
 	{
-		throw new Error( 'glk_stream_get_current is not implemented' )
+		return Glk.glk_stream_get_position( _class_obj_from_id_stream( tag ) )
 	},
 
-	glk_stream_get_position: function()
+	glem_stream_open_file: function( freftag, fmode, rock, unicode )
 	{
-		throw new Error( 'glk_stream_get_position is not implemented' )
+		var fileref = _class_obj_from_id_fileref( freftag )
+		var str
+		if ( unicode )
+		{
+			str = Glk.glk_stream_open_file_uni( fileref, fmode, rock )
+		}
+		else
+		{
+			str = Glk.glk_stream_open_file( fileref, fmode, rock )
+		}
+		return _class_obj_to_id_stream( str )
 	},
 
-	glk_stream_get_rock: function()
+	glem_stream_open_resource: function( filenum, rock, unicode )
 	{
-		throw new Error( 'glk_stream_get_rock is not implemented' )
+		var str
+		if ( unicode )
+		{
+			str = Glk.glk_stream_open_resource_uni( filenum, rock )
+		}
+		else
+		{
+			str = Glk.glk_stream_open_resource( filenum, rock )
+		}
+		return _class_obj_to_id_stream( str )
 	},
 
-	glk_stream_open_file: function()
+	glem_stream_set_current: function( tag )
 	{
-		throw new Error( 'glk_stream_open_file is not implemented' )
+		Glk.glk_stream_set_current( _class_obj_from_id_stream( tag ) )
 	},
 
-	glk_stream_open_file_uni: function()
+	glem_stream_set_position: function( tag, pos, seekmode )
 	{
-		throw new Error( 'glk_stream_open_file_uni is not implemented' )
-	},
-
-	glk_stream_open_memory: function()
-	{
-		throw new Error( 'glk_stream_open_memory is not implemented' )
-	},
-
-	glk_stream_open_memory_uni: function()
-	{
-		throw new Error( 'glk_stream_open_memory_uni is not implemented' )
-	},
-
-	glk_stream_open_resource: function()
-	{
-		throw new Error( 'glk_stream_open_resource is not implemented' )
-	},
-
-	glk_stream_open_resource_uni: function()
-	{
-		throw new Error( 'glk_stream_open_resource_uni is not implemented' )
-	},
-
-	glk_stream_set_current: function()
-	{
-		throw new Error( 'glk_stream_set_current is not implemented' )
-	},
-
-	glk_stream_set_position: function()
-	{
-		throw new Error( 'glk_stream_set_position is not implemented' )
+		Glk.glk_stream_set_position( _class_obj_from_id_stream( tag ), pos, seekmode )
 	},
 
 	glk_style_distinguish: function()
@@ -434,12 +441,12 @@ mergeInto( LibraryManager.library,
 
 	glem_window_clear: function( wintag )
 	{
-		Glk.glk_window_clear( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_window_clear( _class_obj_from_id_window( wintag ) )
 	},
 
 	glem_window_close: function( wintag )
 	{
-		Glk.glk_window_close( GiDispa.class_obj_from_id( 'window', wintag ) )
+		Glk.glk_window_close( _class_obj_from_id_window( wintag ) )
 	},
 
 	glk_window_erase_rect: function()
@@ -462,19 +469,9 @@ mergeInto( LibraryManager.library,
 		throw new Error( 'glk_window_get_arrangement is not implemented' )
 	},
 
-	glk_window_get_echo_stream: function()
-	{
-		throw new Error( 'glk_window_get_echo_stream is not implemented' )
-	},
-
 	glk_window_get_size: function()
 	{
 		throw new Error( 'glk_window_get_size is not implemented' )
-	},
-
-	glk_window_get_stream: function()
-	{
-		throw new Error( 'glk_window_get_stream is not implemented' )
 	},
 
 	glk_window_move_cursor: function()
@@ -489,7 +486,31 @@ mergeInto( LibraryManager.library,
 
 	glem_window_set_background_color: function( wintag, color )
 	{
-		Glk.glk_window_set_background_color( GiDispa.class_obj_from_id( 'window', wintag ), color )
+		Glk.glk_window_set_background_color( _class_obj_from_id_window( wintag ), color )
 	},
 
-})
+}
+
+function addDeps( object, deps )
+{
+	for ( var item in object )
+	{
+		if ( item.substr( -6 ) != '__deps' )
+		{
+			if ( !object[item + '__deps'] )
+			{
+				object[item + '__deps'] = deps;
+			}
+		}
+	}
+}
+
+addDeps( emglken, [
+	'class_obj_from_id_fileref',
+	'class_obj_from_id_stream',
+	'class_obj_from_id_window',
+	'class_obj_to_id_fileref',
+	'class_obj_to_id_stream',
+	'class_obj_to_id_window',
+] )
+mergeInto( LibraryManager.library, emglken )
