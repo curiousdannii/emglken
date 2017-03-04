@@ -23,6 +23,7 @@ GLKMAKEFILE = Make.$(GLK)
 
 # Emscripten
 CC = emcc \
+	-O3 \
 	--js-library $(GLKINCLUDEDIR)/library.js \
 	--pre-js pre.js \
 	--post-js post.js \
@@ -32,6 +33,7 @@ CC = emcc \
 	-s EXPORT_NAME='"Git"' \
 	-s EXPORTED_FUNCTIONS='["_emgiten"]' 
 
+#	-s EMTERPRETIFY_FILE='"git.js.bin"' 
 #	-s PRECISE_F32=1
 #	-s MODULARIZE=1
 
@@ -95,7 +97,7 @@ install: git.js
 	cp git.js $(INSTALLDIR)/git.js
 
 clean:
-	rm -f *~ *.o git.js test/*.tmp
+	rm -f *~ *.o git.js* test/*.tmp
 
 $(OBJS): $(HEADERS)
 

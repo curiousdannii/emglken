@@ -35,7 +35,7 @@ static char *construct_resourceurl(char *str, int ispath);
 #define STRBUFLEN (512)
 static char extracted_string[STRBUFLEN];
 
-void init_emglken()
+void __attribute__((noinline)) init_emglken()
 {
     int ix, jx, val;
     glkunix_startup_t startdata;

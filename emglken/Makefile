@@ -14,7 +14,7 @@
 CC = emcc
 
 #OPTIONS = -g -Wall
-OPTIONS =
+OPTIONS = -O2
 
 CFLAGS = $(OPTIONS) $(INCLUDEDIRS)
 

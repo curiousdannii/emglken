@@ -28,7 +28,8 @@ git/git:
 git.js: emglken/Make.emglken git/git emglken/* git/*
 	-cp git/* git/git/
 	$(MAKE) -C git/git
-	cp git/git/git.js $@
+	cp git/git/git.js* .
+	cp git.js.mem tests/
 
 tests/regtest.py:
 	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py

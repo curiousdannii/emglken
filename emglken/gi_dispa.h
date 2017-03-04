@@ -85,6 +85,7 @@ extern void gidispatch_set_autorestore_registry(
 */
 extern void gidispatch_call(glui32 funcnum, glui32 numargs, 
     gluniversal_t *arglist);
+void gidispatch_call_inner(glui32 funcnum, glui32 numargs, gluniversal_t *arglist);
 extern char *gidispatch_prototype(glui32 funcnum);
 extern glui32 gidispatch_count_classes(void);
 extern gidispatch_intconst_t *gidispatch_get_class(glui32 index);

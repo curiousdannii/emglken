@@ -73,4 +73,6 @@ var Module = {
 		return this.signature
 	},
 
+	//emterpreterFile: require( 'fs' ).readFileSync( 'git.js.bin' ),
+
 }
