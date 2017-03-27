@@ -16,8 +16,8 @@ clean:
 	$(RM) -r git/git
 	$(MAKE) -C emglken clean
 
-EMGLKEN_INC = emglken/Makefile emglken/*.c emglken/*.h emglken/*.js
-emglken/libemglken.a: $(EMGLKEN_INC)
+EMGLKEN_INC = emglken/libemglken.a emglken/library.js
+emglken/libemglken.a: emglken/Makefile emglken/*.c emglken/*.h
 	$(MAKE) -C emglken
 
 git/git:
@@ -26,16 +26,19 @@ git/git:
 	mv Git-master git/git
 	rm Git.tar.gz
 
-git.js: emglken/Make.emglken git/git emglken/* git/*
+git.js: $(EMGLKEN_INC) git/git git/*
 	-cp git/* git/git/
 	$(MAKE) -C git/git
 	cp git/git/git.js* .
 	cp git.js.mem tests/
 
-hugo.js: emglken/*.a emglken/*.js hugo/heglk/Makefile hugo/heglk/*.c hugo/source/*.c
+hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/source/*.c
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo.js* .
 	cp hugo.js.mem tests/
+
+hugo.zip: hugo.js
+	zip -j hugo.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem
 
 tests/regtest.py:
 	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py

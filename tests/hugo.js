@@ -5,7 +5,7 @@
 const fs = require( 'fs' )
 const GlkOte = require( 'glkote-term' )
 const Hugo = require( '../hugo.js' )
-const GiDispa = require( './gi_dispa.js' )
+const GiDispa = require( '../emglken/emglken_dispatch.js' )
 
 const vm = Hugo
 const Glk = GlkOte.Glk
@@ -13,7 +13,7 @@ const Glk = GlkOte.Glk
 const options = {
 	vm: vm,
 	Dialog: new GlkOte.Dialog(),
-	GiDispa: GiDispa,
+	GiDispa: new GiDispa(),
 	Glk: Glk,
 	GlkOte: new GlkOte(),
 }
