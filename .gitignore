@@ -1,4 +1,5 @@
 *.o
+*.mem
 /*.js
 cheapglk
 emglken/libemglken.a
