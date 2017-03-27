@@ -407,7 +407,7 @@ var emglken = {
 	{
 		var widthBox = new Glk.RefBox()
 		var heightBox = new Glk.RefBox()
-		Glk.glk_window_get_size( _class_obj_from_id_window( tag ), width, height )
+		Glk.glk_window_get_size( _class_obj_from_id_window( tag ), widthBox, heightBox )
 		if ( width )
 		{
 			Module.setValue( width, widthBox.value, 'i32' )

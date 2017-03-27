@@ -16,7 +16,8 @@ clean:
 	$(RM) -r git/git
 	$(MAKE) -C emglken clean
 
-emglken/Make.emglken: emglken/*.c emglken/*.h
+EMGLKEN_INC = emglken/Makefile emglken/*.c emglken/*.h emglken/*.js
+emglken/libemglken.a: $(EMGLKEN_INC)
 	$(MAKE) -C emglken
 
 git/git:
@@ -31,7 +32,7 @@ git.js: emglken/Make.emglken git/git emglken/* git/*
 	cp git/git/git.js* .
 	cp git.js.mem tests/
 
-hugo.js: emglken/Make.emglken emglken/* hugo/*
+hugo.js: emglken/*.a emglken/*.js hugo/heglk/Makefile hugo/heglk/*.c hugo/source/*.c
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo.js* .
 	cp hugo.js.mem tests/

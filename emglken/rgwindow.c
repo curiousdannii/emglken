@@ -768,6 +768,8 @@ void gli_window_accept_line(window_t *win, glui32 len)
 
 void glk_request_char_event(window_t *win)
 {
+    win->char_request = TRUE;
+    win->char_request_uni = FALSE;
     glem_request_char_event( win->updatetag, FALSE );
 }
 
@@ -808,6 +810,8 @@ void glk_request_line_event(window_t *win, char *buf, glui32 maxlen,
 
 void glk_request_char_event_uni(window_t *win)
 {
+    win->char_request = TRUE;
+    win->char_request_uni = TRUE;
     glem_request_char_event( win->updatetag, TRUE );
 }
 
