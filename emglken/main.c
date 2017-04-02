@@ -30,7 +30,6 @@ static int inittime = FALSE;
 static int extract_value(int argc, char *argv[], char *optname, int type,
     int *argnum, int *result, int defval);
 static int string_to_bool(char *str);
-static char *construct_resourceurl(char *str, int ispath);
 
 #define STRBUFLEN (512)
 static char extracted_string[STRBUFLEN];
@@ -43,11 +42,11 @@ void __attribute__((noinline)) init_emglken()
     /* Test for compile-time errors. If one of these spouts off, you
         must edit glk.h and recompile. */
     if (sizeof(glui32) != 4) {
-        printf("Compile-time error: glui32 is not a 32-bit value. Please fix glk.h.\n");
+        glem_fatal_error( "Compile-time error: glui32 is not a 32-bit value. Please fix glk.h." );
         glk_exit();
     }
     if ((glui32)(-1) < 0) {
-        printf("Compile-time error: glui32 is not unsigned. Please fix glk.h.\n");
+        glem_fatal_error( "Compile-time error: glui32 is not unsigned. Please fix glk.h." );
         glk_exit();
     }
     
@@ -64,41 +63,4 @@ void __attribute__((noinline)) init_emglken()
 
     if (gli_debugger)
         gidebug_announce_cycle(gidebug_cycle_Start);
-}
-
-/* Given a path or URL (taken from the resourcedir/resourceurl argument),
-   return a (malloced) string containing a URL form. If ispath is
-   true, the path is absolutized and turned into a file: URL. */
-static char *construct_resourceurl(char *str, int ispath)
-{
-    char *res = NULL;
-
-    if (!ispath) {
-        /* We don't append a slash here, because maybe the user wants
-           URLs like http://foo/prefix-pict-1.png. */
-        res = malloc(strlen(str) + 1);
-        if (!res)
-            return NULL;
-        strcpy(res, str);
-    }
-    else {
-        /* This assumes Unix-style pathnames. Sorry. */
-        char prefix[STRBUFLEN];
-        prefix[0] = '\0';
-        int len = strlen(str);
-        int preslash = FALSE;
-        if (len && str[0] != '/') {
-            getcwd(prefix, STRBUFLEN);
-            preslash = TRUE;
-        }
-        int postslash = FALSE;
-        if (len && str[len-1] != '/')
-            postslash = TRUE;
-        res = malloc(16 + strlen(prefix) + len + 1);
-        if (!res)
-            return NULL;
-        sprintf(res, "file://%s%s%s%s", prefix, (preslash?"/":""), str, (postslash?"/":""));
-    }
-
-    return res;
 }

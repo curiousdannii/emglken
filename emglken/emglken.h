@@ -27,10 +27,10 @@
     or illegal operation from the game program. */
 
 #define gli_strict_warning(msg)   \
-    (gli_display_warning(msg)) 
+    (glem_fatal_error(msg))
 
 #define gli_fatal_error(msg)   \
-    (gli_display_error(msg))
+    (glem_fatal_error(msg))
 
 /* Some useful type declarations. */
 
@@ -229,6 +229,7 @@ extern void glem_cancel_hyperlink_event(glui32 wintag);
 extern void glem_cancel_line_event(glui32 wintag);
 extern void glem_cancel_mouse_event(glui32 wintag);
 extern void glem_exit();
+extern void glem_fatal_error(char *msg);
 extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
 extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock, glui32 *tagptr);
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);

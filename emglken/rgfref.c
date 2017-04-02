@@ -113,8 +113,7 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
     char filename[BUFLEN];
     fileref_t *fref;
     
-    sprintf(filename, "/tmp/glktempfref-XXXXXX");
-    //mktemp(filename);
+    //sprintf(filename, "/tmp/glktempfref-XXXXXX");
     
     fref = gli_new_fileref(filename, usage, rock);
     if (!fref) {

@@ -60,6 +60,11 @@ var emglken = {
 		Glk.update()
 	},
 
+	glem_fatal_error: function( msg )
+	{
+		Glk.fatal_error( Module.intArrayToString( msg ) )
+	},
+
 	glem_fileref_create_by_name: function( usage, name, rock )
 	{
 		var fref = Glk.glk_fileref_create_by_name( usage, Module.intArrayToString( name ), rock )
