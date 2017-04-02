@@ -439,7 +439,7 @@ void glk_window_get_arrangement(window_t *win, glui32 *method, glui32 *size,
     winid_t *keywin)
 {
     window_pair_t *dwin;
-    glui32 val;
+    glui32 keywintag;
     
     if (!win) {
         gli_strict_warning("window_get_arrangement: invalid ref");
@@ -451,7 +451,8 @@ void glk_window_get_arrangement(window_t *win, glui32 *method, glui32 *size,
         return;
     }
     
-    glem_window_get_arrangement( win->updatetag, method, size, keywin );
+    glem_window_get_arrangement( win->updatetag, method, size, &keywintag );
+    *keywin = gli_window_find_by_tag( keywintag );
 }
 
 void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size, 
@@ -528,7 +529,7 @@ void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size,
     dwin->vertical = (dwin->dir == winmethod_Left || dwin->dir == winmethod_Right);
     dwin->backward = (dwin->dir == winmethod_Left || dwin->dir == winmethod_Above);
     
-    glem_window_set_arrangement( win->updatetag, method, size, key );
+    glem_window_set_arrangement( win->updatetag, method, size, key->updatetag );
 }
 
 winid_t glk_window_iterate(winid_t win, glui32 *rock)

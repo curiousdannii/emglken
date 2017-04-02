@@ -450,7 +450,7 @@ var emglken = {
 		}
 		if ( keywinptr )
 		{
-			Module.setValue( keywinptr, keywinBox.value, 'i32' )
+			Module.setValue( keywinptr, _class_obj_to_id_window( keywinBox.value ), 'i32' )
 		}
 	},
 
@@ -474,9 +474,9 @@ var emglken = {
 		Glk.glk_window_move_cursor( _class_obj_from_id_window( tag ), xpos, ypos )
 	},
 
-	glem_window_set_arrangement: function( tag, method, size, key )
+	glem_window_set_arrangement: function( tag, method, size, keywintag )
 	{
-		Glk.glk_window_set_arrangement( _class_obj_from_id_window( tag ), method, size, key )
+		Glk.glk_window_set_arrangement( _class_obj_from_id_window( tag ), method, size, _class_obj_from_id_window( keywintag ) )
 	},
 
 	glem_window_set_background_color: function( tag, color )

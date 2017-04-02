@@ -266,10 +266,10 @@ extern void glem_window_close(glui32 wintag);
 extern void glem_window_erase_rect(glui32 wintag, glsi32 left, glsi32 top, glui32 width, glui32 height);
 extern void glem_window_fill_rect(glui32 wintag, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height);
 extern void glem_window_flow_break(glui32 wintag);
-extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, winid_t *keywinptr);
+extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
 extern void glem_window_get_size(glui32 wintag, glui32 *widthptr, glui32 *heightptr);
 extern void glem_window_move_cursor(glui32 wintag, glui32 xpos, glui32 ypos);
-extern void glem_window_set_arrangement(glui32 wintag, glui32 method, glui32 size, winid_t keywin);
+extern void glem_window_set_arrangement(glui32 wintag, glui32 method, glui32 size, glui32 keywintag);
 extern void glem_window_set_background_color(glui32 wintag, glui32 color);
 extern void init_emglken();
 
