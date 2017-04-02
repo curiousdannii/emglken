@@ -13,31 +13,22 @@ all: git.js
 
 clean:
 	$(RM) -r ./*.js
-	$(RM) -r git/git
 	$(MAKE) -C emglken clean
 
 EMGLKEN_INC = emglken/libemglken.a emglken/library.js
 emglken/libemglken.a: emglken/Makefile emglken/*.c emglken/*.h
 	$(MAKE) -C emglken
 
-git/git:
-	$(CURL) -o "Git.tar.gz" https://github.com/DavidKinder/Git/archive/master.tar.gz
-	tar xf Git.tar.gz
-	mv Git-master git/git
-	rm Git.tar.gz
+git.js: $(EMGLKEN_INC) git/Makefile git/*.c git/*.h git/*.js
+	$(MAKE) -C git
+	cp git/git.js* .
 
-git.js: $(EMGLKEN_INC) git/git git/*
-	-cp git/* git/git/
-	$(MAKE) -C git/git
-	cp git/git/git.js* .
-	cp git.js.mem tests/
-
-hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.js hugo/source/*.c
+hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/heglk/*.js hugo/source/*.c hugo/source/*.h
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo.js* .
 
 emglken.zip: hugo.js
-	zip -j emglken.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem package.json
+	zip -j emglken.zip emglken/emglken_dispatch.js git.js git.js.mem hugo.js hugo.js.mem package.json
 
 tests/regtest.py:
 	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py
