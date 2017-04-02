@@ -66,10 +66,11 @@ var emglken = {
 		return _class_obj_to_id_fileref( fref )
 	},
 
+#if EMTERPRETIFY_ASYNC
 	glem_fileref_create_by_prompt__deps: ['$EmterpreterAsync', 'class_obj_to_id_fileref'],
-	glem_fileref_create_by_prompt: function( usage, fmode, rock )
+	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
 			Module.glem_callback = function( fref )
@@ -78,14 +79,33 @@ var emglken = {
 				{
 					return
 				}
-				resume( function()
-				{
-					return _class_obj_to_id_fileref( fref )
-				})
+				Module.setValue( tagptr, _class_obj_to_id_fileref( fref ), 'i32' )
+				resume()
 			}
 			Glk.update()
 		})
 	},
+#endif
+
+#if ASYNCIFY
+	glem_fileref_create_by_prompt__deps: ['emscripten_async_resume', 'class_obj_to_id_fileref'],
+	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
+	{
+		Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
+		//Module['asm'].setAsync()
+		asm.setAsync()
+		Module.glem_callback = function( fref )
+		{
+			if ( ABORT )
+			{
+				return
+			}
+			Module.setValue( tagptr, _class_obj_to_id_fileref( fref ), 'i32' )
+			_emscripten_async_resume()
+		}
+		Glk.update()
+	},
+#endif
 
 	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
@@ -265,6 +285,7 @@ var emglken = {
 		Glk.glk_request_timer_events( ms )
 	},
 
+#if EMTERPRETIFY_ASYNC
 	glem_select__deps: ['$EmterpreterAsync', 'class_obj_to_id_window'],
 	glem_select: function( data )
 	{
@@ -287,6 +308,31 @@ var emglken = {
 			Glk.update()
 		})
 	},
+#endif
+
+#if ASYNCIFY
+	glem_select__deps: ['emscripten_async_resume', 'class_obj_to_id_window'],
+	glem_select: function( data )
+	{
+		var glk_event = new Glk.RefStruct()
+		Glk.glk_select( glk_event )
+		//Module['asm'].setAsync()
+		asm.setAsync()
+		Module.glem_callback = function()
+		{
+			if ( ABORT )
+			{
+				return
+			}
+			Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
+			Module.setValue( data + 4, _class_obj_to_id_window( glk_event.get_field( 1 ) ), 'i32' )
+			Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
+			Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
+			_emscripten_async_resume()
+		}
+		Glk.update()
+	},
+#endif
 
 	glem_set_echo_line_event: function( tag, val )
 	{

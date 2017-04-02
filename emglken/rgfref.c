@@ -175,7 +175,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     int gotresp;
     glui32 tag;
     
-    tag = glem_fileref_create_by_prompt( usage, fmode, rock );
+    glem_fileref_create_by_prompt( usage, fmode, rock, &tag );
     fref = gli_new_fileref(newbuf, usage, rock);
     if ( !fref || !tag )
     {

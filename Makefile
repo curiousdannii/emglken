@@ -32,13 +32,12 @@ git.js: $(EMGLKEN_INC) git/git git/*
 	cp git/git/git.js* .
 	cp git.js.mem tests/
 
-hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/source/*.c
+hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.js hugo/source/*.c
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo.js* .
-	cp hugo.js.mem tests/
 
-hugo.zip: hugo.js
-	zip -j hugo.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem
+emglken.zip: hugo.js
+	zip -j emglken.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem package.json
 
 tests/regtest.py:
 	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py

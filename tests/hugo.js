@@ -16,6 +16,7 @@ const options = {
 	GiDispa: new GiDispa(),
 	Glk: Glk,
 	GlkOte: new GlkOte(),
+	resourcepath: __dirname,
 }
 
 vm.prepare( fs.readFileSync( process.argv[2] ), options )

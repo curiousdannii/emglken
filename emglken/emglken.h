@@ -230,7 +230,7 @@ extern void glem_cancel_line_event(glui32 wintag);
 extern void glem_cancel_mouse_event(glui32 wintag);
 extern void glem_exit();
 extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
-extern glui32 glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock);
+extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock, glui32 *tagptr);
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
 extern void glem_fileref_delete_file(glui32 tag);
