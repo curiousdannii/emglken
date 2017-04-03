@@ -62,12 +62,12 @@ var emglken = {
 
 	glem_fatal_error: function( msg )
 	{
-		Glk.fatal_error( Module.intArrayToString( msg ) )
+		Glk.fatal_error( Module.Pointer_stringify( msg ) )
 	},
 
 	glem_fileref_create_by_name: function( usage, name, rock )
 	{
-		var fref = Glk.glk_fileref_create_by_name( usage, Module.intArrayToString( name ), rock )
+		var fref = Glk.glk_fileref_create_by_name( usage, Module.Pointer_stringify( name ), rock )
 		return _class_obj_to_id_fileref( fref )
 	},
 
