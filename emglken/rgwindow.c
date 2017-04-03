@@ -35,8 +35,6 @@ window_t *gli_focuswin = NULL; /* The window selected by the player.
     gli_currentstr in gtstream.c. In fact, the program doesn't know
     about gli_focuswin at all.) */
 
-/* The current screen metrics. */
-//static data_metrics_t metrics;
 /* Flag: Has the window arrangement changed at all? */
 static int geometry_changed;
 
@@ -45,7 +43,7 @@ void (*gli_interrupt_handler)(void) = NULL;
 //static void compute_content_box(grect_t *box);
 
 /* Set up the window system. This is called from main(). */
-void gli_initialize_windows(/*data_metrics_t *newmetrics*/)
+void gli_initialize_windows()
 {
     int ix;
 
@@ -58,8 +56,6 @@ void gli_initialize_windows(/*data_metrics_t *newmetrics*/)
     for (ix=0; ix<NUMSPACES; ix++)
         spacebuffer[ix] = ' ';
     spacebuffer[NUMSPACES] = '\0';
-    
-    //metrics = *newmetrics;
 
     geometry_changed = TRUE;
 }
@@ -105,7 +101,6 @@ window_t *gli_new_window(glui32 type, glui32 rock, glui32 updatetag)
     
     win->parent = NULL; /* for now */
     win->data = NULL; /* for now */
-    win->inputgen = 0;
     win->char_request = FALSE;
     win->line_request = FALSE;
     win->line_request_uni = FALSE;
@@ -360,7 +355,6 @@ void glk_window_close(window_t *win, stream_result_t *result)
     }
     else {
         /* have to jigger parent */
-        //grect_t box;
         window_t *pairwin, *sibwin, *grandparwin, *wx;
         window_pair_t *dpairwin, *dgrandparwin;
         int keydamage_flag;
@@ -377,8 +371,6 @@ void glk_window_close(window_t *win, stream_result_t *result)
             gli_strict_warning("window_close: window tree is corrupted");
             return;
         }
-        
-        //box = pairwin->bbox;
 
         grandparwin = pairwin->parent;
         if (!grandparwin) {
@@ -424,14 +416,6 @@ void glk_window_close(window_t *win, stream_result_t *result)
                 }
             }
         }
-        
-        /*if (keydamage_flag) {
-            compute_content_box(&box);
-            gli_window_rearrange(gli_rootwin, &box, &metrics);
-        }
-        else {
-            gli_window_rearrange(sibwin, &box, &metrics);
-        }*/
     }
 }
 
@@ -460,7 +444,6 @@ void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size,
 {
     window_pair_t *dwin;
     glui32 newdir;
-    //grect_t box;
     int newvertical, newbackward;
     
     if (!win) {
@@ -490,7 +473,6 @@ void glk_window_set_arrangement(window_t *win, glui32 method, glui32 size,
     }
     
     dwin = win->data;
-    //box = win->bbox;
     
     newdir = method & winmethod_DirMask;
     newvertical = (newdir == winmethod_Left || newdir == winmethod_Right);
@@ -832,14 +814,12 @@ void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, glui3
         case wintype_TextBuffer:
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
-            //win->inputgen = generation+1;
             win_textbuffer_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
         case wintype_TextGrid:
             win->line_request = TRUE;
             win->line_request_uni = TRUE;
-            //win->inputgen = generation+1;
             win_textgrid_init_line(win, buf, TRUE, maxlen, initlen);
             glem_request_line_event( win->updatetag, buf, maxlen, initlen, TRUE );
             break;
@@ -875,7 +855,6 @@ void glk_cancel_char_event(window_t *win)
         case wintype_TextBuffer:
         case wintype_TextGrid:
             win->char_request = FALSE;
-            win->inputgen = 0;
             break;
         default:
             /* do nothing */
@@ -903,13 +882,11 @@ void glk_cancel_line_event(window_t *win, event_t *ev)
         case wintype_TextBuffer:
             if (win->line_request) {
                 win_textbuffer_cancel_line(win, ev);
-                win->inputgen = 0;
             }
             break;
         case wintype_TextGrid:
             if (win->line_request) {
                 win_textgrid_cancel_line(win, ev);
-                win->inputgen = 0;
             }
             break;
         default:

@@ -9,7 +9,6 @@ typedef struct tbrun_struct {
     short style;
     glui32 hyperlink;
     long pos;
-    long specialnum;
 } tbrun_t;
 
 typedef struct window_textbuffer_struct {
@@ -18,14 +17,8 @@ typedef struct window_textbuffer_struct {
     glui32 *chars;
     long numchars;
     long charssize;
-
-    //data_specialspan_t **specials;
-    long numspecials;
-    long specialssize;
     
     int width, height;
-    
-    long updatemark;
     
     tbrun_t *runs; /* There is always at least one run. */
     long numruns;
@@ -45,11 +38,7 @@ typedef struct window_textbuffer_struct {
 
 extern window_textbuffer_t *win_textbuffer_create(window_t *win);
 extern void win_textbuffer_destroy(window_textbuffer_t *dwin);
-//extern void win_textbuffer_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics);
-extern void win_textbuffer_redraw(window_t *win);
-//extern data_content_t *win_textbuffer_update(window_t *win);
 extern void win_textbuffer_putchar(window_t *win, glui32 ch);
-//extern void win_textbuffer_putspecial(window_t *win, data_specialspan_t *special);
 extern void win_textbuffer_trim_buffer(window_t *win);
 extern void win_textbuffer_set_paging(window_t *win, int forcetoend);
 extern void win_textbuffer_init_line(window_t *win, void *buf, int unicode, int maxlen, int initlen);

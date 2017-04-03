@@ -27,10 +27,3 @@ void win_blank_destroy(window_blank_t *dwin)
     dwin->owner = NULL;
     free(dwin);
 }
-
-/*void win_blank_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics)
-{
-    window_blank_t *dwin = win->data;
-    dwin->owner->bbox = *box;
-}*/
-

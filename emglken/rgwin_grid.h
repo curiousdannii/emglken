@@ -10,7 +10,6 @@ typedef struct tgline_struct {
     glui32 *chars;
     short *styles;
     glui32 *links;
-    int dirty;
 } tgline_t;
 
 typedef struct window_textgrid_struct {
@@ -22,8 +21,6 @@ typedef struct window_textgrid_struct {
         only the first height entries are valid. */
     
     int curx, cury; /* the window cursor position */
-    
-    int alldirty; /* all lines should be considered dirty */
     
     /* for line input */
     void *inbuf; /* char* or glui32*, depending on inunicode. */
@@ -38,9 +35,6 @@ typedef struct window_textgrid_struct {
 
 extern window_textgrid_t *win_textgrid_create(window_t *win);
 extern void win_textgrid_destroy(window_textgrid_t *dwin);
-//extern void win_textgrid_rearrange(window_t *win, grect_t *box, data_metrics_t *metrics);
-extern void win_textgrid_redraw(window_t *win);
-//extern data_content_t *win_textgrid_update(window_t *win);
 extern void win_textgrid_putchar(window_t *win, glui32 ch);
 extern void win_textgrid_move_cursor(window_t *win, int xpos, int ypos);
 extern void win_textgrid_init_line(window_t *win, void *buf, int unicode, int maxlen, int initlen);
