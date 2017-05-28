@@ -180,7 +180,6 @@ extern void gli_initialize_windows();
 extern void gli_fast_exit(void);
 extern void gli_display_warning(char *msg);
 extern void gli_display_error(char *msg);
-extern glui32 gli_window_current_generation(void);
 extern window_t *gli_window_find_by_tag(glui32 tag);
 extern window_t *gli_new_window(glui32 type, glui32 rock, glui32 windowtag);
 extern void gli_delete_window(window_t *win);
@@ -215,9 +214,7 @@ extern void gli_delete_fileref(fileref_t *fref);
 /* Functions implemented in library.js */
 
 extern void glem_cancel_char_event(glui32 wintag);
-extern void glem_cancel_hyperlink_event(glui32 wintag);
 extern void glem_cancel_line_event(glui32 wintag);
-extern void glem_cancel_mouse_event(glui32 wintag);
 extern void glem_exit();
 extern void glem_fatal_error(char *msg);
 extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
@@ -229,36 +226,24 @@ extern glui32 glem_get_buffer_stream(glui32 tag, void *buf, glui32 len, int unic
 extern glsi32 glem_get_char_stream(glui32 tag, int unicode);
 extern glui32 glem_get_line_stream(glui32 tag, void *buf, glui32 len, int unicode);
 extern glui32 glem_get_window_stream_tag(glui32 wintag);
-extern glui32 glem_image_draw(glui32 win, glui32 image, glsi32 val1, glsi32 val2);
-extern glui32 glem_image_draw_scaled(glui32 win, glui32 image, glsi32 val1, glsi32 val2, glui32 width, glui32 height);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
 extern void glem_put_buffer_stream(glui32 str, void *buf, glui32 len, int unicode);
 extern void glem_put_char_stream_uni(glui32 str, glui32 ch);
 extern void glem_request_char_event(glui32 wintag, int unicode);
-extern void glem_request_hyperlink_event(glui32 tag);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
-extern void glem_request_mouse_event(glui32 tag);
 extern void glem_select(glui32 *data);
-extern void glem_set_echo_line_event(glui32 tag, glui32 val);
 extern void glem_set_hyperlink_stream(glui32 tag, glui32 linkval);
 extern void glem_set_style_stream(glui32 tag, glui32 style);
-extern void glem_set_terminators_line_event(glui32 tag, glui32 *keycodes, glui32 count);
 extern void glem_stream_close(glui32 tag);
 extern glui32 glem_stream_get_position(glui32 tag);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
 extern void glem_stream_set_current(glui32 tag);
 extern void glem_stream_set_position(glui32 tag, glsi32 pos, glui32 seekmode);
-extern void glem_window_clear(glui32 wintag);
 extern void glem_window_close(glui32 wintag);
-extern void glem_window_erase_rect(glui32 wintag, glsi32 left, glsi32 top, glui32 width, glui32 height);
-extern void glem_window_fill_rect(glui32 wintag, glui32 color, glsi32 left, glsi32 top, glui32 width, glui32 height);
-extern void glem_window_flow_break(glui32 wintag);
 extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
-extern void glem_window_get_size(glui32 wintag, glui32 *widthptr, glui32 *heightptr);
 extern void glem_window_move_cursor(glui32 wintag, glui32 xpos, glui32 ypos);
 extern void glem_window_set_arrangement(glui32 wintag, glui32 method, glui32 size, glui32 keywintag);
-extern void glem_window_set_background_color(glui32 wintag, glui32 color);
 extern void init_emglken();
 
 

@@ -39,15 +39,20 @@ var emglken = {
 	{
 		return GiDispa.class_obj_from_id( 'fileref', Module.getValue( structptr, 'i32' ) )
 	},
+	
+	window_from_ptr: function( winptr )
+	{
+		return GiDispa.class_obj_from_id( 'window', Module.getValue( winptr, 'i32' ) )
+	},
 
 	glem_cancel_char_event: function( tag )
 	{
 		Glk.glk_cancel_char_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_cancel_hyperlink_event: function( tag )
+	glk_cancel_hyperlink_event: function( window )
 	{
-		Glk.glk_cancel_hyperlink_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_cancel_hyperlink_event( _window_from_ptr( window ) )
 	},
 
 	glem_cancel_line_event: function( tag )
@@ -55,9 +60,9 @@ var emglken = {
 		Glk.glk_cancel_line_event( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_cancel_mouse_event: function( tag )
+	glk_cancel_mouse_event: function( window )
 	{
-		Glk.glk_cancel_mouse_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_cancel_mouse_event( _window_from_ptr( window ) )
 	},
 
 	glem_exit: function()
@@ -199,14 +204,14 @@ var emglken = {
 		return _class_obj_from_id_window( tag ).str.disprock
 	},
 
-	glem_image_draw: function( tag, image, val1, val2 )
+	glk_image_draw: function( window, image, val1, val2 )
 	{
-		return Glk.glk_image_draw( _class_obj_from_id_window( tag ), image, val1, val2 )
+		return Glk.glk_image_draw( _window_from_ptr( window ), image, val1, val2 )
 	},
 
-	glem_image_draw_scaled: function( tag, image, val1, val2, width, height )
+	glk_image_draw_scaled: function( window, image, val1, val2, width, height )
 	{
-		return Glk.glk_image_draw_scaled( _class_obj_from_id_window( tag ), image, val1, val2, width, height )
+		return Glk.glk_image_draw_scaled( _window_from_ptr( window ), image, val1, val2, width, height )
 	},
 
 	glk_image_get_info: function( image, width, height )
@@ -266,9 +271,9 @@ var emglken = {
 		}
 	},
 
-	glem_request_hyperlink_event: function( tag )
+	glk_request_hyperlink_event: function( window )
 	{
-		Glk.glk_request_hyperlink_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_request_hyperlink_event( _window_from_ptr( window ) )
 	},
 
 	glem_request_line_event: function( tag, bufaddr, maxlen, initlen, unicode )
@@ -286,9 +291,9 @@ var emglken = {
 		}
 	},
 
-	glem_request_mouse_event: function( tag )
+	glk_request_mouse_event: function( window )
 	{
-		Glk.glk_request_mouse_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_request_mouse_event( _window_from_ptr( window ) )
 	},
 
 	glk_request_timer_events: function( ms )
@@ -345,9 +350,9 @@ var emglken = {
 	},
 #endif
 
-	glem_set_echo_line_event: function( tag, val )
+	glk_set_echo_line_event: function( window, val )
 	{
-		Glk.glk_set_echo_line_event( _class_obj_from_id_window( tag ), val )
+		Glk.glk_set_echo_line_event( _window_from_ptr( window ), val )
 	},
 
 	glem_set_hyperlink_stream: function( tag, linkval )
@@ -360,10 +365,10 @@ var emglken = {
 		Glk.glk_set_style_stream( _class_obj_from_id_stream( tag ), style )
 	},
 
-	glem_set_terminators_line_event: function( tag, arraddr, count )
+	glk_set_terminators_line_event: function( window, arraddr, count )
 	{
 		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, count * 4 )
-		Glk.glk_set_terminators_line_event( _class_obj_from_id_window( tag ), arr )
+		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
 	glem_stream_close: function( tag )
@@ -415,9 +420,9 @@ var emglken = {
 		Glk.glk_stream_set_position( _class_obj_from_id_stream( tag ), pos, seekmode )
 	},
 
-	glem_window_clear: function( tag )
+	glk_window_clear: function( window )
 	{
-		Glk.glk_window_clear( _class_obj_from_id_window( tag ) )
+		Glk.glk_window_clear( _window_from_ptr( window ) )
 	},
 
 	glem_window_close: function( tag )
@@ -425,19 +430,19 @@ var emglken = {
 		Glk.glk_window_close( _class_obj_from_id_window( tag ) )
 	},
 
-	glem_window_erase_rect: function( tag, left, top, width, height )
+	glk_window_erase_rect: function( window, left, top, width, height )
 	{
-		Glk.glk_window_erase_rect( _class_obj_from_id_window( tag ), left, top, width, height )
+		Glk.glk_window_erase_rect( _window_from_ptr( window ), left, top, width, height )
 	},
 
-	glem_window_fill_rect: function( tag, color, left, top, width, height )
+	glk_window_fill_rect: function( window, color, left, top, width, height )
 	{
-		Glk.glk_window_fill_rect( _class_obj_from_id_window( tag ), color, left, top, width, height )
+		Glk.glk_window_fill_rect( _window_from_ptr( window ), color, left, top, width, height )
 	},
 
-	glem_window_flow_break: function( tag )
+	glk_window_flow_break: function( window )
 	{
-		Glk.glk_window_flow_break( _class_obj_from_id_window( tag ) )
+		Glk.glk_window_flow_break( _window_from_ptr( window ) )
 	},
 
 	glem_window_get_arrangement: function( tag, methodptr, sizeptr, keywinptr )
@@ -460,11 +465,11 @@ var emglken = {
 		}
 	},
 
-	glem_window_get_size: function( tag, width, height )
+	glk_window_get_size: function( window, width, height )
 	{
 		var widthBox = new Glk.RefBox()
 		var heightBox = new Glk.RefBox()
-		Glk.glk_window_get_size( _class_obj_from_id_window( tag ), widthBox, heightBox )
+		Glk.glk_window_get_size( _window_from_ptr( window ), widthBox, heightBox )
 		if ( width )
 		{
 			Module.setValue( width, widthBox.value, 'i32' )
@@ -485,9 +490,9 @@ var emglken = {
 		Glk.glk_window_set_arrangement( _class_obj_from_id_window( tag ), method, size, _class_obj_from_id_window( keywintag ) )
 	},
 
-	glem_window_set_background_color: function( tag, color )
+	glk_window_set_background_color: function( window, color )
 	{
-		Glk.glk_window_set_background_color( _class_obj_from_id_window( tag ), color )
+		Glk.glk_window_set_background_color( _window_from_ptr( window ), color )
 	},
 
 }
@@ -514,5 +519,6 @@ addDeps( emglken, [
 	'class_obj_to_id_stream',
 	'class_obj_to_id_window',
 	'fileref_from_ptr',
+	'window_from_ptr',
 ] )
 mergeInto( LibraryManager.library, emglken )

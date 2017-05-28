@@ -19,9 +19,6 @@
 #include "rgwin_buf.h"
 #include "rgwin_graph.h"
 
-/* The update generation number. */
-static glui32 generation = 0;
-
 /* Linked list of all windows */
 static window_t *gli_windowlist = NULL; 
 
@@ -47,7 +44,6 @@ void gli_initialize_windows()
 {
     int ix;
 
-    generation = 0;
     srandom(time(NULL));
     gli_rootwin = NULL;
     gli_focuswin = NULL;
@@ -71,11 +67,6 @@ void gli_fast_exit()
 
     gli_streams_close_all();
     exit(0);
-}
-
-glui32 gli_window_current_generation()
-{
-    return generation;
 }
 
 window_t *gli_window_find_by_tag(glui32 tag)
@@ -622,16 +613,6 @@ glui32 glk_window_get_type(window_t *win)
     return win->type;
 }
 
-void glk_window_get_size(window_t *win, glui32 *width, glui32 *height)
-{    
-    if (!win) {
-        gli_strict_warning("window_get_size: invalid ref");
-        return;
-    }
-    
-    glem_window_get_size( win->updatetag, width, height );
-}
-
 strid_t glk_window_get_stream(window_t *win)
 {
     if (!win) {
@@ -705,22 +686,6 @@ static glui32 *dup_buffer(void *buf, int len, int unicode)
 
     return res;
 }
-
-#if GIDEBUG_LIBRARY_SUPPORT
-
-/* A cache of debug lines generated this cycle. */
-//static gen_list_t debug_output_cache = { NULL, 0, 0 };
-
-/*void gidebug_output(char *text)
-{
-    // Send a line of text to the "debug console", if the user has
-    //   requested debugging mode. *
-    if (gli_debugger) {
-        gen_list_append(&debug_output_cache, strdup(text));
-    }
-}*/
-
-#endif /* GIDEBUG_LIBRARY_SUPPORT */
 
 void gli_window_prepare_input(window_t *win, glui32 *buf, glui32 len)
 {
@@ -829,18 +794,6 @@ void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, glui3
 
 #endif /* GLK_MODULE_UNICODE */
 
-void glk_request_mouse_event(window_t *win)
-{
-    if (!win) {
-        gli_strict_warning("request_mouse_event: invalid ref");
-        return;
-    }
-    
-    glem_request_mouse_event( win->updatetag );
-    
-    return;
-}
-
 void glk_cancel_char_event(window_t *win)
 {
     if (!win) {
@@ -893,24 +846,6 @@ void glk_cancel_line_event(window_t *win, event_t *ev)
     glem_cancel_line_event( win->updatetag );
 }
 
-void glk_cancel_mouse_event(window_t *win)
-{
-    if (!win) {
-        gli_strict_warning("cancel_mouse_event: invalid ref");
-        return;
-    }
-    
-    glem_cancel_mouse_event( win->updatetag );
-    /* But, in fact, we can't do much about this. */
-    
-    return;
-}
-
-void glk_window_clear(window_t *win)
-{
-    glem_window_clear( win->updatetag );
-}
-
 void glk_window_move_cursor(window_t *win, glui32 xpos, glui32 ypos)
 {
     if (!win) {
@@ -927,131 +862,3 @@ void glk_window_move_cursor(window_t *win, glui32 xpos, glui32 ypos)
             break;
     }
 }
-
-#ifdef GLK_MODULE_LINE_ECHO
-
-void glk_set_echo_line_event(window_t *win, glui32 val)
-{
-    if (!win) {
-        gli_strict_warning("set_echo_line_event: invalid ref");
-        return;
-    }
-    
-    glem_set_echo_line_event( win->updatetag, val );
-}
-
-#endif /* GLK_MODULE_LINE_ECHO */
-
-#ifdef GLK_MODULE_LINE_TERMINATORS
-
-void glk_set_terminators_line_event(window_t *win, glui32 *keycodes, 
-    glui32 count)
-{
-
-    if (!win) {
-        gli_strict_warning("set_terminators_line_event: invalid ref");
-        return;
-    }
-    
-    glem_set_terminators_line_event( win->updatetag, keycodes, count );
-}
-
-#endif /* GLK_MODULE_LINE_TERMINATORS */
-
-#ifdef GLK_MODULE_IMAGE
-
-glui32 glk_image_draw(winid_t win, glui32 image, glsi32 val1, glsi32 val2)
-{
-    if (!glk_gestalt(gestalt_Graphics, 0)) {
-        gli_strict_warning("image_draw: graphics not supported.");
-        return FALSE;
-    }
-    return glem_image_draw( win->updatetag, image, val1, val2);
-}
-
-glui32 glk_image_draw_scaled(winid_t win, glui32 image, 
-    glsi32 val1, glsi32 val2, glui32 width, glui32 height)
-{
-    if (!glk_gestalt(gestalt_Graphics, 0)) {
-        gli_strict_warning("image_draw_scaled: graphics not supported.");
-        return FALSE;
-    }
-    return glem_image_draw_scaled( win->updatetag, image, val1, val2, width, height);
-}
-
-void glk_window_flow_break(winid_t win)
-{
-    if (!win) {
-        gli_strict_warning("flow_break: invalid ref");
-        return;
-    }
-    
-    glem_window_flow_break( win->updatetag );
-}
-
-void glk_window_erase_rect(winid_t win, 
-    glsi32 left, glsi32 top, glui32 width, glui32 height)
-{
-    if (!win) {
-        gli_strict_warning("window_erase_rect: invalid ref");
-        return;
-    }
-    if (win->type != wintype_Graphics) {
-        gli_strict_warning("window_erase_rect: not a graphics window");
-        return;
-    }
-    
-    glem_window_erase_rect( win->updatetag, left, top, width, height );
-}
-
-void glk_window_fill_rect(winid_t win, glui32 color, 
-    glsi32 left, glsi32 top, glui32 width, glui32 height)
-{
-    if (!win) {
-        gli_strict_warning("window_fill_rect: invalid ref");
-        return;
-    }
-    if (win->type != wintype_Graphics) {
-        gli_strict_warning("window_fill_rect: not a graphics window");
-        return;
-    }
-
-    glem_window_fill_rect( win->updatetag, color, left, top, width, height );
-}
-
-void glk_window_set_background_color(winid_t win, glui32 color)
-{
-    glem_window_set_background_color( win->updatetag, color );
-}
-
-#endif /* GLK_MODULE_IMAGE */
-
-#ifdef GLK_MODULE_HYPERLINKS
-
-void glk_request_hyperlink_event(winid_t win)
-{
-    if (!win) {
-        gli_strict_warning("request_hyperlink_event: invalid ref");
-        return;
-    }
-
-    if (!glk_gestalt(gestalt_HyperlinkInput, 0))
-        return;
-
-    glem_request_hyperlink_event( win->updatetag );
-}
-
-void glk_cancel_hyperlink_event(winid_t win)
-{
-    if (!win) {
-        gli_strict_warning("cancel_hyperlink_event: invalid ref");
-        return;
-    }
-
-    if (!glk_gestalt(gestalt_HyperlinkInput, 0))
-        return;
-
-    glem_cancel_hyperlink_event( win->updatetag );
-}
-
-#endif /* GLK_MODULE_HYPERLINKS */
