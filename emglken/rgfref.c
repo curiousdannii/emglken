@@ -26,20 +26,15 @@ static fileref_t *gli_filereflist = NULL;
 
 static char workingdir[BUFLEN] = ".";
 
-fileref_t *gli_new_fileref(char *filename, glui32 usage, glui32 rock)
+fileref_t *gli_new_fileref(glui32 usage, glui32 rock)
 {
     fileref_t *fref = (fileref_t *)malloc(sizeof(fileref_t));
     if (!fref)
         return NULL;
     
-    fref->magicnum = MAGIC_FILEREF_NUM;
     fref->rock = rock;
     
-    fref->filename = malloc(1 + strlen(filename));
-    strcpy(fref->filename, filename);
-    
     fref->textmode = ((usage & fileusage_TextMode) != 0);
-    fref->filetype = (usage & fileusage_TypeMask);
     
     fref->prev = NULL;
     fref->next = gli_filereflist;
@@ -60,13 +55,6 @@ void gli_delete_fileref(fileref_t *fref)
     
     if (gli_unregister_obj)
         (*gli_unregister_obj)(fref, gidisp_Class_Fileref, fref->disprock);
-        
-    fref->magicnum = 0;
-    
-    if (fref->filename) {
-        free(fref->filename);
-        fref->filename = NULL;
-    }
     
     prev = fref->prev;
     next = fref->next;
@@ -93,29 +81,11 @@ void glk_fileref_destroy(fileref_t *fref)
     gli_delete_fileref(fref);
 }
 
-static char *gli_suffix_for_usage(glui32 usage)
-{
-    switch (usage & fileusage_TypeMask) {
-        case fileusage_Data:
-            return ".glkdata";
-        case fileusage_SavedGame:
-            return ".glksave";
-        case fileusage_Transcript:
-        case fileusage_InputRecord:
-            return ".txt";
-        default:
-            return "";
-    }
-}
-
 frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
-    char filename[BUFLEN];
     fileref_t *fref;
     
-    //sprintf(filename, "/tmp/glktempfref-XXXXXX");
-    
-    fref = gli_new_fileref(filename, usage, rock);
+    fref = gli_new_fileref(usage, rock);
     if (!fref) {
         gli_strict_warning("fileref_create_temp: unable to create fileref.");
         return NULL;
@@ -136,7 +106,7 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
         return NULL;
     }
 
-    fref = gli_new_fileref(oldfref->filename, usage, rock);
+    fref = gli_new_fileref(usage, rock);
     if (!fref) {
         gli_strict_warning("fileref_create_from_fileref: unable to create fileref.");
         return NULL;
@@ -152,7 +122,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
 {
     fileref_t *fref;
 
-    fref = gli_new_fileref(name, usage, rock);
+    fref = gli_new_fileref(usage, rock);
     if (!fref) {
         gli_strict_warning("fileref_create_by_name: unable to create fileref.");
         return NULL;
@@ -167,15 +137,10 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     glui32 rock)
 {
     fileref_t *fref;
-    char buf[BUFLEN];
-    char newbuf[2*BUFLEN+10];
-    char *cx;
-    int val, gotdot;
-    int gotresp;
     glui32 tag;
     
     glem_fileref_create_by_prompt( usage, fmode, rock, &tag );
-    fref = gli_new_fileref(newbuf, usage, rock);
+    fref = gli_new_fileref(usage, rock);
     if ( !fref || !tag )
     {
         gli_strict_warning("fileref_create_by_prompt: unable to create fileref.");
@@ -214,28 +179,6 @@ glui32 glk_fileref_get_rock(fileref_t *fref)
     }
     
     return fref->rock;
-}
-
-glui32 glk_fileref_does_file_exist(fileref_t *fref)
-{
-    struct stat buf;
-    
-    if (!fref) {
-        gli_strict_warning("fileref_does_file_exist: invalid ref");
-        return FALSE;
-    }
-    
-    return glem_fileref_does_file_exist( fref->tag );
-}
-
-void glk_fileref_delete_file(fileref_t *fref)
-{
-    if (!fref) {
-        gli_strict_warning("fileref_delete_file: invalid ref");
-        return;
-    }
-    
-    glem_fileref_delete_file( fref->tag );
 }
 
 /* This should only be called from startup code. */

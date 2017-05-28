@@ -34,6 +34,12 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
+	// Use the struct's first entry, the tag, to find the fref object
+	fileref_from_ptr: function( structptr )
+	{
+		return GiDispa.class_obj_from_id( 'fileref', Module.getValue( structptr, 'i32' ) )
+	},
+
 	glem_cancel_char_event: function( tag )
 	{
 		Glk.glk_cancel_char_event( _class_obj_from_id_window( tag ) )
@@ -124,9 +130,9 @@ var emglken = {
 		return _class_obj_to_id_fileref( fref )
 	},
 
-	glem_fileref_delete_file: function( tag )
+	glk_fileref_delete_file: function( fref )
 	{
-		Glk.glk_fileref_delete_file( _class_obj_from_id_fileref( tag ) )
+		Glk.glk_fileref_delete_file( _fileref_from_ptr( fref ) )
 	},
 
 	glem_fileref_destroy: function( tag )
@@ -134,9 +140,9 @@ var emglken = {
 		Glk.glk_fileref_destroy( _class_obj_from_id_fileref( tag ) )
 	},
 
-	glem_fileref_does_file_exist: function( tag )
+	glk_fileref_does_file_exist: function( fref )
 	{
-		return Glk.glk_fileref_does_file_exist( _class_obj_from_id_fileref( tag ) )
+		return Glk.glk_fileref_does_file_exist( _fileref_from_ptr( fref ) )
 	},
 
 	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
@@ -507,5 +513,6 @@ addDeps( emglken, [
 	'class_obj_to_id_fileref',
 	'class_obj_to_id_stream',
 	'class_obj_to_id_window',
+	'fileref_from_ptr',
 ] )
 mergeInto( LibraryManager.library, emglken )

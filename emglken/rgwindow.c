@@ -94,7 +94,6 @@ window_t *gli_new_window(glui32 type, glui32 rock, glui32 updatetag)
     if (!win)
         return NULL;
     
-    win->magicnum = MAGIC_WINDOW_NUM;
     win->rock = rock;
     win->type = type;
     win->updatetag = updatetag;
@@ -130,8 +129,6 @@ void gli_delete_window(window_t *win)
     
     if (gli_unregister_obj)
         (*gli_unregister_obj)(win, gidisp_Class_Window, win->disprock);
-        
-    win->magicnum = 0;
     
     win->echostr = NULL;
     if (win->str) {

@@ -30,7 +30,6 @@ stream_t *gli_new_stream(int type, int readable, int writable,
     if (!str)
         return NULL;
     
-    str->magicnum = MAGIC_STREAM_NUM;
     str->type = type;
     str->rock = rock;
 
@@ -78,8 +77,6 @@ void gli_delete_stream(stream_t *str)
     }
     
     gli_windows_unechostream(str);
-    
-    str->magicnum = 0;
 
     switch (str->type) {
         case strtype_Window:

@@ -47,10 +47,9 @@ typedef struct glk_fileref_struct fileref_t;
 #define MAGIC_FILEREF_NUM (6982)
 
 struct glk_window_struct {
-    glui32 magicnum;
+    glui32 updatetag; /* numeric tag for the window in output */
     glui32 rock;
     glui32 type;
-    glui32 updatetag; /* numeric tag for the window in output */
     
     window_t *parent; /* pair window which contains this one */
     void *data; /* one of the window_*_t structures */
@@ -76,9 +75,8 @@ struct glk_window_struct {
 #define strtype_Resource (4)
 
 struct glk_stream_struct {
-    glui32 magicnum;
-    glui32 rock;
     glui32 tag;
+    glui32 rock;
 
     int type; /* file, window, or memory stream */
     int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
@@ -113,12 +111,9 @@ struct glk_stream_struct {
 };
 
 struct glk_fileref_struct {
-    glui32 magicnum;
-    glui32 rock;
     glui32 tag;
+    glui32 rock;
 
-    char *filename;
-    int filetype;
     int textmode;
 
     gidispatch_rock_t disprock;
@@ -214,8 +209,7 @@ extern void gli_stream_echo_line(stream_t *str, char *buf, glui32 len);
 extern void gli_stream_echo_line_uni(stream_t *str, glui32 *buf, glui32 len);
 extern void gli_streams_close_all(void);
 
-extern fileref_t *gli_new_fileref(char *filename, glui32 usage, 
-    glui32 rock);
+extern fileref_t *gli_new_fileref(glui32 usage, glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
 
 /* Functions implemented in library.js */
@@ -230,9 +224,7 @@ extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock)
 extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock, glui32 *tagptr);
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
-extern void glem_fileref_delete_file(glui32 tag);
 extern void glem_fileref_destroy(glui32 tag);
-extern glui32 glem_fileref_does_file_exist(glui32 tag);
 extern glui32 glem_get_buffer_stream(glui32 tag, void *buf, glui32 len, int unicode);
 extern glsi32 glem_get_char_stream(glui32 tag, int unicode);
 extern glui32 glem_get_line_stream(glui32 tag, void *buf, glui32 len, int unicode);
