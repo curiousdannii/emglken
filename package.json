@@ -12,7 +12,10 @@
   "bugs": "https://github.com/curiousdannii/emglken/issues",
   "homepage": "https://github.com/curiousdannii/emglken",
   "devDependencies": {
-    "glkote-term": "^0.3.0"
+    "babili": "^0.1.4",
+    "browserify": "^14.4.0",
+    "glkote-term": "^0.3.0",
+    "minimist": "^1.2.0"
   },
   "scripts": {
     "test": "make test"

@@ -1,8 +1,19 @@
-// Emglken Emscripten library
+/*
 
-// These functions need GiDispa and Glk variables to be set (either globally or in a closure)
+Emglken Emscripten library
+==========================
+
+Copyright (c) 2017 Dannii Willis
+MIT licenced
+https://github.com/curiousdannii/emglken
+
+*/
+
+// These functions need GiDispa and Glk to be passed in the Module options object
 
 var emglken = {
+
+	window_from_ptr__postset: `var Glk=Module['Glk'],GiDispa=Module['GiDispa'];`,
 
 	class_obj_from_id_fileref: function( tag )
 	{

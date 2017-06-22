@@ -1,11 +1,11 @@
 *.o
+*.bin
 *.mem
 *.zip
 /*.js
 cheapglk
 emglken/libemglken.a
 emglken/Make.emglken
+garglk
 node_modules
 tests/regtest.py
-git/git
-git/git.js
