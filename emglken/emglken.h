@@ -79,31 +79,14 @@ struct glk_stream_struct {
     glui32 rock;
 
     int type; /* file, window, or memory stream */
-    int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
+    //int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
     
     glui32 readcount, writecount;
     int readable, writable;
     
     /* for strtype_Window */
     window_t *win;
-    
-    /* for strtype_File */
-    glui32 lastop; /* 0, filemode_Write, or filemode_Read */
-    
-    /* for strtype_Resource */
-    int isbinary;
 
-    /* for strtype_Memory and strtype_Resource. Separate pointers for 
-       one-byte and four-byte streams */
-    unsigned char *buf;
-    unsigned char *bufptr;
-    unsigned char *bufend;
-    unsigned char *bufeof;
-    glui32 *ubuf;
-    glui32 *ubufptr;
-    glui32 *ubufend;
-    glui32 *ubufeof;
-    glui32 buflen;
     gidispatch_rock_t arrayrock;
 
     gidispatch_rock_t disprock;
@@ -204,8 +187,6 @@ extern strid_t gli_stream_open_pathname(char *pathname, int writemode,
 extern void gli_stream_set_current(stream_t *str);
 extern void gli_stream_fill_result(stream_t *str, 
     stream_result_t *result);
-extern void gli_stream_echo_line(stream_t *str, char *buf, glui32 len);
-extern void gli_stream_echo_line_uni(stream_t *str, glui32 *buf, glui32 len);
 extern void gli_streams_close_all(void);
 
 extern fileref_t *gli_new_fileref(glui32 usage, glui32 rock);
@@ -222,24 +203,17 @@ extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 roc
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
 extern void glem_fileref_destroy(glui32 tag);
-extern glui32 glem_get_buffer_stream(glui32 tag, void *buf, glui32 len, int unicode);
-extern glsi32 glem_get_char_stream(glui32 tag, int unicode);
-extern glui32 glem_get_line_stream(glui32 tag, void *buf, glui32 len, int unicode);
 extern glui32 glem_get_window_stream_tag(glui32 wintag);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
-extern void glem_put_buffer_stream(glui32 str, void *buf, glui32 len, int unicode);
-extern void glem_put_char_stream_uni(glui32 str, glui32 ch);
 extern void glem_request_char_event(glui32 wintag, int unicode);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_select(glui32 *data);
 extern void glem_set_hyperlink_stream(glui32 tag, glui32 linkval);
-extern void glem_set_style_stream(glui32 tag, glui32 style);
 extern void glem_stream_close(glui32 tag);
-extern glui32 glem_stream_get_position(glui32 tag);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
+extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
 extern void glem_stream_set_current(glui32 tag);
-extern void glem_stream_set_position(glui32 tag, glsi32 pos, glui32 seekmode);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
 extern void glem_window_move_cursor(glui32 wintag, glui32 xpos, glui32 ypos);

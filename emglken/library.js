@@ -51,6 +51,11 @@ var emglken = {
 		return GiDispa.class_obj_from_id( 'fileref', Module.getValue( structptr, 'i32' ) )
 	},
 	
+	stream_from_ptr: function( streamptr )
+	{
+		return GiDispa.class_obj_from_id( 'stream', getValue( streamptr, 'i32' ) )
+	},
+	
 	window_from_ptr: function( winptr )
 	{
 		return GiDispa.class_obj_from_id( 'window', Module.getValue( winptr, 'i32' ) )
@@ -89,7 +94,7 @@ var emglken = {
 
 	glem_fileref_create_by_name: function( usage, name, rock )
 	{
-		var fref = Glk.glk_fileref_create_by_name( usage, Module.Pointer_stringify( name ), rock )
+		var fref = Glk.glk_fileref_create_by_name( usage, AsciiToString( name ), rock )
 		return _class_obj_to_id_fileref( fref )
 	},
 
@@ -166,48 +171,35 @@ var emglken = {
 		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, arrlen * 4 )
 		return Glk.glk_gestalt_ext( sel, val, arr )
 	},
-
-	glem_get_buffer_stream: function( tag, bufaddr, len, unicode )
+	
+	glk_get_buffer_stream: function( str, bufaddr, len )
 	{
-		var str = _class_obj_from_id_stream( tag )
-		if ( unicode )
-		{
-			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
-			return Glk.glk_get_buffer_stream_uni( str, buf )
-		}
-		else
-		{
-			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
-			return Glk.glk_get_buffer_stream( str, buf )
-		}
+		return Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-
-	glem_get_char_stream: function( tag, unicode )
+	
+	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		var str = _class_obj_from_id_stream( tag )
-		if ( unicode )
-		{
-			return Glk.glk_get_char_stream_uni( str )
-		}
-		else
-		{
-			return Glk.glk_get_char_stream( str )
-		}
+		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
 	},
-
-	glem_get_line_stream: function( tag, bufaddr, len, unicode )
+	
+	glk_get_char_stream: function( str )
 	{
-		var str = _class_obj_from_id_stream( tag )
-		if ( unicode )
-		{
-			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
-			return Glk.glk_get_line_stream_uni( str, buf )
-		}
-		else
-		{
-			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
-			return Glk.glk_get_line_stream( str, buf )
-		}
+		return Glk.glk_get_char_stream( _stream_from_ptr( str ) )
+	},
+	
+	glk_get_char_stream_uni: function( str )
+	{
+		return Glk.glk_get_char_stream_uni( _stream_from_ptr( str ) )
+	},
+	
+	glk_get_line_stream: function( str, bufaddr, len )
+	{
+		return Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+	},
+	
+	glk_get_line_stream_uni: function( str, bufaddr, len )
+	{
+		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
 	},
 
 	glem_get_window_stream_tag: function( tag )
@@ -248,25 +240,65 @@ var emglken = {
 		Module.setValue( pairwintag, _class_obj_to_id_window( pairwin ), 'i32' )
 		return _class_obj_to_id_window( win )
 	},
-
-	glem_put_buffer_stream: function( tag, bufaddr, len, unicode )
+	
+	glk_put_buffer: function( bufaddr, len )
 	{
-		var str = _class_obj_from_id_stream( tag )
-		if ( unicode )
-		{
-			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, len * 4 )
-			Glk.glk_put_buffer_stream_uni( str, buf )
-		}
-		else
-		{
-			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, len )
-			Glk.glk_put_buffer_stream( str, buf )
-		}
+		Glk.glk_put_buffer( new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-
-	glem_put_char_stream_uni: function( str, ch )
+	
+	glk_put_buffer_stream: function( str, bufaddr, len )
 	{
-		Glk.glk_put_char_stream_uni( _class_obj_from_id_stream( str ), ch )
+		Glk.glk_put_buffer( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+	},
+	
+	glk_put_buffer_uni: function( bufaddr, len )
+	{
+		Glk.glk_put_buffer_uni( new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+	},
+	
+	glk_put_buffer_stream_uni: function( str, bufaddr, len )
+	{
+		Glk.glk_put_buffer_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+	},
+	
+	glk_put_char: function( ch )
+	{
+		Glk.glk_put_char( ch )
+	},
+	
+	glk_put_char_stream: function( str, ch )
+	{
+		Glk.glk_put_char_stream( _stream_from_ptr( str ), ch )
+	},
+	
+	glk_put_char_stream_uni: function( str, ch )
+	{
+		Glk.glk_put_char_stream_uni( _stream_from_ptr( str ), ch )
+	},
+	
+	glk_put_char_uni: function( ch )
+	{
+		Glk.glk_put_char_uni( ch )
+	},
+	
+	glk_put_string: function( string )
+	{
+		Glk.glk_put_string( AsciiToString( string ) )
+	},
+	
+	glk_put_string_stream: function( str, string )
+	{
+		Glk.glk_put_string_stream( _stream_from_ptr( str ), AsciiToString( string ) )
+	},
+	
+	glk_put_string_stream_uni: function( str, string )
+	{
+		Glk.glk_put_string_stream_uni( _stream_from_ptr( str ), UTF32ToString( string ) )
+	},
+	
+	glk_put_string_uni: function( string )
+	{
+		Glk.glk_put_string_uni( UTF32ToString( string ) )
 	},
 
 	glem_request_char_event: function( tag, unicode )
@@ -370,10 +402,15 @@ var emglken = {
 	{
 		Glk.glk_set_hyperlink_stream( _class_obj_from_id_stream( tag ), linkval )
 	},
-
-	glem_set_style_stream: function( tag, style )
+	
+	glk_set_style: function( style )
 	{
-		Glk.glk_set_style_stream( _class_obj_from_id_stream( tag ), style )
+		Glk.glk_set_style( style )
+	},
+	
+	glk_set_style_stream: function( str, style )
+	{
+		Glk.glk_set_style_stream( _stream_from_ptr( str ), style )
 	},
 
 	glk_set_terminators_line_event: function( window, arraddr, count )
@@ -387,9 +424,9 @@ var emglken = {
 		Glk.glk_stream_close( _class_obj_from_id_stream( tag ), null )
 	},
 
-	glem_stream_get_position: function( tag )
+	glk_stream_get_position: function( str )
 	{
-		return Glk.glk_stream_get_position( _class_obj_from_id_stream( tag ) )
+		return Glk.glk_stream_get_position( _stream_from_ptr( str ) )
 	},
 
 	glem_stream_open_file: function( freftag, fmode, rock, unicode )
@@ -403,6 +440,23 @@ var emglken = {
 		else
 		{
 			str = Glk.glk_stream_open_file( fileref, fmode, rock )
+		}
+		return _class_obj_to_id_stream( str )
+	},
+
+	glem_stream_open_memory: function( bufaddr, buflen, fmode, rock, unicode )
+	{
+		var buf
+		var str
+		if ( unicode )
+		{
+			buf = new Uint32Array( HEAPU8.buffer, bufaddr, buflen * 4 )
+			str = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
+		}
+		else
+		{
+			buf = new Uint8Array( HEAPU8.buffer, bufaddr, buflen )
+			str = Glk.glk_stream_open_memory( buf, fmode, rock )
 		}
 		return _class_obj_to_id_stream( str )
 	},
@@ -425,10 +479,10 @@ var emglken = {
 	{
 		Glk.glk_stream_set_current( _class_obj_from_id_stream( tag ) )
 	},
-
-	glem_stream_set_position: function( tag, pos, seekmode )
+	
+	glk_stream_set_position: function( str, pos, seekmode )
 	{
-		Glk.glk_stream_set_position( _class_obj_from_id_stream( tag ), pos, seekmode )
+		Glk.glk_stream_set_position( _stream_from_ptr( str ), pos, seekmode )
 	},
 
 	glk_window_clear: function( window )
@@ -530,6 +584,7 @@ addDeps( emglken, [
 	'class_obj_to_id_stream',
 	'class_obj_to_id_window',
 	'fileref_from_ptr',
+	'stream_from_ptr',
 	'window_from_ptr',
 ] )
 mergeInto( LibraryManager.library, emglken )

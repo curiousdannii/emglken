@@ -268,12 +268,12 @@ void win_textgrid_cancel_line(window_t *win, event_t *ev)
     inecho = dwin->inecho;
 
     len = dwin->incurpos;
-    if (inecho && win->echostr) {
+    /*if (inecho && win->echostr) {
         if (!inunicode)
             gli_stream_echo_line(win->echostr, (char *)inbuf, len);
         else
             gli_stream_echo_line_uni(win->echostr, (glui32 *)inbuf, len);
-    }
+    }*/
 
     if (inecho) {
         /* Add the typed text to the buffer. */
