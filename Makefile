@@ -32,12 +32,15 @@ git.min.js: git.js
 	echo '/* Git (Emglken) v$(shell jq -r .git -- versions.json) https://github.com/curiousdannii/emglken */' > $@
 	babili git.js >> $@
 
-hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/heglk/*.js hugo/source/*.c hugo/source/*.h
+hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/heglk/hugo.js hugo/source/*.c hugo/source/*.h
 	$(MAKE) -C hugo/heglk
-	cp hugo/heglk/hugo.js* .
+	cp hugo/heglk/hugo-core.js.* .
+	browserify hugo/heglk/hugo.js --bare --igv x --standalone Hugo > $@
 
-emglken.zip: git.min.js hugo.js
-	zip -j emglken.zip emglken/emglken_dispatch.js git.min.js git-core.js.bin git-core.js.mem hugo.js hugo.js.mem versions.json
+emglken.zip: git.js hugo.js
+	zip -j emglken.zip emglken/emglken_dispatch.js versions.json \
+	git.js git-core.js.bin git-core.js.mem \
+	hugo.js hugo-core.js.bin hugo-core.js.mem
 
 hugo.zip: hugo.js
 	zip -j hugo.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem versions.json

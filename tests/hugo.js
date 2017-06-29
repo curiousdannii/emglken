@@ -3,11 +3,14 @@
 'use strict'
 
 const fs = require( 'fs' )
+const minimist = require( 'minimist' )
 const GlkOte = require( 'glkote-term' )
-const Hugo = require( '../hugo.js' )
 const GiDispa = require( '../emglken/emglken_dispatch.js' )
 
-const vm = Hugo
+const argv = minimist( process.argv.slice( 2 ), { boolean: 'b' } )
+const Hugo = new require( argv.b ? '../hugo.js' : '../hugo/heglk/hugo.js' )
+
+const vm = new Hugo()
 const Glk = GlkOte.Glk
 
 const options = {
@@ -16,10 +19,9 @@ const options = {
 	GiDispa: new GiDispa(),
 	Glk: Glk,
 	GlkOte: new GlkOte(),
-	resourcepath: __dirname,
 }
 
-vm.prepare( fs.readFileSync( process.argv[2] ), options )
+vm.prepare( fs.readFileSync( argv._[0] ), options )
 
 // This will call vm.init()
 Glk.init( options )

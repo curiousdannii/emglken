@@ -8,7 +8,7 @@ const GlkOte = require( 'glkote-term' )
 const GiDispa = require( '../emglken/emglken_dispatch.js' )
 
 const argv = minimist( process.argv.slice( 2 ), { boolean: 'b' } )
-const Git = new require( argv.b ? '../git.min.js' : '../git/git.js' )
+const Git = new require( argv.b ? '../git.js' : '../git/git.js' )
 
 const vm = new Git()
 const Glk = GlkOte.Glk

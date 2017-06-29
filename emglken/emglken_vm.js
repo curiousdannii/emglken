@@ -9,6 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
+const base_options = {
+	siglen: 64,
+}
+
 class EmglkenVM
 {
 
@@ -25,7 +29,7 @@ class EmglkenVM
 			throw new Error( 'A reference to GiDispa is required' )
 		}
 		this.data = data
-		this.options = Object.assign( {}, this.default_options(), options )
+		this.options = Object.assign( {}, base_options, this.default_options(), options )
 
 		this.setsig()
 	}
@@ -60,6 +64,16 @@ class EmglkenVM
 	resume( res )
 	{
 		this.vm.glem_callback( res )
+	}
+
+	setsig()
+	{
+		this.signature = ''
+		var i = 0
+		while ( i < this.options.siglen )
+		{
+			this.signature += ( this.data[i] < 0x10 ? '0' : '' ) + this.data[i++].toString( 16 )
+		}
 	}
 
 }
