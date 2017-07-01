@@ -170,7 +170,7 @@ var emglken = {
 
 	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
 	{
-		var arr = new Uint32Array( HEAPU8.buffer, arraddr, arrlen * 4 )
+		var arr = new Uint32Array( HEAPU8.buffer, arraddr, arrlen )
 		return Glk.glk_gestalt_ext( sel, val, arr )
 	},
 
@@ -181,7 +181,7 @@ var emglken = {
 
 	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glk_get_char_stream: function( str )
@@ -201,7 +201,7 @@ var emglken = {
 
 	glk_get_line_stream_uni: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glem_get_window_stream_tag: function( tag )
@@ -255,12 +255,12 @@ var emglken = {
 
 	glk_put_buffer_uni: function( bufaddr, len )
 	{
-		Glk.glk_put_buffer_uni( new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+		Glk.glk_put_buffer_uni( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glk_put_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		Glk.glk_put_buffer_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
+		Glk.glk_put_buffer_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glk_put_char: function( ch )
@@ -326,7 +326,7 @@ var emglken = {
 		var win = _window_from_id( tag )
 		if ( unicode )
 		{
-			var buf = new Uint32Array( HEAPU8.buffer, bufaddr, maxlen * 4 )
+			var buf = new Uint32Array( HEAPU8.buffer, bufaddr, maxlen )
 			Glk.glk_request_line_event_uni( win, buf, initlen )
 		}
 		else
@@ -422,7 +422,7 @@ var emglken = {
 
 	glk_set_terminators_line_event: function( window, arraddr, count )
 	{
-		var arr = new Uint32Array( HEAPU8.buffer, arraddr, count * 4 )
+		var arr = new Uint32Array( HEAPU8.buffer, arraddr, count )
 		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
@@ -463,7 +463,7 @@ var emglken = {
 		var str
 		if ( unicode )
 		{
-			buf = new Uint32Array( HEAPU8.buffer, bufaddr, buflen * 4 )
+			buf = new Uint32Array( HEAPU8.buffer, bufaddr, buflen )
 			str = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
 		}
 		else
