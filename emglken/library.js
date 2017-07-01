@@ -15,55 +15,57 @@ var emglken = {
 
 	window_from_ptr__postset: `var Glk=Module['Glk'],GiDispa=Module['GiDispa'];`,
 
-	class_obj_from_id_fileref: function( tag )
+	// Find JS objects from their id tags
+	fileref_from_id: function( tag )
 	{
 		return GiDispa.class_obj_from_id( 'fileref', tag )
 	},
 
-	class_obj_from_id_stream: function( tag )
+	stream_from_id: function( tag )
 	{
 		return GiDispa.class_obj_from_id( 'stream', tag )
 	},
 
-	class_obj_from_id_window: function( tag )
+	window_from_id: function( tag )
 	{
 		return GiDispa.class_obj_from_id( 'window', tag )
 	},
 
-	class_obj_to_id_fileref: function( tag )
+	// Use the struct's first entry, the tag, to find the JS objects
+	fileref_from_ptr: function( structptr )
+	{
+		return _fileref_from_id( getValue( structptr, 'i32' ) )
+	},
+
+	stream_from_ptr: function( streamptr )
+	{
+		return _stream_from_id( getValue( streamptr, 'i32' ) )
+	},
+
+	window_from_ptr: function( winptr )
+	{
+		return _window_from_id( getValue( winptr, 'i32' ) )
+	},
+
+	// Given a JS object, return its id tag
+	fileref_to_id: function( tag )
 	{
 		return GiDispa.class_obj_to_id( 'fileref', tag )
 	},
 
-	class_obj_to_id_stream: function( tag )
+	stream_to_id: function( tag )
 	{
 		return GiDispa.class_obj_to_id( 'stream', tag )
 	},
 
-	class_obj_to_id_window: function( tag )
+	window_to_id: function( tag )
 	{
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
-	// Use the struct's first entry, the tag, to find the fref object
-	fileref_from_ptr: function( structptr )
-	{
-		return GiDispa.class_obj_from_id( 'fileref', Module.getValue( structptr, 'i32' ) )
-	},
-	
-	stream_from_ptr: function( streamptr )
-	{
-		return GiDispa.class_obj_from_id( 'stream', getValue( streamptr, 'i32' ) )
-	},
-	
-	window_from_ptr: function( winptr )
-	{
-		return GiDispa.class_obj_from_id( 'window', Module.getValue( winptr, 'i32' ) )
-	},
-
 	glem_cancel_char_event: function( tag )
 	{
-		Glk.glk_cancel_char_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_cancel_char_event( _window_from_id( tag ) )
 	},
 
 	glk_cancel_hyperlink_event: function( window )
@@ -73,7 +75,7 @@ var emglken = {
 
 	glem_cancel_line_event: function( tag )
 	{
-		Glk.glk_cancel_line_event( _class_obj_from_id_window( tag ) )
+		Glk.glk_cancel_line_event( _window_from_id( tag ) )
 	},
 
 	glk_cancel_mouse_event: function( window )
@@ -89,17 +91,17 @@ var emglken = {
 
 	glem_fatal_error: function( msg )
 	{
-		Glk.fatal_error( Module.Pointer_stringify( msg ) )
+		Glk.fatal_error( Pointer_stringify( msg ) )
 	},
 
 	glem_fileref_create_by_name: function( usage, name, rock )
 	{
 		var fref = Glk.glk_fileref_create_by_name( usage, AsciiToString( name ), rock )
-		return _class_obj_to_id_fileref( fref )
+		return _fileref_to_id( fref )
 	},
 
 #if EMTERPRETIFY_ASYNC
-	glem_fileref_create_by_prompt__deps: ['$EmterpreterAsync', 'class_obj_to_id_fileref'],
+	glem_fileref_create_by_prompt__deps: ['$EmterpreterAsync', 'fileref_to_id'],
 	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
 	{
 		EmterpreterAsync.handle( function( resume )
@@ -111,7 +113,7 @@ var emglken = {
 				{
 					return
 				}
-				Module.setValue( tagptr, _class_obj_to_id_fileref( fref ), 'i32' )
+				Module.setValue( tagptr, _fileref_to_id( fref ), 'i32' )
 				resume()
 			}
 			Glk.update()
@@ -120,7 +122,7 @@ var emglken = {
 #endif
 
 #if ASYNCIFY
-	glem_fileref_create_by_prompt__deps: ['emscripten_async_resume', 'class_obj_to_id_fileref'],
+	glem_fileref_create_by_prompt__deps: ['emscripten_async_resume', 'fileref_to_id'],
 	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
 	{
 		Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
@@ -132,7 +134,7 @@ var emglken = {
 			{
 				return
 			}
-			Module.setValue( tagptr, _class_obj_to_id_fileref( fref ), 'i32' )
+			Module.setValue( tagptr, _fileref_to_id( fref ), 'i32' )
 			_emscripten_async_resume()
 		}
 		Glk.update()
@@ -141,14 +143,14 @@ var emglken = {
 
 	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
-		var fref = Glk.glk_fileref_create_from_fileref( usage, _class_obj_from_id_fileref( oldtag ), rock )
-		return _class_obj_to_id_fileref( fref )
+		var fref = Glk.glk_fileref_create_from_fileref( usage, _fileref_from_id( oldtag ), rock )
+		return _fileref_to_id( fref )
 	},
 
 	glem_fileref_create_temp: function( usage, rock )
 	{
 		var fref = Glk.glk_fileref_create_temp( usage, rock )
-		return _class_obj_to_id_fileref( fref )
+		return _fileref_to_id( fref )
 	},
 
 	glk_fileref_delete_file: function( fref )
@@ -158,7 +160,7 @@ var emglken = {
 
 	glem_fileref_destroy: function( tag )
 	{
-		Glk.glk_fileref_destroy( _class_obj_from_id_fileref( tag ) )
+		Glk.glk_fileref_destroy( _fileref_from_id( tag ) )
 	},
 
 	glk_fileref_does_file_exist: function( fref )
@@ -168,35 +170,35 @@ var emglken = {
 
 	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
 	{
-		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, arrlen * 4 )
+		var arr = new Uint32Array( HEAPU8.buffer, arraddr, arrlen * 4 )
 		return Glk.glk_gestalt_ext( sel, val, arr )
 	},
-	
+
 	glk_get_buffer_stream: function( str, bufaddr, len )
 	{
 		return Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-	
+
 	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
 		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
 	},
-	
+
 	glk_get_char_stream: function( str )
 	{
 		return Glk.glk_get_char_stream( _stream_from_ptr( str ) )
 	},
-	
+
 	glk_get_char_stream_uni: function( str )
 	{
 		return Glk.glk_get_char_stream_uni( _stream_from_ptr( str ) )
 	},
-	
+
 	glk_get_line_stream: function( str, bufaddr, len )
 	{
 		return Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-	
+
 	glk_get_line_stream_uni: function( str, bufaddr, len )
 	{
 		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
@@ -204,7 +206,7 @@ var emglken = {
 
 	glem_get_window_stream_tag: function( tag )
 	{
-		return _class_obj_from_id_window( tag ).str.disprock
+		return _window_from_id( tag ).str.disprock
 	},
 
 	glk_image_draw: function( window, image, val1, val2 )
@@ -224,78 +226,78 @@ var emglken = {
 		var res =  Glk.glk_image_get_info( image, widthBox, heightBox )
 		if ( width )
 		{
-			Module.setValue( width, widthBox.value, 'i32' )
+			setValue( width, widthBox.value, 'i32' )
 		}
 		if ( height )
 		{
-			Module.setValue( height, heightBox.value, 'i32' )
+			setValue( height, heightBox.value, 'i32' )
 		}
 		return res
 	},
 
 	glem_new_window: function( splitwin, method, size, wintype, rock, pairwintag )
 	{
-		var win = Glk.glk_window_open( _class_obj_from_id_window( splitwin ), method, size, wintype, rock )
+		var win = Glk.glk_window_open( _window_from_id( splitwin ), method, size, wintype, rock )
 		var pairwin = win ? Glk.glk_window_get_parent( win ) : 0
-		Module.setValue( pairwintag, _class_obj_to_id_window( pairwin ), 'i32' )
-		return _class_obj_to_id_window( win )
+		setValue( pairwintag, _window_to_id( pairwin ), 'i32' )
+		return _window_to_id( win )
 	},
-	
+
 	glk_put_buffer: function( bufaddr, len )
 	{
 		Glk.glk_put_buffer( new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-	
+
 	glk_put_buffer_stream: function( str, bufaddr, len )
 	{
 		Glk.glk_put_buffer( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
-	
+
 	glk_put_buffer_uni: function( bufaddr, len )
 	{
 		Glk.glk_put_buffer_uni( new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
 	},
-	
+
 	glk_put_buffer_stream_uni: function( str, bufaddr, len )
 	{
 		Glk.glk_put_buffer_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len * 4 ) )
 	},
-	
+
 	glk_put_char: function( ch )
 	{
 		Glk.glk_put_char( ch )
 	},
-	
+
 	glk_put_char_stream: function( str, ch )
 	{
 		Glk.glk_put_char_stream( _stream_from_ptr( str ), ch )
 	},
-	
+
 	glk_put_char_stream_uni: function( str, ch )
 	{
 		Glk.glk_put_char_stream_uni( _stream_from_ptr( str ), ch )
 	},
-	
+
 	glk_put_char_uni: function( ch )
 	{
 		Glk.glk_put_char_uni( ch )
 	},
-	
+
 	glk_put_string: function( string )
 	{
 		Glk.glk_put_string( AsciiToString( string ) )
 	},
-	
+
 	glk_put_string_stream: function( str, string )
 	{
 		Glk.glk_put_string_stream( _stream_from_ptr( str ), AsciiToString( string ) )
 	},
-	
+
 	glk_put_string_stream_uni: function( str, string )
 	{
 		Glk.glk_put_string_stream_uni( _stream_from_ptr( str ), UTF32ToString( string ) )
 	},
-	
+
 	glk_put_string_uni: function( string )
 	{
 		Glk.glk_put_string_uni( UTF32ToString( string ) )
@@ -303,7 +305,7 @@ var emglken = {
 
 	glem_request_char_event: function( tag, unicode )
 	{
-		var win = _class_obj_from_id_window( tag )
+		var win = _window_from_id( tag )
 		if ( unicode )
 		{
 			Glk.glk_request_char_event_uni( win )
@@ -321,15 +323,15 @@ var emglken = {
 
 	glem_request_line_event: function( tag, bufaddr, maxlen, initlen, unicode )
 	{
-		var win = _class_obj_from_id_window( tag )
+		var win = _window_from_id( tag )
 		if ( unicode )
 		{
-			var buf = new Uint32Array( Module.HEAPU8.buffer, bufaddr, maxlen * 4 )
+			var buf = new Uint32Array( HEAPU8.buffer, bufaddr, maxlen * 4 )
 			Glk.glk_request_line_event_uni( win, buf, initlen )
 		}
 		else
 		{
-			var buf = new Uint8Array( Module.HEAPU8.buffer, bufaddr, maxlen )
+			var buf = new Uint8Array( HEAPU8.buffer, bufaddr, maxlen )
 			Glk.glk_request_line_event( win, buf, initlen )
 		}
 	},
@@ -345,7 +347,7 @@ var emglken = {
 	},
 
 #if EMTERPRETIFY_ASYNC
-	glem_select__deps: ['$EmterpreterAsync', 'class_obj_to_id_window'],
+	glem_select__deps: ['$EmterpreterAsync', 'window_to_id'],
 	glem_select: function( data )
 	{
 		EmterpreterAsync.handle( function( resume )
@@ -359,7 +361,7 @@ var emglken = {
 					return
 				}
 				Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-				Module.setValue( data + 4, _class_obj_to_id_window( glk_event.get_field( 1 ) ), 'i32' )
+				Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
 				Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
 				Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
 				resume()
@@ -370,7 +372,7 @@ var emglken = {
 #endif
 
 #if ASYNCIFY
-	glem_select__deps: ['emscripten_async_resume', 'class_obj_to_id_window'],
+	glem_select__deps: ['emscripten_async_resume', 'window_to_id'],
 	glem_select: function( data )
 	{
 		var glk_event = new Glk.RefStruct()
@@ -384,7 +386,7 @@ var emglken = {
 				return
 			}
 			Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-			Module.setValue( data + 4, _class_obj_to_id_window( glk_event.get_field( 1 ) ), 'i32' )
+			Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
 			Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
 			Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
 			_emscripten_async_resume()
@@ -398,16 +400,21 @@ var emglken = {
 		Glk.glk_set_echo_line_event( _window_from_ptr( window ), val )
 	},
 
-	glem_set_hyperlink_stream: function( tag, linkval )
+	glk_set_hyperlink: function( linkval )
 	{
-		Glk.glk_set_hyperlink_stream( _class_obj_from_id_stream( tag ), linkval )
+		Glk.glk_set_hyperlink( linkval )
 	},
-	
+
+	glk_set_hyperlink_stream: function( str, linkval )
+	{
+		Glk.glk_set_hyperlink_stream( _stream_from_ptr( str ), linkval )
+	},
+
 	glk_set_style: function( style )
 	{
 		Glk.glk_set_style( style )
 	},
-	
+
 	glk_set_style_stream: function( str, style )
 	{
 		Glk.glk_set_style_stream( _stream_from_ptr( str ), style )
@@ -415,13 +422,19 @@ var emglken = {
 
 	glk_set_terminators_line_event: function( window, arraddr, count )
 	{
-		var arr = new Uint32Array( Module.HEAPU8.buffer, arraddr, count * 4 )
+		var arr = new Uint32Array( HEAPU8.buffer, arraddr, count * 4 )
 		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
-	glem_stream_close: function( tag )
+	glem_stream_close: function( tag, resultstruct )
 	{
-		Glk.glk_stream_close( _class_obj_from_id_stream( tag ), null )
+		var results = new Glk.RefStruct()
+		Glk.glk_stream_close( _stream_from_id( tag ), results )
+		if ( resultstruct )
+		{
+			setValue( resultstruct, results.get_field( 0 ), 'i32' )
+			setValue( resultstruct + 4, results.get_field( 1 ), 'i32' )
+		}
 	},
 
 	glk_stream_get_position: function( str )
@@ -431,7 +444,7 @@ var emglken = {
 
 	glem_stream_open_file: function( freftag, fmode, rock, unicode )
 	{
-		var fileref = _class_obj_from_id_fileref( freftag )
+		var fileref = _fileref_from_id( freftag )
 		var str
 		if ( unicode )
 		{
@@ -441,7 +454,7 @@ var emglken = {
 		{
 			str = Glk.glk_stream_open_file( fileref, fmode, rock )
 		}
-		return _class_obj_to_id_stream( str )
+		return _stream_to_id( str )
 	},
 
 	glem_stream_open_memory: function( bufaddr, buflen, fmode, rock, unicode )
@@ -458,7 +471,7 @@ var emglken = {
 			buf = new Uint8Array( HEAPU8.buffer, bufaddr, buflen )
 			str = Glk.glk_stream_open_memory( buf, fmode, rock )
 		}
-		return _class_obj_to_id_stream( str )
+		return _stream_to_id( str )
 	},
 
 	glem_stream_open_resource: function( filenum, rock, unicode )
@@ -472,14 +485,14 @@ var emglken = {
 		{
 			str = Glk.glk_stream_open_resource( filenum, rock )
 		}
-		return _class_obj_to_id_stream( str )
+		return _stream_to_id( str )
 	},
 
 	glem_stream_set_current: function( tag )
 	{
-		Glk.glk_stream_set_current( _class_obj_from_id_stream( tag ) )
+		Glk.glk_stream_set_current( _stream_from_id( tag ) )
 	},
-	
+
 	glk_stream_set_position: function( str, pos, seekmode )
 	{
 		Glk.glk_stream_set_position( _stream_from_ptr( str ), pos, seekmode )
@@ -492,7 +505,7 @@ var emglken = {
 
 	glem_window_close: function( tag )
 	{
-		Glk.glk_window_close( _class_obj_from_id_window( tag ) )
+		Glk.glk_window_close( _window_from_id( tag ) )
 	},
 
 	glk_window_erase_rect: function( window, left, top, width, height )
@@ -515,18 +528,18 @@ var emglken = {
 		var methodBox = new Glk.RefBox()
 		var sizeBox = new Glk.RefBox()
 		var keywinBox = new Glk.RefBox()
-		Glk.glk_window_get_arrangement( _class_obj_from_id_window( tag ), methodBox, sizeBox, keywinBox )
+		Glk.glk_window_get_arrangement( _window_from_id( tag ), methodBox, sizeBox, keywinBox )
 		if ( methodptr )
 		{
-			Module.setValue( methodptr, methodBox.value, 'i32' )
+			setValue( methodptr, methodBox.value, 'i32' )
 		}
 		if ( sizeptr )
 		{
-			Module.setValue( sizeptr, sizeBox.value, 'i32' )
+			setValue( sizeptr, sizeBox.value, 'i32' )
 		}
 		if ( keywinptr )
 		{
-			Module.setValue( keywinptr, _class_obj_to_id_window( keywinBox.value ), 'i32' )
+			setValue( keywinptr, _window_to_id( keywinBox.value ), 'i32' )
 		}
 	},
 
@@ -537,22 +550,22 @@ var emglken = {
 		Glk.glk_window_get_size( _window_from_ptr( window ), widthBox, heightBox )
 		if ( width )
 		{
-			Module.setValue( width, widthBox.value, 'i32' )
+			setValue( width, widthBox.value, 'i32' )
 		}
 		if ( height )
 		{
-			Module.setValue( height, heightBox.value, 'i32' )
+			setValue( height, heightBox.value, 'i32' )
 		}
 	},
 
 	glem_window_move_cursor: function( tag, xpos, ypos )
 	{
-		Glk.glk_window_move_cursor( _class_obj_from_id_window( tag ), xpos, ypos )
+		Glk.glk_window_move_cursor( _window_from_id( tag ), xpos, ypos )
 	},
 
 	glem_window_set_arrangement: function( tag, method, size, keywintag )
 	{
-		Glk.glk_window_set_arrangement( _class_obj_from_id_window( tag ), method, size, _class_obj_from_id_window( keywintag ) )
+		Glk.glk_window_set_arrangement( _window_from_id( tag ), method, size, _window_from_id( keywintag ) )
 	},
 
 	glk_window_set_background_color: function( window, color )
@@ -577,14 +590,14 @@ function addDeps( object, deps )
 }
 
 addDeps( emglken, [
-	'class_obj_from_id_fileref',
-	'class_obj_from_id_stream',
-	'class_obj_from_id_window',
-	'class_obj_to_id_fileref',
-	'class_obj_to_id_stream',
-	'class_obj_to_id_window',
+	'fileref_from_id',
+	'stream_from_id',
+	'window_from_id',
 	'fileref_from_ptr',
 	'stream_from_ptr',
 	'window_from_ptr',
+	'fileref_to_id',
+	'stream_to_id',
+	'window_to_id',
 ] )
 mergeInto( LibraryManager.library, emglken )

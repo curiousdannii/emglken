@@ -79,14 +79,11 @@ struct glk_stream_struct {
     glui32 rock;
 
     int type; /* file, window, or memory stream */
-    //int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
-    
-    glui32 readcount, writecount;
-    int readable, writable;
-    
-    /* for strtype_Window */
-    window_t *win;
 
+    // Needed for retaining arrays for memory streams
+    int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
+    void *buf;
+    glui32 buflen;
     gidispatch_rock_t arrayrock;
 
     gidispatch_rock_t disprock;
@@ -178,15 +175,10 @@ extern void gli_print_spaces(int len);
 extern void gcmd_win_change_focus(window_t *win, glui32 arg);
 extern void gcmd_win_refresh(window_t *win, glui32 arg);
 
-extern stream_t *gli_new_stream(int type, int readable, int writable, 
-    glui32 rock);
+extern stream_t *gli_new_stream(int type, glui32 rock);
 extern void gli_delete_stream(stream_t *str);
 extern stream_t *gli_stream_open_window(window_t *win);
-extern strid_t gli_stream_open_pathname(char *pathname, int writemode, 
-    int textmode, glui32 rock);
 extern void gli_stream_set_current(stream_t *str);
-extern void gli_stream_fill_result(stream_t *str, 
-    stream_result_t *result);
 extern void gli_streams_close_all(void);
 
 extern fileref_t *gli_new_fileref(glui32 usage, glui32 rock);
@@ -208,8 +200,7 @@ extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 w
 extern void glem_request_char_event(glui32 wintag, int unicode);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_select(glui32 *data);
-extern void glem_set_hyperlink_stream(glui32 tag, glui32 linkval);
-extern void glem_stream_close(glui32 tag);
+extern void glem_stream_close(glui32 tag, stream_result_t *result);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);

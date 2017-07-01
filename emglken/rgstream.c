@@ -9,7 +9,6 @@
 #include <string.h>
 #include "glk.h"
 #include "emglken.h"
-#include "gi_blorb.h"
 
 /* This implements pretty much what any Glk implementation needs for 
     stream stuff. Memory streams, file streams (using stdio functions), 
@@ -23,8 +22,7 @@
 static stream_t *gli_streamlist = NULL; /* linked list of all streams */
 static stream_t *gli_currentstr = NULL; /* the current output stream */
 
-stream_t *gli_new_stream(int type, int readable, int writable, 
-    glui32 rock)
+stream_t *gli_new_stream(int type, glui32 rock)
 {
     stream_t *str = (stream_t *)malloc(sizeof(stream_t));
     if (!str)
@@ -33,15 +31,10 @@ stream_t *gli_new_stream(int type, int readable, int writable,
     str->type = type;
     str->rock = rock;
 
-    //str->unicode = FALSE;
-    
-    str->win = NULL;
-    
-    str->readcount = 0;
-    str->writecount = 0;
-    str->readable = readable;
-    str->writable = writable;
-    
+    str->unicode = FALSE;
+    str->buf = NULL;
+    str->buflen = 0;
+
     str->prev = NULL;
     str->next = gli_streamlist;
     gli_streamlist = str;
@@ -74,10 +67,10 @@ void gli_delete_stream(stream_t *str)
         case strtype_Memory: 
             if (gli_unregister_arr) {
                 /* This could be a char array or a glui32 array. */
-                //char *typedesc = (str->unicode ? "&+#!Iu" : "&+#!Cn");
+                char *typedesc = (str->unicode ? "&+#!Iu" : "&+#!Cn");
                 //void *buf = (str->unicode ? (void*)str->ubuf : (void*)str->buf);
-                //(*gli_unregister_arr)(buf, str->buflen, typedesc,
-                //    str->arrayrock);
+                (*gli_unregister_arr)(str->buf, str->buflen, typedesc,
+                    str->arrayrock);
             }
             break;
         case strtype_Resource: 
@@ -104,21 +97,7 @@ void gli_delete_stream(stream_t *str)
     if (next)
         next->prev = prev;
 
-    if (str->type != strtype_Memory)
-    {
-        glem_stream_close( str->tag );
-    }
-
     free(str);
-}
-
-void gli_stream_fill_result(stream_t *str, stream_result_t *result)
-{
-    if (!result)
-        return;
-    
-    result->readcount = str->readcount;
-    result->writecount = str->writecount;
 }
 
 void glk_stream_close(stream_t *str, stream_result_t *result)
@@ -133,7 +112,7 @@ void glk_stream_close(stream_t *str, stream_result_t *result)
         return;
     }
     
-    gli_stream_fill_result(str, result);
+    glem_stream_close(str->tag, result);
     gli_delete_stream(str);
 }
 
@@ -160,7 +139,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
 {
     stream_t *str;
     glui32 tag;
-    
+
     if (fmode != filemode_Read 
         && fmode != filemode_Write 
         && fmode != filemode_ReadWrite) {
@@ -169,10 +148,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
     }
 
     tag = glem_stream_open_memory( buf, buflen, fmode, rock, FALSE );
-    str = gli_new_stream(strtype_Memory, 
-        (fmode != filemode_Write), 
-        (fmode != filemode_Read), 
-        rock);
+    str = gli_new_stream(strtype_Memory, rock);
     if ( !str || !tag )
     {
         gli_strict_warning("stream_open_memory: unable to create stream.");
@@ -180,14 +156,8 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
     }
     
     if (buf && buflen) {
-        //str->buf = (unsigned char *)buf;
-        //str->bufptr = (unsigned char *)buf;
-        //str->buflen = buflen;
-        //str->bufend = str->buf + str->buflen;
-        //if (fmode == filemode_Write)
-        //    str->bufeof = (unsigned char *)buf;
-        //else
-        //    str->bufeof = str->bufend;
+        str->buf = buf;
+        str->buflen = buflen;
         if (gli_register_arr) {
             str->arrayrock = (*gli_register_arr)(buf, buflen, "&+#!Cn");
         }
@@ -201,11 +171,10 @@ stream_t *gli_stream_open_window(window_t *win)
 {
     stream_t *str;
     
-    str = gli_new_stream(strtype_Window, FALSE, TRUE, 0);
+    str = gli_new_stream(strtype_Window, 0);
     if (!str)
         return NULL;
 
-    str->win = win;
     str->tag = glem_get_window_stream_tag( win->updatetag );
     
     return str;
@@ -215,7 +184,6 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
     glui32 rock)
 {
     stream_t *str;
-    char modestr[16];
     glui32 tag;
 
     if (!fref) {
@@ -224,16 +192,12 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
     }
     
     tag = glem_stream_open_file( fref->tag, fmode, rock, FALSE );
-    str = gli_new_stream(strtype_File, 
-        (fmode == filemode_Read || fmode == filemode_ReadWrite), 
-        !(fmode == filemode_Read), 
-        rock);
+    str = gli_new_stream(strtype_File, rock);
     if ( !str || !tag )
     {
         gli_strict_warning("stream_open_file: unable to create stream.");
         return 0;
     }
-    
     str->tag = tag;
     
     return str;
@@ -255,27 +219,18 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
     }
 
     tag = glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE );
-    str = gli_new_stream(strtype_Memory, 
-        (fmode != filemode_Write), 
-        (fmode != filemode_Read), 
-        rock);
+    str = gli_new_stream(strtype_Memory, rock);
     if ( !str || !tag )
     {
         gli_strict_warning("stream_open_memory_uni: unable to create stream.");
         return NULL;
     }
-    
-    //str->unicode = TRUE;
+
+    str->unicode = TRUE;
 
     if (ubuf && buflen) {
-        //str->ubuf = ubuf;
-        //str->ubufptr = ubuf;
-        //str->buflen = buflen;
-        //str->ubufend = str->ubuf + str->buflen;
-        //if (fmode == filemode_Write)
-        //    str->ubufeof = ubuf;
-        //else
-        //    str->ubufeof = str->ubufend;
+        str->buf = ubuf;
+        str->buflen = buflen;
         if (gli_register_arr) {
             str->arrayrock = (*gli_register_arr)(ubuf, buflen, "&+#!Iu");
         }
@@ -289,7 +244,6 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
     glui32 rock)
 {
     stream_t *str;
-    char modestr[16];
     glui32 tag;
 
     if (!fref) {
@@ -298,18 +252,13 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
     }
 
     tag = glem_stream_open_file( fref->tag, fmode, rock, TRUE );
-    str = gli_new_stream(strtype_File, 
-        (fmode == filemode_Read || fmode == filemode_ReadWrite), 
-        !(fmode == filemode_Read), 
-        rock);
+    str = gli_new_stream(strtype_File, rock);
     if ( !str || !tag )
     {
         gli_strict_warning("stream_open_file_uni: unable to create stream.");
         return 0;
     }
-
     str->tag = tag;
-    //str->unicode = TRUE;
 
     return str;
 }
@@ -322,52 +271,16 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
 strid_t glk_stream_open_resource(glui32 filenum, glui32 rock)
 {
     strid_t str;
-    giblorb_err_t err;
-    giblorb_result_t res;
-    giblorb_map_t *map = giblorb_get_resource_map();
-    if (!map)
-        return 0; /* Not running from a blorb file */
+    glui32 tag;
 
-    err = giblorb_load_resource(map, giblorb_method_Memory, &res, giblorb_ID_Data, filenum);
-    if (err)
-        return 0; /* Not found, or some other error */
-
-    /* We'll use the in-memory copy of the chunk data as the basis for
-       our new stream. It's important to not call chunk_unload() until
-       the stream is closed (and we won't). 
-
-       This will be memory-hoggish for giant data chunks, but I don't
-       expect giant data chunks at this point. A more efficient model
-       would be to use the file on disk, but this requires some hacking
-       into the file stream code (we'd need to open a new FILE*) and
-       I don't feel like doing that.
-
-       Note that binary chunks are normally type BINA, but FORM
-       chunks also count as binary. (This allows us to embed AIFF
-       files as readable resources, for example.) */
-
-    if (res.chunktype == giblorb_ID_TEXT)
-        {}
-    else if (res.chunktype == giblorb_ID_BINA
-        || res.chunktype == giblorb_make_id('F', 'O', 'R', 'M'))
-        {}
-    else
-        return 0; /* Unknown chunk type */
-
-    str = gli_new_stream(strtype_Resource,
-        TRUE, FALSE, rock);
-    if (!str) {
+    tag = glem_stream_open_resource( filenum, rock, FALSE );
+    str = gli_new_stream(strtype_Resource, rock);
+    if ( !str || !tag )
+    {
         gli_strict_warning("stream_open_resource: unable to create stream.");
         return NULL;
     }
-    
-    if (res.data.ptr && res.length) {
-        //str->buf = (unsigned char *)res.data.ptr;
-        //str->bufptr = (unsigned char *)res.data.ptr;
-        //str->buflen = res.length;
-        //str->bufend = str->buf + str->buflen;
-        //str->bufeof = str->bufend;
-    }
+    str->tag = tag;
     
     return str;
 }
@@ -375,46 +288,16 @@ strid_t glk_stream_open_resource(glui32 filenum, glui32 rock)
 strid_t glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
 {
     strid_t str;
-    giblorb_err_t err;
-    giblorb_result_t res;
-    giblorb_map_t *map = giblorb_get_resource_map();
-    if (!map)
-        return 0; /* Not running from a blorb file */
+    glui32 tag;
 
-    err = giblorb_load_resource(map, giblorb_method_Memory, &res, giblorb_ID_Data, filenum);
-    if (err)
-        return 0; /* Not found, or some other error */
-
-    if (res.chunktype == giblorb_ID_TEXT)
-        {}
-    else if (res.chunktype == giblorb_ID_BINA
-        || res.chunktype == giblorb_make_id('F', 'O', 'R', 'M'))
-        {}
-    else
-        return 0; /* Unknown chunk type */
-
-    str = gli_new_stream(strtype_Resource, 
-        TRUE, FALSE, rock);
-    if (!str) {
+    tag = glem_stream_open_resource( filenum, rock, TRUE );
+    str = gli_new_stream(strtype_Resource, rock);
+    if ( !str || !tag )
+    {
         gli_strict_warning("stream_open_resource_uni: unable to create stream.");
         return NULL;
     }
-    
-    //str->unicode = TRUE;
-
-    /* We have been handed an array of bytes. (They're big-endian
-       four-byte chunks, or perhaps a UTF-8 byte sequence, rather than
-       native-endian four-byte integers). So we drop it into buf,
-       rather than ubuf -- we'll have to do the translation in the
-       get() functions. */
-
-    if (res.data.ptr && res.length) {
-        //str->buf = (unsigned char *)res.data.ptr;
-        //str->bufptr = (unsigned char *)res.data.ptr;
-        //str->buflen = res.length;
-        //str->bufend = str->buf + str->buflen;
-        //str->bufeof = str->bufend;
-    }
+    str->tag = tag;
     
     return str;
 }
@@ -454,10 +337,7 @@ glui32 glk_stream_get_rock(stream_t *str)
 void gli_stream_set_current(stream_t *str)
 {
     gli_currentstr = str;
-    if (str->type != strtype_Memory)
-    {
-        glem_stream_set_current( str->tag );
-    }
+    glem_stream_set_current( str->tag );
 }
 
 void glk_stream_set_current(stream_t *str)
@@ -472,42 +352,3 @@ strid_t glk_stream_get_current()
     else
         return 0;
 }
-
-static void gli_set_hyperlink(stream_t *str, glui32 linkval)
-{
-    if (!str || !str->writable)
-        return;
-
-    if (!glk_gestalt(gestalt_Hyperlinks, 0))
-        return;
-    
-    switch (str->type) {
-        case strtype_Window:
-            str->win->hyperlink = linkval;
-            if (str->win->echostr)
-                gli_set_hyperlink(str->win->echostr, linkval);
-            break;
-    }
-    if (str->type != strtype_Memory)
-    {
-        glem_set_hyperlink_stream( str->tag, linkval );
-    }
-}
-
-#ifdef GLK_MODULE_HYPERLINKS
-
-void glk_set_hyperlink(glui32 linkval)
-{
-    gli_set_hyperlink(gli_currentstr, linkval);
-}
-
-void glk_set_hyperlink_stream(strid_t str, glui32 linkval)
-{
-    if (!str) {
-        gli_strict_warning("set_hyperlink_stream: invalid ref");
-        return;
-    }
-    gli_set_hyperlink(str, linkval);
-}
-
-#endif /* GLK_MODULE_HYPERLINKS */

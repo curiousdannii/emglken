@@ -123,8 +123,7 @@ void gli_delete_window(window_t *win)
     
     win->echostr = NULL;
     if (win->str) {
-        gli_delete_stream(win->str);
-        win->str = NULL;
+        gli_strict_warning("gli_delete_window: stream should no longer exist");
     }
     
     prev = win->prev;
@@ -338,7 +337,8 @@ void glk_window_close(window_t *win, stream_result_t *result)
         /* begin (simpler) closation */
         geometry_changed = TRUE;
         
-        gli_stream_fill_result(win->str, result);
+        glk_stream_close(win->str, result);
+        win->str = NULL;
         gli_window_close(win, TRUE); 
     }
     else {
@@ -376,7 +376,8 @@ void glk_window_close(window_t *win, stream_result_t *result)
         
         /* Begin closation */
         
-        gli_stream_fill_result(win->str, result);
+        glk_stream_close(win->str, result);
+        win->str = NULL;
 
         /* Close the child window (and descendants), so that key-deletion can
             crawl up the tree to the root window. */
