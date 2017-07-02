@@ -52,20 +52,7 @@ void glk_select(event_t *event)
         case evtype_LineInput:
             if (!win)
                 break;
-            if (!win->line_request)
-                break;
-            //gli_window_prepare_input( win, NULL, data[2] );
             gli_window_accept_line( win, data[2] );
-            break;
-
-        case evtype_CharInput:
-            if (!win)
-                break;
-            if (!win->char_request)
-                break;
-            win->char_request = FALSE;
-            win->char_request_uni = FALSE;
-            gli_event_store( evtype_CharInput, win, data[2], 0 );
             break;
 
         default:
@@ -231,4 +218,33 @@ static glsi32 gli_timer_request_since_start()
         res += ((tv.tv_usec - timing_start.tv_usec) / 1000);
         return res;
     }
+}
+
+void glk_cancel_line_event(window_t *win, event_t *ev)
+{
+    if (!win) {
+        gli_strict_warning("cancel_line_event: invalid ref");
+        return;
+    }
+
+    event_t *oldcurrent = curevent;
+    event_t dummyev;
+    if (!ev) {
+        ev = &dummyev;
+    }
+    curevent = ev;
+    gli_event_clearevent(curevent);
+
+    glui32 data[4];
+
+    glem_cancel_line_event( win->updatetag, data );
+
+    switch ( data[0] )
+    {
+        case evtype_LineInput:
+            gli_window_accept_line( win, data[2] );
+            break;
+    }
+    
+    curevent = oldcurrent;
 }

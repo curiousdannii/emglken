@@ -7,8 +7,6 @@
 #include <stdio.h>
 #include "glk.h"
 #include "emglken.h"
-#include "rgwin_grid.h"
-#include "rgwin_buf.h"
 
 /* This version of the library doesn't accept style hints. */
 

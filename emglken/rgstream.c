@@ -57,8 +57,6 @@ void gli_delete_stream(stream_t *str)
     if (str == gli_currentstr) {
         gli_currentstr = NULL;
     }
-    
-    gli_windows_unechostream(str);
 
     switch (str->type) {
         case strtype_Window:
@@ -321,6 +319,16 @@ strid_t glk_stream_iterate(strid_t str, glui32 *rock)
     
     if (rock)
         *rock = 0;
+    return NULL;
+}
+
+stream_t *gli_stream_find_by_tag(glui32 tag)
+{
+    stream_t *str;
+    for (str=gli_streamlist; str; str=str->next) {
+        if (str->tag == tag)
+            return str;
+    }
     return NULL;
 }
 

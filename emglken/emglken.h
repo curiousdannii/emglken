@@ -34,10 +34,6 @@
 
 /* Some useful type declarations. */
 
-#define grect_set_from_size(boxref, wid, hgt)   \
-    ((boxref)->left = 0, (boxref)->top = 0,     \
-     (boxref)->right = (wid), (boxref)->bottom = (hgt))
-
 typedef struct glk_window_struct window_t;
 typedef struct glk_stream_struct stream_t;
 typedef struct glk_fileref_struct fileref_t;
@@ -49,21 +45,22 @@ typedef struct glk_fileref_struct fileref_t;
 struct glk_window_struct {
     glui32 updatetag; /* numeric tag for the window in output */
     glui32 rock;
+
     glui32 type;
-    
+
+    // Window relationships
     window_t *parent; /* pair window which contains this one */
-    void *data; /* one of the window_*_t structures */
+    window_t *child1, *child2; /* for pair windows only */
     
     stream_t *str; /* the window stream. */
-    stream_t *echostr; /* the window's echo stream, if any. */
 
+    // Needed for retaining line input arrays
     int line_request;
-    int line_request_uni;
-    int char_request;
-    int char_request_uni;
-
-    glui32 style;
-    glui32 hyperlink;
+    int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
+    void *buf;
+    glui32 buflen;
+    glui32 incurpos;
+    gidispatch_rock_t arrayrock;
     
     gidispatch_rock_t disprock;
     window_t *next, *prev; /* in the big linked list of windows */
@@ -93,8 +90,6 @@ struct glk_stream_struct {
 struct glk_fileref_struct {
     glui32 tag;
     glui32 rock;
-
-    int textmode;
 
     gidispatch_rock_t disprock;
     fileref_t *next, *prev; /* in the big linked list of filerefs */
@@ -139,14 +134,6 @@ extern int gli_debugger;
 
 extern void gli_initialize_misc(void);
 
-extern void gli_msgline_warning(char *msg);
-extern void gli_msgline_error(char *msg);
-extern void gli_msgline(char *msg);
-extern void gli_msgline_redraw(void);
-
-extern int gli_msgin_getline(char *prompt, char *buf, int maxlen, int *length);
-extern int gli_msgin_getchar(char *prompt, int hilite);
-
 extern void gli_putchar_utf8(glui32 val, FILE *fl);
 extern glui32 gli_parse_utf8(unsigned char *buf, glui32 buflen,
     glui32 *out, glui32 outlen);
@@ -163,31 +150,21 @@ extern void gli_display_error(char *msg);
 extern window_t *gli_window_find_by_tag(glui32 tag);
 extern window_t *gli_new_window(glui32 type, glui32 rock, glui32 windowtag);
 extern void gli_delete_window(window_t *win);
-extern window_t *gli_window_iterate_treeorder(window_t *win);
-extern void gli_windows_refresh(glui32 fromgen);
-extern void gli_windows_trim_buffers(void);
-extern void gli_window_put_char(window_t *win, glui32 ch);
-extern void gli_windows_unechostream(stream_t *str);
-extern void gli_window_prepare_input(window_t *win, glui32 *buf, glui32 len);
 extern void gli_window_accept_line(window_t *win, glui32 len);
-extern void gli_print_spaces(int len);
-
-extern void gcmd_win_change_focus(window_t *win, glui32 arg);
-extern void gcmd_win_refresh(window_t *win, glui32 arg);
 
 extern stream_t *gli_new_stream(int type, glui32 rock);
 extern void gli_delete_stream(stream_t *str);
 extern stream_t *gli_stream_open_window(window_t *win);
 extern void gli_stream_set_current(stream_t *str);
 extern void gli_streams_close_all(void);
+extern stream_t *gli_stream_find_by_tag(glui32 tag);
 
 extern fileref_t *gli_new_fileref(glui32 usage, glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
 
 /* Functions implemented in library.js */
 
-extern void glem_cancel_char_event(glui32 wintag);
-extern void glem_cancel_line_event(glui32 wintag);
+extern void glem_cancel_line_event(glui32 wintag, glui32 *evdata);
 extern void glem_exit();
 extern void glem_fatal_error(char *msg);
 extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
@@ -195,11 +172,11 @@ extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 roc
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
 extern void glem_fileref_destroy(glui32 tag);
+extern glui32 glem_get_window_echostream_tag(glui32 wintag);
 extern glui32 glem_get_window_stream_tag(glui32 wintag);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
-extern void glem_request_char_event(glui32 wintag, int unicode);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
-extern void glem_select(glui32 *data);
+extern void glem_select(glui32 *evdata);
 extern void glem_stream_close(glui32 tag, stream_result_t *result);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
@@ -207,8 +184,6 @@ extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode
 extern void glem_stream_set_current(glui32 tag);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
-extern void glem_window_move_cursor(glui32 wintag, glui32 xpos, glui32 ypos);
-extern void glem_window_set_arrangement(glui32 wintag, glui32 method, glui32 size, glui32 keywintag);
 extern void init_emglken();
 
 

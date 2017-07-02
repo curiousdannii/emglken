@@ -63,9 +63,9 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
-	glem_cancel_char_event: function( tag )
+	glk_cancel_char_event: function( window )
 	{
-		Glk.glk_cancel_char_event( _window_from_id( tag ) )
+		Glk.glk_cancel_char_event( _window_from_ptr( window ) )
 	},
 
 	glk_cancel_hyperlink_event: function( window )
@@ -73,9 +73,17 @@ var emglken = {
 		Glk.glk_cancel_hyperlink_event( _window_from_ptr( window ) )
 	},
 
-	glem_cancel_line_event: function( tag )
+	glem_cancel_line_event: function( tag, data )
 	{
-		Glk.glk_cancel_line_event( _window_from_id( tag ) )
+		var glk_event = new Glk.RefStruct()
+		Glk.glk_cancel_line_event( _window_from_id( tag ), glk_event )
+		if ( data )
+		{
+			Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
+			Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
+			Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
+			Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
+		}
 	},
 
 	glk_cancel_mouse_event: function( window )
@@ -204,6 +212,12 @@ var emglken = {
 		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
+	glem_get_window_echostream_tag: function( tag )
+	{
+		var win = _window_from_id( tag );
+		return win.echostr ? win.echostr.disprock : 0
+	},
+
 	glem_get_window_stream_tag: function( tag )
 	{
 		return _window_from_id( tag ).str.disprock
@@ -303,17 +317,14 @@ var emglken = {
 		Glk.glk_put_string_uni( UTF32ToString( string ) )
 	},
 
-	glem_request_char_event: function( tag, unicode )
+	glk_request_char_event: function( window )
 	{
-		var win = _window_from_id( tag )
-		if ( unicode )
-		{
-			Glk.glk_request_char_event_uni( win )
-		}
-		else
-		{
-			Glk.glk_request_char_event( win )
-		}
+		Glk.glk_request_char_event( _window_from_ptr( window ) )
+	},
+
+	glk_request_char_event_uni: function( window )
+	{
+		Glk.glk_request_char_event_uni( _window_from_ptr( window ) )
 	},
 
 	glk_request_hyperlink_event: function( window )
@@ -558,19 +569,24 @@ var emglken = {
 		}
 	},
 
-	glem_window_move_cursor: function( tag, xpos, ypos )
+	glk_window_move_cursor: function( window, xpos, ypos )
 	{
-		Glk.glk_window_move_cursor( _window_from_id( tag ), xpos, ypos )
+		Glk.glk_window_move_cursor( _window_from_ptr( window ), xpos, ypos )
 	},
 
-	glem_window_set_arrangement: function( tag, method, size, keywintag )
+	glk_window_set_arrangement: function( window, method, size, keywin )
 	{
-		Glk.glk_window_set_arrangement( _window_from_id( tag ), method, size, _window_from_id( keywintag ) )
+		Glk.glk_window_set_arrangement( _window_from_ptr( window ), method, size, _window_from_ptr( keywin ) )
 	},
 
 	glk_window_set_background_color: function( window, color )
 	{
 		Glk.glk_window_set_background_color( _window_from_ptr( window ), color )
+	},
+
+	glk_window_set_echo_stream: function( window, str )
+	{
+		Glk.glk_window_set_echo_stream( _window_from_ptr( window ), _stream_from_ptr( str ) )
 	},
 
 }

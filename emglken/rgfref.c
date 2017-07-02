@@ -34,8 +34,6 @@ fileref_t *gli_new_fileref(glui32 usage, glui32 rock)
     
     fref->rock = rock;
     
-    fref->textmode = ((usage & fileusage_TextMode) != 0);
-    
     fref->prev = NULL;
     fref->next = gli_filereflist;
     gli_filereflist = fref;
