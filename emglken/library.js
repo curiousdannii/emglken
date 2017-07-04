@@ -63,6 +63,48 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
+	// GlkApi's unicode functions are not TypedArray safe, so we must convert to normal arrays
+	// See https://github.com/erkyrath/glkote/issues/27
+	glk_buffer_canon_decompose_uni: function( bufaddr, len, numchars )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk.glk_buffer_canon_decompose_uni( buf, numchars )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
+	glk_buffer_canon_normalize_uni: function( bufaddr, len, numchars )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk.glk_buffer_canon_normalize_uni( buf, numchars )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
+	glk_buffer_to_lower_case_uni: function( bufaddr, len, numchars )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk.glk_buffer_to_lower_case_uni( buf, numchars )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
+	glk_buffer_to_upper_case_uni: function( bufaddr, len, numchars )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk.glk_buffer_to_upper_case_uni( buf, numchars )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
+	glk_buffer_to_title_case_uni: function( bufaddr, len, numchars, lowerrest )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk.glk_buffer_to_title_case_uni( buf, numchars, lowerrest )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
 	glk_cancel_char_event: function( window )
 	{
 		Glk.glk_cancel_char_event( _window_from_ptr( window ) )

@@ -25,7 +25,7 @@ static glui32 last_timing_msec;
 static struct timeval timing_start; 
 
 static glsi32 gli_timer_request_since_start(void);
-static char *alloc_utf_buffer(glui32 *ustr, int ulen);
+//static char *alloc_utf_buffer(glui32 *ustr, int ulen);
 
 /* Set up the input system. This is called from main(). */
 void gli_initialize_events()
@@ -91,9 +91,9 @@ void glk_select_poll(event_t *event)
 /* Convert an array of Unicode chars to (null-terminated) UTF-8.
    The caller should free this after use.
 */
-static char *alloc_utf_buffer(glui32 *ustr, int ulen)
+/*static char *alloc_utf_buffer(glui32 *ustr, int ulen)
 {
-    /* We do this in a lazy way; we alloc the largest possible buffer. */
+    // We do this in a lazy way; we alloc the largest possible buffer.
     int len = 4*ulen+4;
     char *buf = malloc(len);
     if (!buf)
@@ -109,7 +109,7 @@ static char *alloc_utf_buffer(glui32 *ustr, int ulen)
 
     *(ptr+ix) = '\0';
     return buf;
-}
+}*/
 
 #if GIDEBUG_LIBRARY_SUPPORT
 

@@ -101,22 +101,6 @@ extern window_t *gli_rootwin;
 extern window_t *gli_focuswin;
 extern void (*gli_interrupt_handler)(void);
 
-/* The following typedefs are copied from cheapglk.h. They support the
-   tables declared in cgunigen.c. */
-
-typedef glui32 gli_case_block_t[2]; /* upper, lower */
-/* If both are 0xFFFFFFFF, you have to look at the special-case table */
-
-typedef glui32 gli_case_special_t[3]; /* upper, lower, title */
-/* Each of these points to a subarray of the unigen_special_array
-   (in cgunicode.c). In that subarray, element zero is the length,
-   and that's followed by length unicode values. */
-
-typedef glui32 gli_decomp_block_t[2]; /* count, position */
-/* The position points to a subarray of the unigen_decomp_array.
-   If the count is zero, there is no decomposition. */
-
-
 extern gidispatch_rock_t (*gli_register_obj)(void *obj, glui32 objclass);
 extern void (*gli_unregister_obj)(void *obj, glui32 objclass, gidispatch_rock_t objrock);
 extern gidispatch_rock_t (*gli_register_arr)(void *array, glui32 len, char *typecode);
@@ -133,11 +117,6 @@ extern int gli_debugger;
 /* Declarations of library internal functions. */
 
 extern void gli_initialize_misc(void);
-
-extern void gli_putchar_utf8(glui32 val, FILE *fl);
-extern glui32 gli_parse_utf8(unsigned char *buf, glui32 buflen,
-    glui32 *out, glui32 outlen);
-extern int gli_encode_utf8(glui32 val, char *buf, int len);
 
 extern void gli_initialize_events(void);
 extern void gli_event_store(glui32 type, window_t *win, glui32 val1, glui32 val2);

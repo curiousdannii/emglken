@@ -24,14 +24,12 @@ EMGLKEN_OBJS = \
   main.o rgevent.o rgfref.o rggestal.o \
   rgmisc.o rgstream.o rgstyle.o \
   rgwindow.o rgschan.o rgblorb.o \
-  cgunicod.o cgdate.o gi_dispa.o gi_debug.o gi_blorb.o
+  cgdate.o gi_dispa.o gi_debug.o gi_blorb.o
 
 EMGLKEN_HEADERS = \
   emglken.h gi_debug.h gi_dispa.h
 
 all: $(GLKLIB) Make.emglken
-
-cgunicod.o: cgunigen.c
 
 $(GLKLIB): $(EMGLKEN_OBJS)
 	ar r $(GLKLIB) $(EMGLKEN_OBJS)
