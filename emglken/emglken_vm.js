@@ -54,6 +54,10 @@ class EmglkenVM
 				this.vm.then( () => this.start() )
 			})
 		}
+		else
+		{
+			throw new Error( 'Unsupported runtime environment' )
+		}
 	}
 
 	get_signature()
