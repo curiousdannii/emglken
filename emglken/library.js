@@ -100,44 +100,42 @@ var emglken = {
 
 	// GlkApi's unicode functions are not TypedArray safe, so we must convert to normal arrays
 	// See https://github.com/erkyrath/glkote/issues/27
+	glem_buffer_helper: function( func, bufaddr, len, numchars, lowerrest )
+	{
+		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var newlen = Glk[ func ]( buf, numchars, lowerrest )
+		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
+		return newlen
+	},
+
+	glk_buffer_canon_decompose_uni__deps: [ 'glem_buffer_helper' ],
 	glk_buffer_canon_decompose_uni: function( bufaddr, len, numchars )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
-		var newlen = Glk.glk_buffer_canon_decompose_uni( buf, numchars )
-		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
-		return newlen
+		return _glem_buffer_helper( 'glk_buffer_canon_decompose_uni', bufaddr, len, numchars )
 	},
 
+	glk_buffer_canon_normalize_uni__deps: [ 'glem_buffer_helper' ],
 	glk_buffer_canon_normalize_uni: function( bufaddr, len, numchars )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
-		var newlen = Glk.glk_buffer_canon_normalize_uni( buf, numchars )
-		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
-		return newlen
+		return _glem_buffer_helper( 'glk_buffer_canon_normalize_uni', bufaddr, len, numchars )
 	},
 
+	glk_buffer_to_lower_case_uni__deps: [ 'glem_buffer_helper' ],
 	glk_buffer_to_lower_case_uni: function( bufaddr, len, numchars )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
-		var newlen = Glk.glk_buffer_to_lower_case_uni( buf, numchars )
-		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
-		return newlen
+		return _glem_buffer_helper( 'glk_buffer_to_lower_case_uni', bufaddr, len, numchars )
 	},
 
+	glk_buffer_to_upper_case_uni__deps: [ 'glem_buffer_helper' ],
 	glk_buffer_to_upper_case_uni: function( bufaddr, len, numchars )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
-		var newlen = Glk.glk_buffer_to_upper_case_uni( buf, numchars )
-		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
-		return newlen
+		return _glem_buffer_helper( 'glk_buffer_to_upper_case_uni', bufaddr, len, numchars )
 	},
 
+	glk_buffer_to_title_case_uni__deps: [ 'glem_buffer_helper' ],
 	glk_buffer_to_title_case_uni: function( bufaddr, len, numchars, lowerrest )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
-		var newlen = Glk.glk_buffer_to_title_case_uni( buf, numchars, lowerrest )
-		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
-		return newlen
+		return _glem_buffer_helper( 'glk_buffer_to_title_case_uni', bufaddr, len, numchars, lowerrest )
 	},
 
 	glk_cancel_char_event: function( window )
