@@ -479,14 +479,17 @@ var emglken = {
 		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
-	glem_stream_close: function( tag, resultstruct )
+	glem_stream_finalise: function( tag, resultstruct, close )
 	{
-		var results = new Glk.RefStruct()
-		Glk.glk_stream_close( _stream_from_id( tag ), results )
+		var str = _stream_from_id( tag )
 		if ( resultstruct )
 		{
-			setValue( resultstruct, results.get_field( 0 ), 'i32' )
-			setValue( resultstruct + 4, results.get_field( 1 ), 'i32' )
+			setValue( resultstruct, str.readcount, 'i32' )
+			setValue( resultstruct + 4, str.writecount, 'i32' )
+		}
+		if ( close )
+		{
+			Glk.glk_stream_close( str )
 		}
 	},
 

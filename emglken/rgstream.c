@@ -110,7 +110,7 @@ void glk_stream_close(stream_t *str, stream_result_t *result)
         return;
     }
     
-    glem_stream_close(str->tag, result);
+    glem_stream_finalise( str->tag, result, TRUE );
     gli_delete_stream(str);
 }
 

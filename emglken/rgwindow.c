@@ -94,7 +94,8 @@ void gli_delete_window(window_t *win)
         (*gli_unregister_obj)(win, gidisp_Class_Window, win->disprock);
     
     if (win->str) {
-        gli_strict_warning("gli_delete_window: stream should no longer exist");
+        gli_delete_stream(win->str);
+        win->str = NULL;
     }
     
     prev = win->prev;
@@ -269,8 +270,7 @@ void glk_window_close(window_t *win, stream_result_t *result)
         gli_rootwin = 0;
         
         /* begin (simpler) closation */
-        glk_stream_close(win->str, result);
-        win->str = NULL;
+        glem_stream_finalise( win->str->tag, result, FALSE );
         gli_window_close(win, TRUE); 
     }
     else {
@@ -305,8 +305,7 @@ void glk_window_close(window_t *win, stream_result_t *result)
         
         /* Begin closation */
         
-        glk_stream_close(win->str, result);
-        win->str = NULL;
+        glem_stream_finalise( win->str->tag, result, FALSE );
 
         /* Close the child window (and descendants), so that key-deletion can
             crawl up the tree to the root window. */

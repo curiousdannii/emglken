@@ -156,7 +156,7 @@ extern glui32 glem_get_window_stream_tag(glui32 wintag);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_select(glui32 *evdata);
-extern void glem_stream_close(glui32 tag, stream_result_t *result);
+extern void glem_stream_finalise(glui32 tag, stream_result_t *result, int close);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
