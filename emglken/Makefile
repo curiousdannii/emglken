@@ -24,7 +24,7 @@ EMGLKEN_OBJS = \
   main.o rgevent.o rgfref.o rggestal.o \
   rgmisc.o rgstream.o rgstyle.o \
   rgwindow.o rgschan.o rgblorb.o \
-  cgdate.o gi_dispa.o gi_debug.o gi_blorb.o
+  gi_dispa.o gi_debug.o gi_blorb.o
 
 EMGLKEN_HEADERS = \
   emglken.h gi_debug.h gi_dispa.h

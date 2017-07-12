@@ -63,6 +63,41 @@ var emglken = {
 		return GiDispa.class_obj_to_id( 'window', tag )
 	},
 
+	// Functions for filling time and date structs
+	glem_date_box_from_struct: function( dateptr )
+	{
+		for ( var datebox = new Glk.RefStruct(), i = 0; i < 8; i++ )
+		{
+			datebox.set_field( i, getValue( dateptr + ( 4 * i ), 'i32' ) )
+		}
+		return datebox
+	},
+
+	glem_date_box_to_struct: function( datebox, dateptr )
+	{
+		for ( var i = 0; i < 8; i++ )
+		{
+			setValue( dateptr + ( 4 * i ), datebox.get_field( i ), 'i32' )
+		}
+	},
+
+	glem_time_box_from_struct: function( timeptr )
+	{
+		var timebox = new Glk.RefStruct()
+		timebox.set_field( 0, getValue( timeptr, 'i32' ) )
+		timebox.set_field( 1, getValue( timeptr + 4, 'i32' ) >>> 0 )
+		timebox.set_field( 2, getValue( timeptr + 8, 'i32' ) )
+		return timebox
+	},
+
+	glem_time_box_to_struct: function( timebox, timeptr )
+	{
+		for ( var i = 0; i < 3; i++ )
+		{
+			setValue( timeptr + ( 4 * i ), timebox.get_field( i ), 'i32' )
+		}
+	},
+
 	// GlkApi's unicode functions are not TypedArray safe, so we must convert to normal arrays
 	// See https://github.com/erkyrath/glkote/issues/27
 	glk_buffer_canon_decompose_uni: function( bufaddr, len, numchars )
@@ -131,6 +166,47 @@ var emglken = {
 	glk_cancel_mouse_event: function( window )
 	{
 		Glk.glk_cancel_mouse_event( _window_from_ptr( window ) )
+	},
+
+	glk_current_simple_time: function( factor )
+	{
+		return Glk.glk_current_simple_time( factor )
+	},
+
+	glk_current_time__deps: [ 'glem_time_box_to_struct' ],
+	glk_current_time: function( timeptr )
+	{
+		var timebox = new Glk.RefStruct()
+		Glk.glk_current_time( timebox )
+		_glem_time_box_to_struct( timebox, timeptr )
+	},
+
+	glk_date_to_simple_time_local__deps: [ 'glem_date_box_from_struct' ],
+	glk_date_to_simple_time_local: function( dateptr, factor )
+	{
+		return Glk.glk_date_to_simple_time_local( _glem_date_box_from_struct( dateptr ), factor )
+	},
+
+	glk_date_to_simple_time_utc__deps: [ 'glem_date_box_from_struct' ],
+	glk_date_to_simple_time_utc: function( dateptr, factor )
+	{
+		return Glk.glk_date_to_simple_time_utc( _glem_date_box_from_struct( dateptr ), factor )
+	},
+
+	glk_date_to_time_local__deps: [ 'glem_date_box_from_struct', 'glem_time_box_to_struct' ],
+	glk_date_to_time_local: function( dateptr, timeptr )
+	{
+		var timebox = new Glk.RefStruct()
+		Glk.glk_date_to_time_local( _glem_date_box_from_struct( dateptr ), timebox )
+		_glem_time_box_to_struct( timebox, timeptr )
+	},
+
+	glk_date_to_time_utc__deps: [ 'glem_date_box_from_struct', 'glem_time_box_to_struct' ],
+	glk_date_to_time_utc: function( dateptr, timeptr )
+	{
+		var timebox = new Glk.RefStruct()
+		Glk.glk_date_to_time_utc( _glem_date_box_from_struct( dateptr ), timebox )
+		_glem_time_box_to_struct( timebox, timeptr )
 	},
 
 	glem_exit: function()
@@ -479,6 +555,22 @@ var emglken = {
 		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
+	glk_simple_time_to_date_local__deps: [ 'glem_date_box_to_struct' ],
+	glk_simple_time_to_date_local: function( time, factor, dateptr )
+	{
+		var datebox = new Glk.RefStruct()
+		Glk.glk_simple_time_to_date_local( time, factor, datebox )
+		_glem_date_box_to_struct( datebox, dateptr )
+	},
+
+	glk_simple_time_to_date_utc__deps: [ 'glem_date_box_to_struct' ],
+	glk_simple_time_to_date_utc: function( time, factor, dateptr )
+	{
+		var datebox = new Glk.RefStruct()
+		Glk.glk_simple_time_to_date_utc( time, factor, datebox )
+		_glem_date_box_to_struct( datebox, dateptr )
+	},
+
 	glem_stream_finalise: function( tag, resultstruct, close )
 	{
 		var str = _stream_from_id( tag )
@@ -552,6 +644,22 @@ var emglken = {
 	glk_stream_set_position: function( str, pos, seekmode )
 	{
 		Glk.glk_stream_set_position( _stream_from_ptr( str ), pos, seekmode )
+	},
+
+	glk_time_to_date_local__deps: [ 'glem_date_box_to_struct', 'glem_time_box_from_struct' ],
+	glk_time_to_date_local: function( timeptr, dateptr )
+	{
+		var datebox = new Glk.RefStruct()
+		Glk.glk_time_to_date_local( _glem_time_box_from_struct( timeptr ), datebox )
+		_glem_date_box_to_struct( datebox, dateptr )
+	},
+
+	glk_time_to_date_utc__deps: [ 'glem_date_box_to_struct', 'glem_time_box_from_struct' ],
+	glk_time_to_date_utc: function( timeptr, dateptr )
+	{
+		var datebox = new Glk.RefStruct()
+		Glk.glk_time_to_date_utc( _glem_time_box_from_struct( timeptr ), datebox )
+		_glem_date_box_to_struct( datebox, dateptr )
 	},
 
 	glk_window_clear: function( window )

@@ -178,25 +178,3 @@ glui32 glk_fileref_get_rock(fileref_t *fref)
     
     return fref->rock;
 }
-
-/* This should only be called from startup code. */
-void glkunix_set_base_file(char *filename)
-{
-    int ix;
-  
-    for (ix=strlen(filename)-1; ix >= 0; ix--) 
-        if (filename[ix] == '/')
-            break;
-
-    if (ix >= 0) {
-        /* There is a slash. */
-        strncpy(workingdir, filename, ix);
-        workingdir[ix] = '\0';
-        ix++;
-    }
-    else {
-        /* No slash, just a filename. */
-        ix = 0;
-    }
-}
-
