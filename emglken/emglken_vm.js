@@ -49,6 +49,10 @@ class EmglkenVM
 			moduleoptions.memoryInitializerPrefixURL = this.options.dirname + '/'
 			fs.readFile( this.options.dirname + '/' + this.options.emptfile, ( err, data ) =>
 			{
+				if ( err )
+				{
+					throw err
+				}
 				moduleoptions.emterpreterFile = data.buffer
 				this.vm = this.options.module( moduleoptions )
 				this.vm.then( () => this.start() )
