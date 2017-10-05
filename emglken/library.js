@@ -380,7 +380,7 @@ var emglken = {
 
 	glk_put_buffer_stream: function( str, bufaddr, len )
 	{
-		Glk.glk_put_buffer( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glk_put_buffer_uni: function( bufaddr, len )
@@ -390,7 +390,7 @@ var emglken = {
 
 	glk_put_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		Glk.glk_put_buffer_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
 	},
 
 	glk_put_char: function( ch )
