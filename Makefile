@@ -50,5 +50,5 @@ tests/regtest.py:
 
 # Run the test suite
 test: tests/regtest.py git.js
-	cd tests && python regtest.py glulxercise.regtest
-	cd tests && python regtest.py glulxercise-bundled.regtest
+	cd tests && python regtest.py -t 10 glulxercise.regtest
+	cd tests && python regtest.py -t 10 glulxercise-bundled.regtest
