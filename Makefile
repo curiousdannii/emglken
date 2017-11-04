@@ -45,10 +45,7 @@ emglken.zip: git.js hugo.js
 hugo.zip: hugo.js
 	zip -j hugo.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem versions.json
 
-tests/regtest.py:
-	$(CURL) -o tests/regtest.py https://raw.githubusercontent.com/erkyrath/plotex/master/regtest.py
-
 # Run the test suite
-test: tests/regtest.py git.js
-	cd tests && python regtest.py -t 10 glulxercise.regtest
-	cd tests && python regtest.py -t 10 glulxercise-bundled.regtest
+test: git.js
+	cd tests && python regtest.py -i "./git.js" glulxercise.regtest
+	cd tests && python regtest.py -i "./git.js -b" glulxercise.regtest
