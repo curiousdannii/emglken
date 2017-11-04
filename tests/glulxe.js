@@ -19,6 +19,9 @@ const options = {
 	GiDispa: new GiDispa(),
 	Glk: Glk,
 	GlkOte: new GlkOte(),
+
+	profile_filename: argv.profile_filename || '',
+	profcalls: argv.profcalls || 0,
 }
 
 vm.prepare( fs.readFileSync( argv._[0] ), options )
