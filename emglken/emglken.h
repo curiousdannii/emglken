@@ -122,7 +122,7 @@ extern void gli_initialize_events(void);
 extern void gli_event_store(glui32 type, window_t *win, glui32 val1, glui32 val2);
 extern int gli_timer_need_update(glui32 *msec);
 
-extern void gli_initialize_windows();
+extern void gli_initialize_windows(void);
 extern void gli_fast_exit(void);
 extern void gli_display_warning(char *msg);
 extern void gli_display_error(char *msg);
@@ -144,7 +144,7 @@ extern void gli_delete_fileref(fileref_t *fref);
 /* Functions implemented in library.js */
 
 extern void glem_cancel_line_event(glui32 wintag, glui32 *evdata);
-extern void glem_exit();
+extern void glem_exit(void);
 extern void glem_fatal_error(char *msg);
 extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
 extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock, glui32 *tagptr);
@@ -163,7 +163,7 @@ extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode
 extern void glem_stream_set_current(glui32 tag);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
-extern void init_emglken();
+extern void init_emglken(void);
 
 
 /* A macro that I can't think of anywhere else to put it. */

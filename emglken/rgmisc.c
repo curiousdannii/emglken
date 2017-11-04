@@ -60,7 +60,7 @@ void glk_exit()
     if (gli_debugger)
         gidebug_announce_cycle(gidebug_cycle_End);
 
-    glem_exit(0);
+    glem_exit();
     exit(0);
 }
 
@@ -130,6 +130,18 @@ gidispatch_rock_t gidispatch_get_objrock(void *obj, glui32 objclass)
             return dummy;
         }
     }
+}
+
+void gidispatch_set_autorestore_registry(
+    long (*locatearr)(void *array, glui32 len, char *typecode,
+        gidispatch_rock_t objrock, int *elemsizeref),
+    gidispatch_rock_t (*restorearr)(long bufkey, glui32 len,
+        char *typecode, void **arrayref))
+{
+    /* RemGlk is not able to serialize its UI state. Therefore, it
+       does not have the capability of autosaving and autorestoring.
+       Therefore, it will never call these hooks. Therefore, we ignore
+       them and do nothing here. */
 }
 
 unsigned char glk_char_to_lower(unsigned char ch)
