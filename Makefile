@@ -32,20 +32,27 @@ git.min.js: git.js
 	echo '/* Git (Emglken) v$(shell jq -r .git -- versions.json) https://github.com/curiousdannii/emglken */' > $@
 	babili git.js >> $@
 
+glulxe.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe.js
+	$(MAKE) -C glulxe
+	cp glulxe/glulxe-core.js.* .
+	browserify glulxe/glulxe.js --bare --igv x --standalone Glulxe > $@
+
 hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/heglk/hugo.js hugo/source/*.c hugo/source/*.h
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo-core.js.* .
 	browserify hugo/heglk/hugo.js --bare --igv x --standalone Hugo > $@
 
-emglken.zip: git.js hugo.js
-	zip -j emglken.zip emglken/emglken_dispatch.js versions.json \
+emglken.zip: git.js glulxe.js hugo.js
+	zip -j emglken.zip \
+	LICENSE README.md versions.json \
+	emglken/emglken_dispatch.js \
 	git.js git-core.js.bin git-core.js.mem \
+	glulxe.js glulxe-core.js.bin glulxe-core.js.mem \
 	hugo.js hugo-core.js.bin hugo-core.js.mem
 
-hugo.zip: hugo.js
-	zip -j hugo.zip emglken/emglken_dispatch.js hugo.js hugo.js.mem versions.json
-
 # Run the test suite
-test: git.js
+test: git.js glulxe.js
 	cd tests && python regtest.py -i "./git.js" glulxercise.regtest
 	cd tests && python regtest.py -i "./git.js -b" glulxercise.regtest
+	cd tests && python regtest.py -i "./glulxe.js" glulxercise.regtest
+	cd tests && python regtest.py -i "./glulxe.js -b" glulxercise.regtest
