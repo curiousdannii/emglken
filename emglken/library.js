@@ -334,11 +334,6 @@ var emglken = {
 		return win.echostr ? win.echostr.disprock : 0
 	},
 
-	glem_get_window_stream_tag: function( tag )
-	{
-		return _window_from_id( tag ).str.disprock
-	},
-
 	glk_image_draw: function( window, image, val1, val2 )
 	{
 		return Glk.glk_image_draw( _window_from_ptr( window ), image, val1, val2 )
@@ -365,11 +360,14 @@ var emglken = {
 		return res
 	},
 
-	glem_new_window: function( splitwin, method, size, wintype, rock, pairwintag )
+	glem_new_window: function( splitwin, method, size, wintype, rock, strtag, pairwintag )
 	{
 		var win = Glk.glk_window_open( _window_from_id( splitwin ), method, size, wintype, rock )
-		var pairwin = win ? Glk.glk_window_get_parent( win ) : 0
-		setValue( pairwintag, _window_to_id( pairwin ), 'i32' )
+		if ( win )
+		{
+			setValue( strtag, win.str ? win.str.disprock : 0, 'i32' )
+			setValue( pairwintag, _window_to_id( Glk.glk_window_get_parent( win ) ), 'i32' )
+		}
 		return _window_to_id( win )
 	},
 

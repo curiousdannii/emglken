@@ -26,12 +26,13 @@ static fileref_t *gli_filereflist = NULL;
 
 static char workingdir[BUFLEN] = ".";
 
-fileref_t *gli_new_fileref(glui32 usage, glui32 rock)
+fileref_t *gli_new_fileref(glui32 tag, glui32 rock)
 {
     fileref_t *fref = (fileref_t *)malloc(sizeof(fileref_t));
     if (!fref)
         return NULL;
     
+    fref->tag = tag;
     fref->rock = rock;
     
     fref->prev = NULL;
@@ -83,13 +84,16 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
     fileref_t *fref;
     
-    fref = gli_new_fileref(usage, rock);
-    if (!fref) {
+    glui32 tag = glem_fileref_create_temp( usage, rock );
+    if ( tag )
+    {
+        fref = gli_new_fileref( tag, rock );
+    }
+    if ( !fref )
+    {
         gli_strict_warning("fileref_create_temp: unable to create fileref.");
         return NULL;
     }
-    
-    fref->tag = glem_fileref_create_temp( usage, rock );
 
     return fref;
 }
@@ -97,20 +101,23 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
     glui32 rock)
 {
-    fileref_t *fref; 
+    fileref_t *fref;
 
     if (!oldfref) {
         gli_strict_warning("fileref_create_from_fileref: invalid ref");
         return NULL;
     }
 
-    fref = gli_new_fileref(usage, rock);
-    if (!fref) {
+    glui32 tag = glem_fileref_create_from_fileref( usage, oldfref->tag, rock );
+    if ( tag )
+    {
+        fref = gli_new_fileref( tag, rock );
+    }
+    if ( !fref )
+    {
         gli_strict_warning("fileref_create_from_fileref: unable to create fileref.");
         return NULL;
     }
-    
-    fref->tag = glem_fileref_create_from_fileref( usage, oldfref->tag, rock );
 
     return fref;
 }
@@ -120,13 +127,16 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
 {
     fileref_t *fref;
 
-    fref = gli_new_fileref(usage, rock);
-    if (!fref) {
+    glui32 tag = glem_fileref_create_by_name( usage, name, rock );
+    if ( tag )
+    {
+        fref = gli_new_fileref( tag, rock );
+    }
+    if ( !fref )
+    {
         gli_strict_warning("fileref_create_by_name: unable to create fileref.");
         return NULL;
     }
-    
-    fref->tag = glem_fileref_create_by_name( usage, name, rock );
 
     return fref;
 }
@@ -138,13 +148,15 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     glui32 tag;
     
     glem_fileref_create_by_prompt( usage, fmode, rock, &tag );
-    fref = gli_new_fileref(usage, rock);
-    if ( !fref || !tag )
+    if ( tag )
+    {
+        fref = gli_new_fileref( tag, rock );
+    }
+    if ( !fref )
     {
         gli_strict_warning("fileref_create_by_prompt: unable to create fileref.");
         return NULL;
     }
-    fref->tag = tag;
     
     return fref;
 }

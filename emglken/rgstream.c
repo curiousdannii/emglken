@@ -22,13 +22,14 @@
 static stream_t *gli_streamlist = NULL; /* linked list of all streams */
 static stream_t *gli_currentstr = NULL; /* the current output stream */
 
-stream_t *gli_new_stream(int type, glui32 rock)
+stream_t *gli_new_stream( int type, glui32 tag, glui32 rock )
 {
     stream_t *str = (stream_t *)malloc(sizeof(stream_t));
     if (!str)
         return NULL;
     
     str->type = type;
+    str->tag = tag;
     str->rock = rock;
 
     str->unicode = FALSE;
@@ -146,8 +147,11 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
     }
 
     tag = glem_stream_open_memory( buf, buflen, fmode, rock, FALSE );
-    str = gli_new_stream(strtype_Memory, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_Memory, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_memory: unable to create stream.");
         return 0;
@@ -159,21 +163,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
         if (gli_register_arr) {
             str->arrayrock = (*gli_register_arr)(buf, buflen, "&+#!Cn");
         }
-        str->tag = tag;
     }
-    
-    return str;
-}
-
-stream_t *gli_stream_open_window(window_t *win)
-{
-    stream_t *str;
-    
-    str = gli_new_stream(strtype_Window, 0);
-    if (!str)
-        return NULL;
-
-    str->tag = glem_get_window_stream_tag( win->updatetag );
     
     return str;
 }
@@ -190,13 +180,15 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
     }
     
     tag = glem_stream_open_file( fref->tag, fmode, rock, FALSE );
-    str = gli_new_stream(strtype_File, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_File, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_file: unable to create stream.");
         return 0;
     }
-    str->tag = tag;
     
     return str;
 }
@@ -217,8 +209,11 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
     }
 
     tag = glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE );
-    str = gli_new_stream(strtype_Memory, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_Memory, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_memory_uni: unable to create stream.");
         return NULL;
@@ -232,7 +227,6 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
         if (gli_register_arr) {
             str->arrayrock = (*gli_register_arr)(ubuf, buflen, "&+#!Iu");
         }
-        str->tag = tag;
     }
     
     return str;
@@ -250,13 +244,15 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
     }
 
     tag = glem_stream_open_file( fref->tag, fmode, rock, TRUE );
-    str = gli_new_stream(strtype_File, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_File, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_file_uni: unable to create stream.");
         return 0;
     }
-    str->tag = tag;
 
     return str;
 }
@@ -272,13 +268,15 @@ strid_t glk_stream_open_resource(glui32 filenum, glui32 rock)
     glui32 tag;
 
     tag = glem_stream_open_resource( filenum, rock, FALSE );
-    str = gli_new_stream(strtype_Resource, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_Resource, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_resource: unable to create stream.");
         return NULL;
     }
-    str->tag = tag;
     
     return str;
 }
@@ -289,13 +287,15 @@ strid_t glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
     glui32 tag;
 
     tag = glem_stream_open_resource( filenum, rock, TRUE );
-    str = gli_new_stream(strtype_Resource, rock);
-    if ( !str || !tag )
+    if ( tag )
+    {
+        str = gli_new_stream( strtype_Resource, tag, rock );
+    }
+    if ( !str )
     {
         gli_strict_warning("stream_open_resource_uni: unable to create stream.");
         return NULL;
     }
-    str->tag = tag;
     
     return str;
 }

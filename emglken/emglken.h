@@ -131,14 +131,13 @@ extern window_t *gli_new_window(glui32 type, glui32 rock, glui32 windowtag);
 extern void gli_delete_window(window_t *win);
 extern void gli_window_accept_line(window_t *win, glui32 len);
 
-extern stream_t *gli_new_stream(int type, glui32 rock);
+extern stream_t *gli_new_stream(int type, glui32 tag, glui32 rock);
 extern void gli_delete_stream(stream_t *str);
-extern stream_t *gli_stream_open_window(window_t *win);
 extern void gli_stream_set_current(stream_t *str);
 extern void gli_streams_close_all(void);
 extern stream_t *gli_stream_find_by_tag(glui32 tag);
 
-extern fileref_t *gli_new_fileref(glui32 usage, glui32 rock);
+extern fileref_t *gli_new_fileref(glui32 tag, glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
 
 /* Functions implemented in library.js */
@@ -152,8 +151,7 @@ extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
 extern void glem_fileref_destroy(glui32 tag);
 extern glui32 glem_get_window_echostream_tag(glui32 wintag);
-extern glui32 glem_get_window_stream_tag(glui32 wintag);
-extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *pairwintag);
+extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *strtagptr, glui32 *pairwintag);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
 extern void glem_select(glui32 *evdata);
 extern void glem_stream_finalise(glui32 tag, stream_result_t *result, int close);

@@ -71,8 +71,6 @@ window_t *gli_new_window(glui32 type, glui32 rock, glui32 updatetag)
     win->parent = NULL; /* for now */
     win->line_request = FALSE;
 
-    win->str = gli_stream_open_window(win);
-
     win->prev = NULL;
     win->next = gli_windowlist;
     gli_windowlist = win;
@@ -118,6 +116,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
 {
     window_t *newwin, *pairwin, *oldparent;
     glui32 val;
+    glui32 strtag;
     glui32 windowtag, pairwintag;
     
     if (!gli_rootwin) {
@@ -162,10 +161,10 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
     }
     
     if (splitwin) {
-        windowtag = glem_new_window(splitwin->updatetag, method, size, wintype, rock, &pairwintag);
+        windowtag = glem_new_window(splitwin->updatetag, method, size, wintype, rock, &strtag, &pairwintag);
     }
     else {
-        windowtag = glem_new_window(0, method, size, wintype, rock, &pairwintag);
+        windowtag = glem_new_window(0, method, size, wintype, rock, &strtag, &pairwintag);
     }
     if (!windowtag) {
         return 0;
@@ -175,6 +174,7 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
         gli_strict_warning("window_open: unable to create window");
         return 0;
     }
+    newwin->str = gli_new_stream( strtype_Window, strtag, 0 );
     
     switch (wintype) {
         case wintype_Blank:
