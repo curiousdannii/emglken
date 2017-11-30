@@ -34,17 +34,17 @@ var emglken = {
 	// Use the struct's first entry, the tag, to find the JS objects
 	fileref_from_ptr: function( structptr )
 	{
-		return _fileref_from_id( getValue( structptr, 'i32' ) )
+		return _fileref_from_id( {{{ makeGetValue( 'structptr', '0', 'i32' ) }}} )
 	},
 
 	stream_from_ptr: function( streamptr )
 	{
-		return _stream_from_id( getValue( streamptr, 'i32' ) )
+		return _stream_from_id( {{{ makeGetValue( 'streamptr', '0', 'i32' ) }}} )
 	},
 
 	window_from_ptr: function( winptr )
 	{
-		return _window_from_id( getValue( winptr, 'i32' ) )
+		return _window_from_id( {{{ makeGetValue( 'winptr', '0', 'i32' ) }}} )
 	},
 
 	// Given a JS object, return its id tag
@@ -68,7 +68,7 @@ var emglken = {
 	{
 		for ( var datebox = new Glk.RefStruct(), i = 0; i < 8; i++ )
 		{
-			datebox.set_field( i, getValue( dateptr + ( 4 * i ), 'i32' ) )
+			datebox.set_field( i, {{{ makeGetValue( 'dateptr', '4 * i', 'i32' ) }}} )
 		}
 		return datebox
 	},
@@ -77,16 +77,16 @@ var emglken = {
 	{
 		for ( var i = 0; i < 8; i++ )
 		{
-			setValue( dateptr + ( 4 * i ), datebox.get_field( i ), 'i32' )
+			{{{ makeSetValue( 'dateptr', '4 * i', 'datebox.get_field( i )', 'i32' ) }}}
 		}
 	},
 
 	glem_time_box_from_struct: function( timeptr )
 	{
 		var timebox = new Glk.RefStruct()
-		timebox.set_field( 0, getValue( timeptr, 'i32' ) )
-		timebox.set_field( 1, getValue( timeptr + 4, 'i32' ) >>> 0 )
-		timebox.set_field( 2, getValue( timeptr + 8, 'i32' ) )
+		timebox.set_field( 0, {{{ makeGetValue( 'timeptr', '0', 'i32' ) }}} )
+		timebox.set_field( 1, {{{ makeGetValue( 'timeptr', '4', 'i32', undefined, 1 ) }}} )
+		timebox.set_field( 2, {{{ makeGetValue( 'timeptr', '8', 'i32' ) }}} )
 		return timebox
 	},
 
@@ -94,7 +94,7 @@ var emglken = {
 	{
 		for ( var i = 0; i < 3; i++ )
 		{
-			setValue( timeptr + ( 4 * i ), timebox.get_field( i ), 'i32' )
+			{{{ makeSetValue( 'timeptr', '4 * i', 'timebox.get_field( i )', 'i32' ) }}}
 		}
 	},
 
@@ -154,10 +154,10 @@ var emglken = {
 		Glk.glk_cancel_line_event( _window_from_id( tag ), glk_event )
 		if ( data )
 		{
-			Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-			Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
-			Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
-			Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
+			{{{ makeSetValue( 'data', '0', 'glk_event.get_field( 0 )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '4', '_window_to_id( glk_event.get_field( 1 ) )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '8', 'glk_event.get_field( 2 )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '12', 'glk_event.get_field( 3 )', 'i32' ) }}}
 		}
 	},
 
@@ -224,7 +224,6 @@ var emglken = {
 		return _fileref_to_id( fref )
 	},
 
-#if EMTERPRETIFY_ASYNC
 	glem_fileref_create_by_prompt__deps: ['$EmterpreterAsync', 'fileref_to_id'],
 	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
 	{
@@ -237,33 +236,12 @@ var emglken = {
 				{
 					return
 				}
-				Module.setValue( tagptr, _fileref_to_id( fref ), 'i32' )
+				{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( fref )', 'i32' ) }}}
 				resume()
 			}
 			Glk.update()
 		})
 	},
-#endif
-
-#if ASYNCIFY
-	glem_fileref_create_by_prompt__deps: ['emscripten_async_resume', 'fileref_to_id'],
-	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
-	{
-		Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
-		//Module['asm'].setAsync()
-		asm.setAsync()
-		Module.glem_callback = function( fref )
-		{
-			if ( ABORT )
-			{
-				return
-			}
-			Module.setValue( tagptr, _fileref_to_id( fref ), 'i32' )
-			_emscripten_async_resume()
-		}
-		Glk.update()
-	},
-#endif
 
 	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
@@ -351,11 +329,11 @@ var emglken = {
 		var res =  Glk.glk_image_get_info( image, widthBox, heightBox )
 		if ( width )
 		{
-			setValue( width, widthBox.value, 'i32' )
+			{{{ makeSetValue( 'width', '0', 'widthBox.value', 'i32' ) }}}
 		}
 		if ( height )
 		{
-			setValue( height, heightBox.value, 'i32' )
+			{{{ makeSetValue( 'height', '0', 'heightBox.value', 'i32' ) }}}
 		}
 		return res
 	},
@@ -365,8 +343,8 @@ var emglken = {
 		var win = Glk.glk_window_open( _window_from_id( splitwin ), method, size, wintype, rock )
 		if ( win )
 		{
-			setValue( strtag, win.str ? win.str.disprock : 0, 'i32' )
-			setValue( pairwintag, _window_to_id( Glk.glk_window_get_parent( win ) ), 'i32' )
+			{{{ makeSetValue( 'strtag', '0', 'win.str ? win.str.disprock : 0', 'i32' ) }}}
+			{{{ makeSetValue( 'pairwintag', '0', '_window_to_id( Glk.glk_window_get_parent( win ) )', 'i32' ) }}}
 		}
 		return _window_to_id( win )
 	},
@@ -471,7 +449,6 @@ var emglken = {
 		Glk.glk_request_timer_events( ms )
 	},
 
-#if EMTERPRETIFY_ASYNC
 	glem_select__deps: ['$EmterpreterAsync', 'window_to_id'],
 	glem_select: function( data )
 	{
@@ -485,40 +462,15 @@ var emglken = {
 				{
 					return
 				}
-				Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-				Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
-				Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
-				Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
+				{{{ makeSetValue( 'data', '0', 'glk_event.get_field( 0 )', 'i32' ) }}}
+				{{{ makeSetValue( 'data', '4', '_window_to_id( glk_event.get_field( 1 ) )', 'i32' ) }}}
+				{{{ makeSetValue( 'data', '8', 'glk_event.get_field( 2 )', 'i32' ) }}}
+				{{{ makeSetValue( 'data', '12', 'glk_event.get_field( 3 )', 'i32' ) }}}
 				resume()
 			}
 			Glk.update()
 		})
 	},
-#endif
-
-#if ASYNCIFY
-	glem_select__deps: ['emscripten_async_resume', 'window_to_id'],
-	glem_select: function( data )
-	{
-		var glk_event = new Glk.RefStruct()
-		Glk.glk_select( glk_event )
-		//Module['asm'].setAsync()
-		asm.setAsync()
-		Module.glem_callback = function()
-		{
-			if ( ABORT )
-			{
-				return
-			}
-			Module.setValue( data, glk_event.get_field( 0 ), 'i32' )
-			Module.setValue( data + 4, _window_to_id( glk_event.get_field( 1 ) ), 'i32' )
-			Module.setValue( data + 8, glk_event.get_field( 2 ), 'i32' )
-			Module.setValue( data + 12, glk_event.get_field( 3 ), 'i32' )
-			_emscripten_async_resume()
-		}
-		Glk.update()
-	},
-#endif
 
 	glk_set_echo_line_event: function( window, val )
 	{
@@ -572,8 +524,8 @@ var emglken = {
 		var str = _stream_from_id( tag )
 		if ( resultstruct )
 		{
-			setValue( resultstruct, str.readcount, 'i32' )
-			setValue( resultstruct + 4, str.writecount, 'i32' )
+			{{{ makeSetValue( 'resultstruct', '0', 'str.readcount', 'i32' ) }}}
+			{{{ makeSetValue( 'resultstruct', '4', 'str.writecount', 'i32' ) }}}
 		}
 		if ( close )
 		{
@@ -691,15 +643,15 @@ var emglken = {
 		Glk.glk_window_get_arrangement( _window_from_id( tag ), methodBox, sizeBox, keywinBox )
 		if ( methodptr )
 		{
-			setValue( methodptr, methodBox.value, 'i32' )
+			{{{ makeSetValue( 'methodptr', '0', 'methodBox.value', 'i32' ) }}}
 		}
 		if ( sizeptr )
 		{
-			setValue( sizeptr, sizeBox.value, 'i32' )
+			{{{ makeSetValue( 'sizeptr', '0', 'sizeBox.value', 'i32' ) }}}
 		}
 		if ( keywinptr )
 		{
-			setValue( keywinptr, _window_to_id( keywinBox.value ), 'i32' )
+			{{{ makeSetValue( 'keywinptr', '0', '_window_to_id( keywinBox.value )', 'i32' ) }}}
 		}
 	},
 
@@ -710,11 +662,11 @@ var emglken = {
 		Glk.glk_window_get_size( _window_from_ptr( window ), widthBox, heightBox )
 		if ( width )
 		{
-			setValue( width, widthBox.value, 'i32' )
+			{{{ makeSetValue( 'width', '0', 'widthBox.value', 'i32' ) }}}
 		}
 		if ( height )
 		{
-			setValue( height, heightBox.value, 'i32' )
+			{{{ makeSetValue( 'height', '0', 'heightBox.value', 'i32' ) }}}
 		}
 	},
 
