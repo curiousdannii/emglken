@@ -8,7 +8,12 @@ const GlkOte = require( 'glkote-term' )
 const GiDispa = require( '../emglken/emglken_dispatch.js' )
 
 const argv = minimist( process.argv.slice( 2 ), { boolean: 'b' } )
-const Glulxe = new require( argv.b ? '../glulxe.js' : '../glulxe/glulxe.js' )
+
+const vm_path = argv.profile_filename ?
+	( argv.b ? '../glulxe-profiler.js' : '../glulxe/glulxe-profiler.js' ) :
+	( argv.b ? '../glulxe.js' : '../glulxe/glulxe.js' )
+
+const Glulxe = new require( vm_path )
 
 const vm = new Glulxe()
 const Glk = GlkOte.Glk

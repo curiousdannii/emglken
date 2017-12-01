@@ -1,0 +1,12 @@
+** game: glulxercise.ulx
+
+* basic
+
+Glulxercise: A Glulx interpreter unit test
+Welcome to the test chamber.
+
+* arith
+
+> arith
+!FAIL
+Passed.

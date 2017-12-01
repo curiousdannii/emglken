@@ -33,26 +33,34 @@ git.min.js: git.js
 	babili git.js >> $@
 
 glulxe.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe.js
-	$(MAKE) -C glulxe
+	$(MAKE) -C glulxe glulxe-core.js
 	cp glulxe/glulxe-core.js.* .
 	browserify glulxe/glulxe.js --bare --igv x --standalone Glulxe > $@
+
+glulxe-profiler.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe-profiler.js
+	$(MAKE) -C glulxe glulxe-profiler-core.js
+	cp glulxe/glulxe-profiler-core.js.* .
+	browserify glulxe/glulxe-profiler.js --bare --igv x --standalone Glulxe > $@
 
 hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/heglk/hugo.js hugo/source/*.c hugo/source/*.h
 	$(MAKE) -C hugo/heglk
 	cp hugo/heglk/hugo-core.js.* .
 	browserify hugo/heglk/hugo.js --bare --igv x --standalone Hugo > $@
 
-emglken.zip: git.js glulxe.js hugo.js
+emglken.zip: git.js glulxe.js glulxe-profiler.js hugo.js
 	zip -j emglken.zip \
 	LICENSE README.md versions.json \
 	emglken/emglken_dispatch.js \
 	git.js git-core.js.bin git-core.js.mem \
 	glulxe.js glulxe-core.js.bin glulxe-core.js.mem \
+	glulxe-profiler.js glulxe-profiler-core.js.bin glulxe-profiler-core.js.mem \
 	hugo.js hugo-core.js.bin hugo-core.js.mem
 
 # Run the test suite
-test: git.js glulxe.js
+test: git.js glulxe.js glulxe-profiler.js
 	cd tests && python regtest.py -i "./git.js" glulxercise.regtest
 	cd tests && python regtest.py -i "./git.js -b" glulxercise.regtest
 	cd tests && python regtest.py -i "./glulxe.js" glulxercise.regtest
 	cd tests && python regtest.py -i "./glulxe.js -b" glulxercise.regtest
+	cd tests && python regtest.py -i "./glulxe.js --profile_filename=glulxprof" glulxercise-profiler.regtest
+	cd tests && python regtest.py -i "./glulxe.js --profile_filename=glulxprof -b" glulxercise-profiler.regtest
