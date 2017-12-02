@@ -102,7 +102,7 @@ var emglken = {
 	// See https://github.com/erkyrath/glkote/issues/27
 	glem_buffer_helper: function( func, bufaddr, len, numchars, lowerrest )
 	{
-		var buf = Array.prototype.slice.call( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		var buf = Array.prototype.slice.call( new Uint32Array( buffer, bufaddr, len ) )
 		var newlen = Glk[ func ]( buf, numchars, lowerrest )
 		HEAPU8.set( new Uint8Array( Uint32Array.from( buf ).slice( 0, len ).buffer ), bufaddr )
 		return newlen
@@ -272,18 +272,18 @@ var emglken = {
 
 	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
 	{
-		var arr = new Uint32Array( HEAPU8.buffer, arraddr, arrlen )
+		var arr = new Uint32Array( buffer, arraddr, arrlen )
 		return Glk.glk_gestalt_ext( sel, val, arr )
 	},
 
 	glk_get_buffer_stream: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+		return Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 	},
 
 	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 	},
 
 	glk_get_char_stream: function( str )
@@ -298,12 +298,12 @@ var emglken = {
 
 	glk_get_line_stream: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+		return Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 	},
 
 	glk_get_line_stream_uni: function( str, bufaddr, len )
 	{
-		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 	},
 
 	glem_get_window_echostream_tag: function( tag )
@@ -351,22 +351,22 @@ var emglken = {
 
 	glk_put_buffer: function( bufaddr, len )
 	{
-		Glk.glk_put_buffer( new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer( new Uint8Array( buffer, bufaddr, len ) )
 	},
 
 	glk_put_buffer_stream: function( str, bufaddr, len )
 	{
-		Glk.glk_put_buffer_stream( _stream_from_ptr( str ), new Uint8Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 	},
 
 	glk_put_buffer_uni: function( bufaddr, len )
 	{
-		Glk.glk_put_buffer_uni( new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer_uni( new Uint32Array( buffer, bufaddr, len ) )
 	},
 
 	glk_put_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		Glk.glk_put_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( HEAPU8.buffer, bufaddr, len ) )
+		Glk.glk_put_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 	},
 
 	glk_put_char: function( ch )
@@ -429,12 +429,12 @@ var emglken = {
 		var win = _window_from_id( tag )
 		if ( unicode )
 		{
-			var buf = new Uint32Array( HEAPU8.buffer, bufaddr, maxlen )
+			var buf = new Uint32Array( buffer, bufaddr, maxlen )
 			Glk.glk_request_line_event_uni( win, buf, initlen )
 		}
 		else
 		{
-			var buf = new Uint8Array( HEAPU8.buffer, bufaddr, maxlen )
+			var buf = new Uint8Array( buffer, bufaddr, maxlen )
 			Glk.glk_request_line_event( win, buf, initlen )
 		}
 	},
@@ -499,7 +499,7 @@ var emglken = {
 
 	glk_set_terminators_line_event: function( window, arraddr, count )
 	{
-		var arr = new Uint32Array( HEAPU8.buffer, arraddr, count )
+		var arr = new Uint32Array( buffer, arraddr, count )
 		Glk.glk_set_terminators_line_event( _window_from_ptr( window ), arr )
 	},
 
@@ -559,12 +559,12 @@ var emglken = {
 		var str
 		if ( unicode )
 		{
-			buf = new Uint32Array( HEAPU8.buffer, bufaddr, buflen )
+			buf = new Uint32Array( buffer, bufaddr, buflen )
 			str = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
 		}
 		else
 		{
-			buf = new Uint8Array( HEAPU8.buffer, bufaddr, buflen )
+			buf = new Uint8Array( buffer, bufaddr, buflen )
 			str = Glk.glk_stream_open_memory( buf, fmode, rock )
 		}
 		return _stream_to_id( str )
