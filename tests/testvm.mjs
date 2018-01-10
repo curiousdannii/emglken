@@ -76,20 +76,25 @@ const options = {
 	showlog: true,
 }
 
-Glk.set_references( options )
-
-// Set up the profile stream if it has been set
-if ( argv.profile_filename )
+async function start()
 {
-	const fref = Glk.glk_fileref_create_by_name( 0, argv.profile_filename, 0 )
-	if ( fref )
+	Glk.set_references( options )
+
+	// Set up the profile stream if it has been set
+	if ( argv.profile_filename )
 	{
-		options.profile_stream = Glk.glk_stream_open_file( fref, 1, 0 )
-		Glk.glk_fileref_destroy( fref )
+		const fref = await Glk.glk_fileref_create_by_name( 0, argv.profile_filename, 0 )
+		if ( fref )
+		{
+			options.profile_stream = await Glk.glk_stream_open_file( fref, 1, 0 )
+			await Glk.glk_fileref_destroy( fref )
+		}
 	}
+
+	vm.prepare( fs.readFileSync( argv._[1] ), options )
+
+	// This will call vm.init()
+	Glk.init( options )
 }
 
-vm.prepare( fs.readFileSync( argv._[1] ), options )
-
-// This will call vm.init()
-Glk.init( options )
+start()

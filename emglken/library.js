@@ -27,7 +27,7 @@ var emglken = {
 
 	async_ret: function( func )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			func()
 			.then( res => resume( () => res ) )
@@ -308,7 +308,7 @@ var emglken = {
 
 	glk_fileref_does_file_exist: function( fref )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_fileref_does_file_exist( _fileref_from_ptr( fref ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -323,7 +323,7 @@ var emglken = {
 
 	glk_get_buffer_stream: function( str, bufaddr, len )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -332,7 +332,7 @@ var emglken = {
 
 	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -341,7 +341,7 @@ var emglken = {
 
 	glk_get_char_stream: function( str )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_char_stream( _stream_from_ptr( str ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -350,7 +350,7 @@ var emglken = {
 
 	glk_get_char_stream_uni: function( str )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_char_stream_uni( _stream_from_ptr( str ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -359,7 +359,7 @@ var emglken = {
 
 	glk_get_line_stream: function( str, bufaddr, len )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -368,7 +368,7 @@ var emglken = {
 
 	glk_get_line_stream_uni: function( str, bufaddr, len )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 			.then( function( result ) { resume( function() { return result } ) } )
@@ -393,7 +393,7 @@ var emglken = {
 
 	glk_image_get_info: function( image, width, height )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			var widthBox = new Glk.RefBox()
 			var heightBox = new Glk.RefBox()
@@ -619,7 +619,7 @@ var emglken = {
 
 	glk_stream_get_position: function( str )
 	{
-		EmterpreterAsync.handle( function( resume )
+		return EmterpreterAsync.handle( function( resume )
 		{
 			Glk.glk_stream_get_position( _stream_from_ptr( str ) )
 			.then( function( result ) { resume( function() { return result } ) } )
