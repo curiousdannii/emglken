@@ -1,3 +1,6 @@
+[submodule "asyncglk"]
+	path = asyncglk
+	url = https://github.com/curiousdannii/asyncglk.git
 [submodule "git"]
 	path = git
 	url = https://github.com/curiousdannii/Git.git

@@ -84,7 +84,8 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
     fileref_t *fref;
     
-    glui32 tag = glem_fileref_create_temp( usage, rock );
+    glui32 tag;
+    glem_fileref_create_temp( usage, rock, &tag );
     if ( tag )
     {
         fref = gli_new_fileref( tag, rock );
@@ -108,7 +109,8 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
         return NULL;
     }
 
-    glui32 tag = glem_fileref_create_from_fileref( usage, oldfref->tag, rock );
+    glui32 tag;
+    glem_fileref_create_from_fileref( usage, oldfref->tag, rock, &tag );
     if ( tag )
     {
         fref = gli_new_fileref( tag, rock );
@@ -127,7 +129,8 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
 {
     fileref_t *fref;
 
-    glui32 tag = glem_fileref_create_by_name( usage, name, rock );
+    glui32 tag;
+    glem_fileref_create_by_name( usage, name, rock, &tag );
     if ( tag )
     {
         fref = gli_new_fileref( tag, rock );

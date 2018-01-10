@@ -5,6 +5,7 @@
 import fs from 'fs'
 import readline from 'readline'
 
+import { GlkProxy } from '../asyncglk/'
 import GiDispa from '../emglken/emglken_dispatch.js'
 import GlkOte from 'glkote-term'
 import minimist from 'minimist'
@@ -47,7 +48,7 @@ if ( argv._[0] === 'hugo' )
 }
 
 const vm = new VM()
-const Glk = GlkOte.Glk
+const Glk = new GlkProxy( GlkOte.Glk )
 
 // Readline options
 const stdin = process.stdin

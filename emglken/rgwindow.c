@@ -161,10 +161,10 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
     }
     
     if (splitwin) {
-        windowtag = glem_new_window(splitwin->updatetag, method, size, wintype, rock, &strtag, &pairwintag);
+        glem_new_window(splitwin->updatetag, method, size, wintype, rock, &windowtag, &strtag, &pairwintag);
     }
     else {
-        windowtag = glem_new_window(0, method, size, wintype, rock, &strtag, &pairwintag);
+        glem_new_window(0, method, size, wintype, rock, &windowtag, &strtag, &pairwintag);
     }
     if (!windowtag) {
         return 0;

@@ -146,7 +146,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
         return 0;
     }
 
-    tag = glem_stream_open_memory( buf, buflen, fmode, rock, FALSE );
+    glem_stream_open_memory( buf, buflen, fmode, rock, FALSE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_Memory, tag, rock );
@@ -179,7 +179,7 @@ strid_t glk_stream_open_file(fileref_t *fref, glui32 fmode,
         return 0;
     }
     
-    tag = glem_stream_open_file( fref->tag, fmode, rock, FALSE );
+    glem_stream_open_file( fref->tag, fmode, rock, FALSE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_File, tag, rock );
@@ -208,7 +208,7 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
         return NULL;
     }
 
-    tag = glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE );
+    glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_Memory, tag, rock );
@@ -243,7 +243,7 @@ strid_t glk_stream_open_file_uni(fileref_t *fref, glui32 fmode,
         return 0;
     }
 
-    tag = glem_stream_open_file( fref->tag, fmode, rock, TRUE );
+    glem_stream_open_file( fref->tag, fmode, rock, TRUE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_File, tag, rock );
@@ -267,7 +267,7 @@ strid_t glk_stream_open_resource(glui32 filenum, glui32 rock)
     strid_t str;
     glui32 tag;
 
-    tag = glem_stream_open_resource( filenum, rock, FALSE );
+    glem_stream_open_resource( filenum, rock, FALSE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_Resource, tag, rock );
@@ -286,7 +286,7 @@ strid_t glk_stream_open_resource_uni(glui32 filenum, glui32 rock)
     strid_t str;
     glui32 tag;
 
-    tag = glem_stream_open_resource( filenum, rock, TRUE );
+    glem_stream_open_resource( filenum, rock, TRUE, &tag );
     if ( tag )
     {
         str = gli_new_stream( strtype_Resource, tag, rock );
