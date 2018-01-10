@@ -58,9 +58,9 @@ emglken.zip: git.js glulxe.js glulxe-profiler.js hugo.js
 
 # Run the test suite
 test: git.js glulxe.js glulxe-profiler.js
-	cd tests && python regtest.py -i "./git.js" glulxercise.regtest
-	cd tests && python regtest.py -i "./git.js -b" glulxercise.regtest
-	cd tests && python regtest.py -i "./glulxe.js" glulxercise.regtest
-	cd tests && python regtest.py -i "./glulxe.js -b" glulxercise.regtest
-	cd tests && python regtest.py -i "./glulxe.js --profile_filename=glulxprof" glulxercise-profiler.regtest
-	cd tests && python regtest.py -i "./glulxe.js --profile_filename=glulxprof -b" glulxercise-profiler.regtest
+	cd tests && python regtest.py -i "./testvm git" glulxercise.regtest
+	cd tests && python regtest.py -i "./testvm git -b" glulxercise.regtest
+	cd tests && python regtest.py -i "./testvm glulxe" glulxercise.regtest
+	cd tests && python regtest.py -i "./testvm glulxe -b" glulxercise.regtest
+	cd tests && python regtest.py -i "./testvm glulxe --profile_filename=glulxprof" glulxercise-profiler.regtest
+	cd tests && python regtest.py -i "./testvm glulxe --profile_filename=glulxprof -b" glulxercise-profiler.regtest
