@@ -61,6 +61,7 @@ const rl = readline.createInterface({
 })
 const rl_opts = {
     rl: rl,
+    showlog: true,
     stdin: stdin,
     stdout: stdout,
 }
@@ -73,7 +74,6 @@ const options = {
 	GlkOte: new GlkOte( rl_opts ),
 
 	profcalls: argv.profcalls || 0,
-	showlog: true,
 }
 
 async function start()
