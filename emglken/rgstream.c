@@ -137,7 +137,6 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
     glui32 rock)
 {
     stream_t *str;
-    glui32 tag;
 
     if (fmode != filemode_Read 
         && fmode != filemode_Write 
@@ -146,7 +145,7 @@ strid_t glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
         return 0;
     }
 
-    glem_stream_open_memory( buf, buflen, fmode, rock, FALSE, &tag );
+    glui32 tag = glem_stream_open_memory( buf, buflen, fmode, rock, FALSE );
     if ( tag )
     {
         str = gli_new_stream( strtype_Memory, tag, rock );
@@ -199,7 +198,6 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
     glui32 rock)
 {
     stream_t *str;
-    glui32 tag;
 
     if (fmode != filemode_Read 
         && fmode != filemode_Write 
@@ -208,7 +206,7 @@ strid_t glk_stream_open_memory_uni(glui32 *ubuf, glui32 buflen, glui32 fmode,
         return NULL;
     }
 
-    glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE, &tag );
+    glui32 tag = glem_stream_open_memory( ubuf, buflen, fmode, rock, TRUE );
     if ( tag )
     {
         str = gli_new_stream( strtype_Memory, tag, rock );

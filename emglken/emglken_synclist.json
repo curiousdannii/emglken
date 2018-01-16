@@ -1,10 +1,6 @@
 [
-  "_glem_fileref_create_by_name",
   "_glem_fileref_create_by_prompt",
-  "_glem_fileref_create_from_fileref",
-  "_glem_fileref_create_temp",
   "_glk_fileref_delete_file",
-  "_glem_fileref_destroy",
   "_glk_fileref_does_file_exist",
   "_glk_get_buffer_stream",
   "_glk_get_buffer_stream_uni",
@@ -18,7 +14,6 @@
   "_glem_stream_finalise",
   "_glk_stream_get_position",
   "_glem_stream_open_file",
-  "_glem_stream_open_memory",
   "_glem_stream_open_resource",
   "_glk_stream_set_position",
   "_glem_window_close",

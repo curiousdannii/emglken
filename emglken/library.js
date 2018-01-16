@@ -3,7 +3,7 @@
 Emglken Emscripten library
 ==========================
 
-Copyright (c) 2017 Dannii Willis
+Copyright (c) 2018 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -16,23 +16,54 @@ var emglken = {
 	window_from_ptr__postset: `var Glk=Module['Glk'],GiDispa=Module['GiDispa'];`,
 
 	// Async helper functions
-	// Won't work while Emscripten uses uglifyjs to parse this file
-	/*async_noret: function( func )
+	async_noret: function( funcname, func, setfunc )
 	{
 		EmterpreterAsync.handle( function( resume )
 		{
-			func().then( resume )
+			func()
+			.then( resume )
+			.catch( function( err )
+			{
+				console.error( funcname, err )
+			})
 		})
 	},
 
-	async_ret: function( func )
+	async_ret: function( funcname, func )
 	{
 		return EmterpreterAsync.handle( function( resume )
 		{
 			func()
-			.then( res => resume( () => res ) )
+			.then( function ( result )
+			{
+				resume( function()
+				{
+					return result
+				})
+			})
+			.catch( function( err )
+			{
+				console.error( funcname, err )
+			})
 		})
-	},*/
+	},
+
+	async_set: function( funcname, func, setfunc )
+	{
+		EmterpreterAsync.handle( function( resume )
+		{
+			func()
+			.then( function( result )
+			{
+				setfunc( result )
+				resume()
+			})
+			.catch( function( err )
+			{
+				console.error( funcname, err )
+			})
+		})
+	},
 
 	// Find JS objects from their id tags
 	fileref_from_id: function( tag )
@@ -236,82 +267,53 @@ var emglken = {
 		Glk.fatal_error( Pointer_stringify( msg ) )
 	},
 
-	glem_fileref_create_by_name: function( usage, name, rock, tagptr )
+	glem_fileref_create_by_name: function( usage, name, rock )
 	{
-		EmterpreterAsync.handle( function( resume )
-		{
-			Glk.glk_fileref_create_by_name( usage, AsciiToString( name ), rock )
-			.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( result )', 'i32' ) }}}
-				resume()
-			})
-		})
+		var fref = Glk.glk_fileref_create_by_name( usage, AsciiToString( name ), rock )
+		return _fileref_to_id( fref )
 	},
 
 	glem_fileref_create_by_prompt: function( usage, fmode, rock, tagptr )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_set( 'glem_fileref_create_by_prompt', function()
 		{
-			Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
-			.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( result )', 'i32' ) }}}
-				resume()
-			})
+			return Glk.glk_fileref_create_by_prompt( usage, fmode, rock )
+		}, function( result )
+		{
+			{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( result )', 'i32' ) }}}
 		})
 	},
 
-	glem_fileref_create_from_fileref: function( usage, oldtag, rock, tagptr )
+	glem_fileref_create_from_fileref: function( usage, oldtag, rock )
 	{
-		EmterpreterAsync.handle( function( resume )
-		{
-			Glk.glk_fileref_create_from_fileref( usage, _fileref_from_id( oldtag ), rock )
-			.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( result )', 'i32' ) }}}
-				resume()
-			})
-		})
+		var fref = Glk.glk_fileref_create_from_fileref( usage, _fileref_from_id( oldtag ), rock )
+		return _fileref_to_id( fref )
 	},
 
-	glem_fileref_create_temp: function( usage, rock, tagptr )
+	glem_fileref_create_temp: function( usage, rock )
 	{
-		EmterpreterAsync.handle( function( resume )
-		{
-			Glk.glk_fileref_create_temp( usage, rock )
-			.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_fileref_to_id( result )', 'i32' ) }}}
-				resume()
-			})
-		})
+		var fref = Glk.glk_fileref_create_temp( usage, rock )
+		return _fileref_to_id( fref )
 	},
 
 	glk_fileref_delete_file: function( fref )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_noret( 'glk_fileref_delete_file', function()
 		{
-			Glk.glk_fileref_delete_file( _fileref_from_ptr( fref ) )
-			.then( resume )
+			return Glk.glk_fileref_delete_file( _fileref_from_ptr( fref ) )
 		})
 	},
 
 	glem_fileref_destroy: function( tag )
 	{
-		EmterpreterAsync.handle( function( resume )
-		{
-			Glk.glk_fileref_destroy( _fileref_from_id( tag ) )
-			.then( resume )
-		})
+		Glk.glk_fileref_destroy( _fileref_from_id( tag ) )
 	},
 
 	glk_fileref_does_file_exist: function( fref )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_fileref_does_file_exist', function()
 		{
-			Glk.glk_fileref_does_file_exist( _fileref_from_ptr( fref ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_fileref_does_file_exist( _fileref_from_ptr( fref ) )
 		})
 	},
 
@@ -323,55 +325,49 @@ var emglken = {
 
 	glk_get_buffer_stream: function( str, bufaddr, len )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_buffer_stream', function()
 		{
-			Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_buffer_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 		})
 	},
 
 	glk_get_buffer_stream_uni: function( str, bufaddr, len )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_buffer_stream_uni', function()
 		{
-			Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_buffer_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 		})
 	},
 
 	glk_get_char_stream: function( str )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_char_stream', function()
 		{
-			Glk.glk_get_char_stream( _stream_from_ptr( str ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_char_stream( _stream_from_ptr( str ) )
 		})
 	},
 
 	glk_get_char_stream_uni: function( str )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_char_stream_uni', function()
 		{
-			Glk.glk_get_char_stream_uni( _stream_from_ptr( str ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_char_stream_uni( _stream_from_ptr( str ) )
 		})
 	},
 
 	glk_get_line_stream: function( str, bufaddr, len )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_line_stream', function()
 		{
-			Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_line_stream( _stream_from_ptr( str ), new Uint8Array( buffer, bufaddr, len ) )
 		})
 	},
 
 	glk_get_line_stream_uni: function( str, bufaddr, len )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_get_line_stream_uni', function()
 		{
-			Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_get_line_stream_uni( _stream_from_ptr( str ), new Uint32Array( buffer, bufaddr, len ) )
 		})
 	},
 
@@ -410,24 +406,26 @@ var emglken = {
 				}
 				resume( function() { return result } )
 			})
+			.catch( function( err )
+			{
+				console.error( 'glk_image_get_info', err )
+			})
 		})
 	},
 
 	glem_new_window: function( splitwin, method, size, wintype, rock, wintag, strtag, pairwintag )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_set( 'glem_new_window', function()
 		{
-			Glk.glk_window_open( _window_from_id( splitwin ), method, size, wintype, rock )
-			.then( function( win )
+			return Glk.glk_window_open( _window_from_id( splitwin ), method, size, wintype, rock )
+		}, function( win )
+		{
+			{{{ makeSetValue( 'wintag', '0', '_window_to_id( win )', 'i32' ) }}}
+			if ( win )
 			{
-				{{{ makeSetValue( 'wintag', '0', '_window_to_id( win )', 'i32' ) }}}
-				if ( win )
-				{
-					{{{ makeSetValue( 'strtag', '0', 'win.str ? win.str.disprock : 0', 'i32' ) }}}
-					{{{ makeSetValue( 'pairwintag', '0', '_window_to_id( Glk.glk_window_get_parent( win ) )', 'i32' ) }}}
-				}
-				resume()
-			})
+				{{{ makeSetValue( 'strtag', '0', 'win.str ? win.str.disprock : 0', 'i32' ) }}}
+				{{{ makeSetValue( 'pairwintag', '0', '_window_to_id( Glk.glk_window_get_parent( win ) )', 'i32' ) }}}
+			}
 		})
 	},
 
@@ -533,18 +531,16 @@ var emglken = {
 
 	glem_select: function( data )
 	{
-		EmterpreterAsync.handle( function( resume )
+		var glk_event = new Glk.RefStruct()
+		_async_set( 'glem_select', function()
 		{
-			var glk_event = new Glk.RefStruct()
-			Glk.glk_select( glk_event )
-			.then( function()
-			{
-				{{{ makeSetValue( 'data', '0', 'glk_event.get_field( 0 )', 'i32' ) }}}
-				{{{ makeSetValue( 'data', '4', '_window_to_id( glk_event.get_field( 1 ) )', 'i32' ) }}}
-				{{{ makeSetValue( 'data', '8', 'glk_event.get_field( 2 )', 'i32' ) }}}
-				{{{ makeSetValue( 'data', '12', 'glk_event.get_field( 3 )', 'i32' ) }}}
-				resume()
-			})
+			return Glk.glk_select( glk_event )
+		}, function()
+		{
+			{{{ makeSetValue( 'data', '0', 'glk_event.get_field( 0 )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '4', '_window_to_id( glk_event.get_field( 1 ) )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '8', 'glk_event.get_field( 2 )', 'i32' ) }}}
+			{{{ makeSetValue( 'data', '12', 'glk_event.get_field( 3 )', 'i32' ) }}}
 		})
 	},
 
@@ -609,6 +605,10 @@ var emglken = {
 			{
 				Glk.glk_stream_close( str )
 				.then( resume )
+				.catch( function( err )
+				{
+					console.error( 'glem_stream_finalise', err )
+				})
 			}
 			else
 			{
@@ -619,77 +619,63 @@ var emglken = {
 
 	glk_stream_get_position: function( str )
 	{
-		return EmterpreterAsync.handle( function( resume )
+		return _async_ret( 'glk_stream_get_position', function()
 		{
-			Glk.glk_stream_get_position( _stream_from_ptr( str ) )
-			.then( function( result ) { resume( function() { return result } ) } )
+			return Glk.glk_stream_get_position( _stream_from_ptr( str ) )
 		})
 	},
 
 	glem_stream_open_file: function( freftag, fmode, rock, unicode, tagptr )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_set( 'glem_stream_open_file', function()
 		{
 			var fileref = _fileref_from_id( freftag )
-			var promise
 			if ( unicode )
 			{
-				promise = Glk.glk_stream_open_file_uni( fileref, fmode, rock )
+				return Glk.glk_stream_open_file_uni( fileref, fmode, rock )
 			}
 			else
 			{
-				promise = Glk.glk_stream_open_file( fileref, fmode, rock )
+				return Glk.glk_stream_open_file( fileref, fmode, rock )
 			}
-			promise.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_stream_to_id( result )', 'i32' ) }}}
-				resume()
-			})
+		}, function( result )
+		{
+			{{{ makeSetValue( 'tagptr', '0', '_stream_to_id( result )', 'i32' ) }}}
 		})
 	},
 
-	glem_stream_open_memory: function( bufaddr, buflen, fmode, rock, unicode, tagptr )
+	glem_stream_open_memory: function( bufaddr, buflen, fmode, rock, unicode )
 	{
-		EmterpreterAsync.handle( function( resume )
+		var buf
+		var str
+		if ( unicode )
 		{
-			var buf
-			var promise
-			if ( unicode )
-			{
-				buf = new Uint32Array( buffer, bufaddr, buflen )
-				promise = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
-			}
-			else
-			{
-				buf = new Uint8Array( buffer, bufaddr, buflen )
-				promise = Glk.glk_stream_open_memory( buf, fmode, rock )
-			}
-			promise.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_stream_to_id( result )', 'i32' ) }}}
-				resume()
-			})
-		})
+			buf = new Uint32Array( buffer, bufaddr, buflen )
+			str = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
+		}
+		else
+		{
+			buf = new Uint8Array( buffer, bufaddr, buflen )
+			str = Glk.glk_stream_open_memory( buf, fmode, rock )
+		}
+		return _stream_to_id( str )
 	},
 
 	glem_stream_open_resource: function( filenum, rock, unicode, tagptr )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_set( 'glem_stream_open_resource', function()
 		{
-			var promise
 			if ( unicode )
 			{
-				promise = Glk.glk_stream_open_resource_uni( filenum, rock )
+				return Glk.glk_stream_open_resource_uni( filenum, rock )
 			}
 			else
 			{
-				promise = Glk.glk_stream_open_resource( filenum, rock )
+				return Glk.glk_stream_open_resource( filenum, rock )
 			}
-			promise.then( function( result )
-			{
-				{{{ makeSetValue( 'tagptr', '0', '_stream_to_id( result )', 'i32' ) }}}
-				resume()
-			})
+		}, function( result )
+		{
+			{{{ makeSetValue( 'tagptr', '0', '_stream_to_id( result )', 'i32' ) }}}
 		})
 	},
 
@@ -700,10 +686,9 @@ var emglken = {
 
 	glk_stream_set_position: function( str, pos, seekmode )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_noret( 'glk_stream_set_position', function()
 		{
-			Glk.glk_stream_set_position( _stream_from_ptr( str ), pos, seekmode )
-			.then( resume )
+			return Glk.glk_stream_set_position( _stream_from_ptr( str ), pos, seekmode )
 		})
 	},
 
@@ -730,10 +715,9 @@ var emglken = {
 
 	glem_window_close: function( tag )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_noret( 'glem_window_close', function()
 		{
-			Glk.glk_window_close( _window_from_id( tag ) )
-			.then( resume )
+			return Glk.glk_window_close( _window_from_id( tag ) )
 		})
 	},
 
@@ -754,50 +738,46 @@ var emglken = {
 
 	glem_window_get_arrangement: function( tag, methodptr, sizeptr, keywinptr )
 	{
-		EmterpreterAsync.handle( function( resume )
+		var methodBox = new Glk.RefBox()
+		var sizeBox = new Glk.RefBox()
+		var keywinBox = new Glk.RefBox()
+		_async_set( 'glem_window_get_arrangement', function()
 		{
-			var methodBox = new Glk.RefBox()
-			var sizeBox = new Glk.RefBox()
-			var keywinBox = new Glk.RefBox()
-			Glk.glk_window_get_arrangement( _window_from_id( tag ), methodBox, sizeBox, keywinBox )
-			.then( function()
+			return Glk.glk_window_get_arrangement( _window_from_id( tag ), methodBox, sizeBox, keywinBox )
+		}, function()
+		{
+			if ( methodptr )
 			{
-				if ( methodptr )
-				{
-					{{{ makeSetValue( 'methodptr', '0', 'methodBox.value', 'i32' ) }}}
-				}
-				if ( sizeptr )
-				{
-					{{{ makeSetValue( 'sizeptr', '0', 'sizeBox.value', 'i32' ) }}}
-				}
-				if ( keywinptr )
-				{
-					{{{ makeSetValue( 'keywinptr', '0', '_window_to_id( keywinBox.value )', 'i32' ) }}}
-				}
-				resume()
-			})
+				{{{ makeSetValue( 'methodptr', '0', 'methodBox.value', 'i32' ) }}}
+			}
+			if ( sizeptr )
+			{
+				{{{ makeSetValue( 'sizeptr', '0', 'sizeBox.value', 'i32' ) }}}
+			}
+			if ( keywinptr )
+			{
+				{{{ makeSetValue( 'keywinptr', '0', '_window_to_id( keywinBox.value )', 'i32' ) }}}
+			}
 		})
 	},
 
 	glk_window_get_size: function( window, width, height )
 	{
-		EmterpreterAsync.handle( function( resume )
+		var widthBox = new Glk.RefBox()
+		var heightBox = new Glk.RefBox()
+		_async_set( 'glk_window_get_size', function()
 		{
-			var widthBox = new Glk.RefBox()
-			var heightBox = new Glk.RefBox()
-			Glk.glk_window_get_size( _window_from_ptr( window ), widthBox, heightBox )
-			.then( function()
+			return Glk.glk_window_get_size( _window_from_ptr( window ), widthBox, heightBox )
+		}, function()
+		{
+			if ( width )
 			{
-				if ( width )
-				{
-					{{{ makeSetValue( 'width', '0', 'widthBox.value', 'i32' ) }}}
-				}
-				if ( height )
-				{
-					{{{ makeSetValue( 'height', '0', 'heightBox.value', 'i32' ) }}}
-				}
-				resume()
-			})
+				{{{ makeSetValue( 'width', '0', 'widthBox.value', 'i32' ) }}}
+			}
+			if ( height )
+			{
+				{{{ makeSetValue( 'height', '0', 'heightBox.value', 'i32' ) }}}
+			}
 		})
 	},
 
@@ -808,10 +788,9 @@ var emglken = {
 
 	glk_window_set_arrangement: function( window, method, size, keywin )
 	{
-		EmterpreterAsync.handle( function( resume )
+		_async_noret( 'glk_window_set_arrangement', function()
 		{
-			Glk.glk_window_set_arrangement( _window_from_ptr( window ), method, size, _window_from_ptr( keywin ) )
-			.then( resume )
+			return Glk.glk_window_set_arrangement( _window_from_ptr( window ), method, size, _window_from_ptr( keywin ) )
 		})
 	},
 
@@ -843,6 +822,9 @@ function addDeps( object, deps )
 
 addDeps( emglken, [
 	'$EmterpreterAsync',
+	'async_noret',
+	'async_ret',
+	'async_set',
 	'fileref_from_id',
 	'stream_from_id',
 	'window_from_id',

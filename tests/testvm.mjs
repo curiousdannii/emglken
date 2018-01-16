@@ -5,7 +5,7 @@
 import fs from 'fs'
 import readline from 'readline'
 
-import { GlkProxy } from '../asyncglk/'
+import { Glk as AsyncGlk, DialogTerm } from '../asyncglk/'
 import GiDispa from '../emglken/emglken_dispatch.js'
 import GlkOte from 'glkote-term'
 import minimist from 'minimist'
@@ -48,7 +48,7 @@ if ( argv._[0] === 'hugo' )
 }
 
 const vm = new VM()
-const Glk = new GlkProxy( GlkOte.Glk )
+const Glk = new AsyncGlk()
 
 // Readline options
 const stdin = process.stdin
@@ -68,7 +68,7 @@ const rl_opts = {
 
 const options = {
 	vm: vm,
-	Dialog: new GlkOte.Dialog( rl_opts ),
+	Dialog: new DialogTerm( rl_opts ),
 	GiDispa: new GiDispa(),
 	Glk: Glk,
 	GlkOte: new GlkOte( rl_opts ),
