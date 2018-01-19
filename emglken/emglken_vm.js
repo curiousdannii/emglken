@@ -40,14 +40,14 @@ class EmglkenVM
 		const moduleoptions = {
 			Glk: this.options.Glk,
 			GiDispa: this.options.GiDispa,
+			locateFile: path => this.options.dirname + '/' + path,
+			memoryInitializerPrefixURL: this.options.dirname + '/',
 		}
 		// Node
 		if ( typeof process === 'object' )
 		{
 			const fs = require( 'fs' )
 
-			moduleoptions.locateFile = path => this.options.dirname + '/' + path
-			moduleoptions.memoryInitializerPrefixURL = this.options.dirname + '/'
 			fs.readFile( this.options.dirname + '/' + this.options.emptfile, ( err, data ) =>
 			{
 				if ( err )
@@ -55,6 +55,18 @@ class EmglkenVM
 					throw err
 				}
 				moduleoptions.emterpreterFile = data.buffer
+				this.vm = this.options.module( moduleoptions )
+				this.vm.then( () => this.start() )
+			})
+		}
+		// Web Worker
+		else if ( typeof fetch === 'function' )
+		{
+			fetch( this.options.dirname + '/' + this.options.emptfile )
+			.then( res => res.arrayBuffer() )
+			.then( buffer =>
+			{
+				moduleoptions.emterpreterFile = buffer
 				this.vm = this.options.module( moduleoptions )
 				this.vm.then( () => this.start() )
 			})

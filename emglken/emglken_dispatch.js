@@ -3,7 +3,7 @@
 Emglken dispatch layer
 ======================
 
-Copyright (c) 2017 Dannii Willis
+Copyright (c) 2018 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -110,4 +110,8 @@ if ( typeof module === 'object' && module.exports )
 if ( typeof window !== 'undefined' )
 {
 	window.GiDispa = new EmglkenDispatch()
+}
+if ( typeof self !== 'undefined' )
+{
+	self.GiDispa = new EmglkenDispatch()
 }
