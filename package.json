@@ -13,7 +13,7 @@
   "homepage": "https://github.com/curiousdannii/emglken",
   "devDependencies": {
     "babili": "^0.1.4",
-    "browserify": "^15.0.0",
+    "browserify": "^16.0.0",
     "glkote-term": "^0.4.0",
     "minimist": "^1.2.0",
     "mute-stream": "0.0.7"
