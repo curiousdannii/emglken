@@ -3,13 +3,15 @@
 Emglken VM
 ==========
 
-Copyright (c) 2017 Dannii Willis
+Copyright (c) 2018 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
 */
 
 const base_options = {
+	// How long the temporary buffer for retrieving an autosavefile should be
+	autosavelen: 64 * 1024,
 	siglen: 64,
 }
 
@@ -40,6 +42,7 @@ class EmglkenVM
 		const moduleoptions = {
 			Glk: this.options.Glk,
 			GiDispa: this.options.GiDispa,
+			vm: this,
 		}
 		// Node
 		if ( typeof process === 'object' )
@@ -64,6 +67,8 @@ class EmglkenVM
 			throw new Error( 'Unsupported runtime environment' )
 		}
 	}
+
+	do_autosave() {}
 
 	get_signature()
 	{
