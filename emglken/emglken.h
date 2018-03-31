@@ -59,7 +59,6 @@ struct glk_window_struct {
     int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
     void *buf;
     glui32 buflen;
-    glui32 incurpos;
     gidispatch_rock_t arrayrock;
     
     gidispatch_rock_t disprock;
@@ -98,7 +97,6 @@ struct glk_fileref_struct {
 /* A few global variables */
 
 extern window_t *gli_rootwin;
-extern window_t *gli_focuswin;
 extern void (*gli_interrupt_handler)(void);
 
 extern gidispatch_rock_t (*gli_register_obj)(void *obj, glui32 objclass);
@@ -140,6 +138,11 @@ extern stream_t *gli_stream_find_by_tag(glui32 tag);
 extern fileref_t *gli_new_fileref(glui32 tag, glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
 
+/* New C funcs */
+
+extern void glem_restore_state(void);
+extern void init_emglken(void);
+
 /* Functions implemented in library.js */
 
 extern void glem_cancel_line_event(glui32 wintag, glui32 *evdata);
@@ -150,18 +153,24 @@ extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 roc
 extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
 extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
 extern void glem_fileref_destroy(glui32 tag);
+extern glui32 glem_fileref_iterate(glui32 freftag, glui32 *rockptr);
 extern glui32 glem_get_window_echostream_tag(glui32 wintag);
 extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *strtagptr, glui32 *pairwintag);
 extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
+extern void glem_restore_glkapi(void);
 extern void glem_select(glui32 *evdata);
 extern void glem_stream_finalise(glui32 tag, stream_result_t *result, int close);
+extern glui32 glem_stream_get_current(void);
+extern glui32 glem_stream_iterate(glui32 strtag, glui32 *rockptr, int *type, int *unicode, void *buf, glui32 *buflen);
 extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
 extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
 extern void glem_stream_set_current(glui32 tag);
+extern int glem_try_autorestore(glui32 *ramStreamTag, glui32 *miscStreamTag);
 extern void glem_window_close(glui32 wintag);
 extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
-extern void init_emglken(void);
+extern void glem_window_get_tree(glui32 wintag, glui32 *child1ptr, glui32 *child2ptr, glui32 *parentptr, glui32 *strptr);
+extern glui32 glem_window_iterate(glui32 wintag, glui32 *rockptr, int *type, int *line_request, int *unicode, void *buf, glui32 *buflen);
 
 
 /* A macro that I can't think of anywhere else to put it. */

@@ -18,10 +18,6 @@
 static window_t *gli_windowlist = NULL; 
 
 window_t *gli_rootwin = NULL; /* The topmost window. */
-window_t *gli_focuswin = NULL; /* The window selected by the player. 
-    (This has nothing to do with the "current output stream", which is
-    gli_currentstr in gtstream.c. In fact, the program doesn't know
-    about gli_focuswin at all.) */
 
 void (*gli_interrupt_handler)(void) = NULL;
 
@@ -32,7 +28,6 @@ void gli_initialize_windows()
 
     srandom(time(NULL));
     gli_rootwin = NULL;
-    gli_focuswin = NULL;
 }
 
 /* Get out fast. This is used by the ctrl-C interrupt handler, under Unix. 
@@ -227,10 +222,6 @@ winid_t glk_window_open(winid_t splitwin, glui32 method, glui32 size,
 static void gli_window_close(window_t *win, int recurse)
 {
     window_t *wx;
-    
-    if (gli_focuswin == win) {
-        gli_focuswin = NULL;
-    }
     
     switch (win->type) {
         case wintype_Blank:
@@ -464,7 +455,6 @@ void gli_window_accept_line(window_t *win, glui32 len)
     gli_event_store(evtype_LineInput, win, len, termkey);
     win->line_request = FALSE;
     win->buf = NULL;
-    win->incurpos = 0;
     win->buflen = 0;
 
     if (gli_unregister_arr) {
@@ -495,7 +485,6 @@ void glk_request_line_event(window_t *win, char *buf, glui32 maxlen,
     win->buf = buf;
     win->unicode = FALSE;
     win->buflen = maxlen;
-    win->incurpos = initlen;
     
     if (gli_register_arr) {
         win->arrayrock = (*gli_register_arr)(buf, maxlen, "&+#!Cn");
@@ -527,7 +516,6 @@ void glk_request_line_event_uni(window_t *win, glui32 *buf, glui32 maxlen, glui3
     win->buf = buf;
     win->unicode = TRUE;
     win->buflen = maxlen;
-    win->incurpos = initlen;
     
     if (gli_register_arr) {
         win->arrayrock = (*gli_register_arr)(buf, maxlen, "&+#!Iu");

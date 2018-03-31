@@ -270,6 +270,18 @@ var emglken = {
 		return Glk.glk_fileref_does_file_exist( _fileref_from_ptr( fref ) )
 	},
 
+	glem_fileref_iterate: function( freftag, rockref )
+	{
+		var rockBox = new Glk.RefBox()
+		var fref = Glk.glk_fileref_iterate( _fileref_from_id( freftag ), rockBox )
+		if ( !fref )
+		{
+			return 0
+		}
+		{{{ makeSetValue( 'rockref', '0', 'rockBox.value', 'i32' ) }}}
+		return _fileref_to_id( fref )
+	},
+
 	glk_gestalt_ext: function( sel, val, arraddr, arrlen )
 	{
 		var arr = new Uint32Array( buffer, arraddr, arrlen )
@@ -430,11 +442,13 @@ var emglken = {
 		if ( unicode )
 		{
 			var buf = new Uint32Array( buffer, bufaddr, maxlen )
+			GiDispa.retain_array( buf, { addr: bufaddr, unicode: 1 } )
 			Glk.glk_request_line_event_uni( win, buf, initlen )
 		}
 		else
 		{
 			var buf = new Uint8Array( buffer, bufaddr, maxlen )
+			GiDispa.retain_array( buf, { addr: bufaddr } )
 			Glk.glk_request_line_event( win, buf, initlen )
 		}
 	},
@@ -447,6 +461,11 @@ var emglken = {
 	glk_request_timer_events: function( ms )
 	{
 		Glk.glk_request_timer_events( ms )
+	},
+
+	glem_restore_glkapi: function()
+	{
+		Glk.restore_allstate( Module.vm.snapshot.glk )
 	},
 
 	glem_select__deps: ['$EmterpreterAsync', 'window_to_id'],
@@ -533,9 +552,34 @@ var emglken = {
 		}
 	},
 
+	glem_stream_get_current: function()
+	{
+		return _stream_to_id( Glk.glk_stream_get_current() )
+	},
+
 	glk_stream_get_position: function( str )
 	{
 		return Glk.glk_stream_get_position( _stream_from_ptr( str ) )
+	},
+
+	glem_stream_iterate: function( strtag, rockref, typeptr, unicodeptr, bufptr, buflenptr )
+	{
+		var rockBox = new Glk.RefBox()
+		var str = Glk.glk_stream_iterate( _stream_from_id( strtag ), rockBox )
+		if ( !str )
+		{
+			return 0
+		}
+		{{{ makeSetValue( 'rockref', '0', 'rockBox.value', 'i32' ) }}}
+		{{{ makeSetValue( 'typeptr', '0', 'str.type', 'i32' ) }}}
+		{{{ makeSetValue( 'unicodeptr', '0', 'str.unicode', 'i32' ) }}}
+		var arr = GiDispa.get_retained_array( str.buf )
+		if ( arr )
+		{
+			{{{ makeSetValue( 'bufptr', '0', 'arr.addr', 'i32' ) }}}
+			{{{ makeSetValue( 'buflenptr', '0', 'arr.len', 'i32' ) }}}
+		}
+		return _stream_to_id( str )
 	},
 
 	glem_stream_open_file: function( freftag, fmode, rock, unicode )
@@ -560,11 +604,13 @@ var emglken = {
 		if ( unicode )
 		{
 			buf = new Uint32Array( buffer, bufaddr, buflen )
+			GiDispa.retain_array( buf, { addr: bufaddr, unicode: 1 } )
 			str = Glk.glk_stream_open_memory_uni( buf, fmode, rock )
 		}
 		else
 		{
 			buf = new Uint8Array( buffer, bufaddr, buflen )
+			GiDispa.retain_array( buf, { addr: bufaddr } )
 			str = Glk.glk_stream_open_memory( buf, fmode, rock )
 		}
 		return _stream_to_id( str )
@@ -608,6 +654,42 @@ var emglken = {
 		var datebox = new Glk.RefStruct()
 		Glk.glk_time_to_date_utc( _glem_time_box_from_struct( timeptr ), datebox )
 		_glem_date_box_to_struct( datebox, dateptr )
+	},
+
+	glem_try_autorestore: function( ramStreamTag, miscStreamTag )
+	{
+		var vm = Module.vm
+		var Dialog = vm.options.Dialog
+		if ( Dialog )
+		{
+			if ( vm.options.clear_vm_autosave )
+			{
+				Dialog.autosave_write( vm.signature, null )
+			}
+			else if ( vm.options.do_vm_autosave )
+			{
+				try
+				{
+					var snapshot = Dialog.autosave_read( vm.signature )
+					if ( snapshot )
+					{
+						vm.snapshot = snapshot
+
+						// Create the streams
+						var ramstr = Glk.glk_stream_open_memory( new Uint8Array( snapshot.ram ), 2, 0 )
+						var miscstr = Glk.glk_stream_open_memory_uni( Uint32Array.from( snapshot.misc ), 2, 0 )
+						{{{ makeSetValue( 'ramStreamTag', '0', '_stream_to_id( ramstr )', 'i32' ) }}}
+						{{{ makeSetValue( 'miscStreamTag', '0', '_stream_to_id( miscstr )', 'i32' ) }}}
+						return 1
+					}
+				}
+				catch (ex)
+				{
+					//this.log( 'Autorestore failed, deleting it' )
+					Dialog.autosave_write( vm.signature, null )
+				}
+			}
+		}
 	},
 
 	glk_window_clear: function( window )
@@ -668,6 +750,36 @@ var emglken = {
 		{
 			{{{ makeSetValue( 'height', '0', 'heightBox.value', 'i32' ) }}}
 		}
+	},
+
+	glem_window_get_tree: function( wintag, child1ptr, child2ptr, parentptr, strptr )
+	{
+		var win = _window_from_id( wintag )
+		{{{ makeSetValue( 'child1ptr', '0', '_window_to_id( win.child1 )', 'i32' ) }}}
+		{{{ makeSetValue( 'child2ptr', '0', '_window_to_id( win.child2 )', 'i32' ) }}}
+		{{{ makeSetValue( 'parentptr', '0', '_window_to_id( win.parent )', 'i32' ) }}}
+		{{{ makeSetValue( 'strptr', '0', '_stream_to_id( win.str )', 'i32' ) }}}
+	},
+
+	glem_window_iterate: function( wintag, rockref, typeptr, line_requestptr, unicodeptr, bufptr, buflenptr )
+	{
+		var rockBox = new Glk.RefBox()
+		var win = Glk.glk_window_iterate( _window_from_id( wintag ), rockBox )
+		if ( !win )
+		{
+			return 0
+		}
+		{{{ makeSetValue( 'rockref', '0', 'rockBox.value', 'i32' ) }}}
+		{{{ makeSetValue( 'typeptr', '0', 'win.type', 'i32' ) }}}
+		{{{ makeSetValue( 'line_requestptr', '0', 'win.line_request', 'i32' ) }}}
+		{{{ makeSetValue( 'unicodeptr', '0', 'win.line_request_uni', 'i32' ) }}}
+		var arr = GiDispa.get_retained_array( win.linebuf )
+		if ( arr )
+		{
+			{{{ makeSetValue( 'bufptr', '0', 'arr.addr', 'i32' ) }}}
+			{{{ makeSetValue( 'buflenptr', '0', 'arr.len', 'i32' ) }}}
+		}
+		return _window_to_id( win )
 	},
 
 	glk_window_move_cursor: function( window, xpos, ypos )

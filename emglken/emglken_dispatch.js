@@ -9,8 +9,12 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const dummyArgInt = {
-	serialize: () => ({}),
+const argUint8 = {
+	serialize: () => 0,
+}
+
+const argUint32 = {
+	serialize: () => 1,
 }
 
 class EmglkenDispatch
@@ -23,6 +27,7 @@ class EmglkenDispatch
 			'window': {},
 		}
 		this.last_used_id = 101
+		this.retained_arrays = []
 	}
 
 	check_autosave()
@@ -80,26 +85,42 @@ class EmglkenDispatch
 
 	get_retained_array( arr )
 	{
-		return {
-			arg: dummyArgInt,
-			arr: arr.slice(),
-			len: arr.length,
-		}
+		return this.retained_arrays.filter( r => r.origarr === arr )[0]
 	}
 
 	prepare_resume()
 	{}
 
-	retain_array()
-	{}
+	retain_array( arr, obj )
+	{
+		if ( obj )
+		{
+			this.retained_arrays.push({
+				addr: obj.addr,
+				get arr() { return Array.from( arr ) },
+				arg: obj.unicode || obj.arg ? argUint32 : argUint8,
+				len: arr.length,
+				origarr: arr,
+			})
+		}
+	}
 
 	set_vm( vm )
 	{
 		this.vm = vm
 	}
 
-	unretain_array()
-	{}
+	unretain_array( arr )
+	{
+		const data = this.retained_arrays.filter( r => r.origarr === arr )[0]
+		this.retained_arrays = this.retained_arrays.filter( r => r.origarr !== arr )
+
+		// This is an array from an autorestore, so we need to manually write back to the VM
+		if ( data && !data.origarr.buffer )
+		{
+			this.vm.vm.HEAPU8.set( new Uint8Array( data.arg.serialize() ? Uint32Array.from( data.origarr ).buffer : data.origarr ), data.addr )
+		}
+	}
 }
 
 // Export the class and an instance

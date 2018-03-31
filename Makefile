@@ -32,7 +32,7 @@ git.min.js: git.js
 	echo '/* Git (Emglken) v$(shell jq -r .git -- versions.json) https://github.com/curiousdannii/emglken */' > $@
 	babili git.js >> $@
 
-glulxe.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe.js glulxe/library.js
+glulxe.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe.js
 	$(MAKE) -C glulxe glulxe-core.js
 	cp glulxe/glulxe-core.js.* .
 	browserify glulxe/glulxe.js --bare --igv x --standalone Glulxe > $@
