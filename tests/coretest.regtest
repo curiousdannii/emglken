@@ -1,0 +1,7 @@
+** game: coretest.hex
+
+* basic
+
+Testing core functions of Hugo v2.5
+No errors
+!error(s)

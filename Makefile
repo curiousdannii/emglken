@@ -64,3 +64,5 @@ test: git.js glulxe.js glulxe-profiler.js
 	cd tests && python regtest.py -i "./testvm glulxe -b" glulxercise.regtest
 	cd tests && python regtest.py -i "./testvm glulxe --profile_filename=glulxprof" glulxercise-profiler.regtest
 	cd tests && python regtest.py -i "./testvm glulxe --profile_filename=glulxprof -b" glulxercise-profiler.regtest
+	cd tests && python regtest.py -i "./testvm hugo" coretest.regtest
+	cd tests && python regtest.py -i "./testvm hugo -b" coretest.regtest
