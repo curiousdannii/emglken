@@ -18,7 +18,7 @@ clean:
 	$(RM) -r ./*.js
 #	$(MAKE) -C emglken clean
 
-EMGLKEN_INC = emglken/emglken_vm.js emglken/libemglken.a emglken/library.js
+EMGLKEN_INC = emglken/libemglken.a emglken/library.js emglken/include/*.js
 
 emglken/libemglken.a: emglken/Makefile emglken/*.c emglken/*.h
 	$(MAKE) -C emglken

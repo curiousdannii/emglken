@@ -5,7 +5,7 @@
 import fs from 'fs'
 import readline from 'readline'
 
-import GiDispa from '../emglken/emglken_dispatch.js'
+import GiDispa from '../emglken/include/dispatch.js'
 import GlkOte from 'glkote-term'
 import minimist from 'minimist'
 import MuteStream from 'mute-stream'
@@ -78,7 +78,8 @@ const options = {
 Glk.set_references( options )
 
 // Set up the profile stream if it has been set
-if ( argv.profile_filename )
+// TODO Fix up a fake file stream or something
+/*if ( argv.profile_filename )
 {
 	const fref = Glk.glk_fileref_create_by_name( 0, argv.profile_filename, 0 )
 	if ( fref )
@@ -86,7 +87,7 @@ if ( argv.profile_filename )
 		options.profile_stream = Glk.glk_stream_open_file( fref, 1, 0 )
 		Glk.glk_fileref_destroy( fref )
 	}
-}
+}*/
 
 vm.prepare( fs.readFileSync( argv._[1] ), options )
 

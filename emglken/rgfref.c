@@ -22,10 +22,6 @@
 /* Linked list of all filerefs */
 static fileref_t *gli_filereflist = NULL; 
 
-#define BUFLEN (256)
-
-static char workingdir[BUFLEN] = ".";
-
 fileref_t *gli_new_fileref(glui32 tag, glui32 rock)
 {
     fileref_t *fref = (fileref_t *)malloc(sizeof(fileref_t));
@@ -66,99 +62,8 @@ void gli_delete_fileref(fileref_t *fref)
         gli_filereflist = next;
     if (next)
         next->prev = prev;
-    
-    glem_fileref_destroy( fref->tag );
+
     free(fref);
-}
-
-void glk_fileref_destroy(fileref_t *fref)
-{
-    if (!fref) {
-        gli_strict_warning("fileref_destroy: invalid ref");
-        return;
-    }
-    gli_delete_fileref(fref);
-}
-
-frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
-{
-    fileref_t *fref;
-    
-    glui32 tag = glem_fileref_create_temp( usage, rock );
-    if ( tag )
-    {
-        fref = gli_new_fileref( tag, rock );
-    }
-    if ( !fref )
-    {
-        gli_strict_warning("fileref_create_temp: unable to create fileref.");
-        return NULL;
-    }
-
-    return fref;
-}
-
-frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
-    glui32 rock)
-{
-    fileref_t *fref;
-
-    if (!oldfref) {
-        gli_strict_warning("fileref_create_from_fileref: invalid ref");
-        return NULL;
-    }
-
-    glui32 tag = glem_fileref_create_from_fileref( usage, oldfref->tag, rock );
-    if ( tag )
-    {
-        fref = gli_new_fileref( tag, rock );
-    }
-    if ( !fref )
-    {
-        gli_strict_warning("fileref_create_from_fileref: unable to create fileref.");
-        return NULL;
-    }
-
-    return fref;
-}
-
-frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
-    glui32 rock)
-{
-    fileref_t *fref;
-
-    glui32 tag = glem_fileref_create_by_name( usage, name, rock );
-    if ( tag )
-    {
-        fref = gli_new_fileref( tag, rock );
-    }
-    if ( !fref )
-    {
-        gli_strict_warning("fileref_create_by_name: unable to create fileref.");
-        return NULL;
-    }
-
-    return fref;
-}
-
-frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
-    glui32 rock)
-{
-    fileref_t *fref;
-    glui32 tag;
-    
-    glem_fileref_create_by_prompt( usage, fmode, rock, &tag );
-    if ( tag )
-    {
-        fref = gli_new_fileref( tag, rock );
-    }
-    if ( !fref )
-    {
-        gli_strict_warning("fileref_create_by_prompt: unable to create fileref.");
-        return NULL;
-    }
-    
-    return fref;
 }
 
 frefid_t glk_fileref_iterate(fileref_t *fref, glui32 *rock)

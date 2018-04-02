@@ -38,29 +38,11 @@ typedef struct glk_window_struct window_t;
 typedef struct glk_stream_struct stream_t;
 typedef struct glk_fileref_struct fileref_t;
 
-#define MAGIC_WINDOW_NUM (9826)
-#define MAGIC_STREAM_NUM (8269)
-#define MAGIC_FILEREF_NUM (6982)
-
 struct glk_window_struct {
-    glui32 updatetag; /* numeric tag for the window in output */
+    glui32 tag; /* numeric tag for the window in output */
     glui32 rock;
 
-    glui32 type;
-
-    // Window relationships
-    window_t *parent; /* pair window which contains this one */
-    window_t *child1, *child2; /* for pair windows only */
-    
-    stream_t *str; /* the window stream. */
-
-    // Needed for retaining line input arrays
-    int line_request;
-    int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
-    void *buf;
-    glui32 buflen;
     gidispatch_rock_t arrayrock;
-    
     gidispatch_rock_t disprock;
     window_t *next, *prev; /* in the big linked list of windows */
 };
@@ -74,14 +56,7 @@ struct glk_stream_struct {
     glui32 tag;
     glui32 rock;
 
-    int type; /* file, window, or memory stream */
-
-    // Needed for retaining arrays for memory streams
-    int unicode; /* one-byte or four-byte chars? Not meaningful for windows */
-    void *buf;
-    glui32 buflen;
     gidispatch_rock_t arrayrock;
-
     gidispatch_rock_t disprock;
     stream_t *next, *prev; /* in the big linked list of streams */
 };
@@ -96,7 +71,6 @@ struct glk_fileref_struct {
 
 /* A few global variables */
 
-extern window_t *gli_rootwin;
 extern void (*gli_interrupt_handler)(void);
 
 extern gidispatch_rock_t (*gli_register_obj)(void *obj, glui32 objclass);
@@ -115,71 +89,37 @@ extern int gli_debugger;
 /* Declarations of library internal functions. */
 
 extern void gli_initialize_misc(void);
-
 extern void gli_initialize_events(void);
-extern void gli_event_store(glui32 type, window_t *win, glui32 val1, glui32 val2);
-extern int gli_timer_need_update(glui32 *msec);
-
 extern void gli_initialize_windows(void);
 extern void gli_fast_exit(void);
 extern void gli_display_warning(char *msg);
 extern void gli_display_error(char *msg);
-extern window_t *gli_window_find_by_tag(glui32 tag);
-extern window_t *gli_new_window(glui32 type, glui32 rock, glui32 windowtag);
+extern window_t *gli_new_window(glui32 tag, glui32 rock);
 extern void gli_delete_window(window_t *win);
-extern void gli_window_accept_line(window_t *win, glui32 len);
 
-extern stream_t *gli_new_stream(int type, glui32 tag, glui32 rock);
+extern stream_t *gli_new_stream(glui32 tag, glui32 rock);
 extern void gli_delete_stream(stream_t *str);
-extern void gli_stream_set_current(stream_t *str);
 extern void gli_streams_close_all(void);
-extern stream_t *gli_stream_find_by_tag(glui32 tag);
 
 extern fileref_t *gli_new_fileref(glui32 tag, glui32 rock);
 extern void gli_delete_fileref(fileref_t *fref);
 
 /* New C funcs */
 
-extern void glem_restore_state(void);
-extern void init_emglken(void);
+extern void glem_register_arr( stream_t *obj, glui32 *buf, glui32 maxlen, int unicode );
+extern void *glem_register_obj( glui32 objclass, glui32 tag, glui32 rock );
+extern void glem_unregister_arr( stream_t *obj, glui32 *buf, glui32 maxlen, int unicode );
+extern void glem_unregister_obj( glui32 objclass, void *obj );
+extern void init_emglken( void );
 
 /* Functions implemented in library.js */
 
-extern void glem_cancel_line_event(glui32 wintag, glui32 *evdata);
-extern void glem_exit(void);
-extern void glem_fatal_error(char *msg);
-extern glui32 glem_fileref_create_by_name(glui32 usage, char *name, glui32 rock);
-extern void glem_fileref_create_by_prompt(glui32 usage, glui32 fmode, glui32 rock, glui32 *tagptr);
-extern glui32 glem_fileref_create_from_fileref(glui32 usage, glui32 oldtag, glui32 rock);
-extern glui32 glem_fileref_create_temp(glui32 usage, glui32 rock);
-extern void glem_fileref_destroy(glui32 tag);
-extern glui32 glem_fileref_iterate(glui32 freftag, glui32 *rockptr);
-extern glui32 glem_get_window_echostream_tag(glui32 wintag);
-extern glui32 glem_new_window(glui32 split, glui32 method, glui32 size, glui32 wintype, glui32 rock, glui32 *strtagptr, glui32 *pairwintag);
-extern void glem_request_line_event(glui32 wintag, void *buf, glui32 maxlen, glui32 initlen, int unicode);
-extern void glem_restore_glkapi(void);
-extern void glem_select(glui32 *evdata);
-extern void glem_stream_finalise(glui32 tag, stream_result_t *result, int close);
-extern glui32 glem_stream_get_current(void);
-extern glui32 glem_stream_iterate(glui32 strtag, glui32 *rockptr, int *type, int *unicode, void *buf, glui32 *buflen);
-extern glui32 glem_stream_open_file(glui32 tag, glui32 fmode, glui32 rock, int unicode);
-extern glui32 glem_stream_open_memory(void *buf, glui32 buflen, glui32 fmode, glui32 rock, int unicode);
-extern glui32 glem_stream_open_resource(glui32 filenum, glui32 rock, int unicode);
-extern void glem_stream_set_current(glui32 tag);
-extern int glem_try_autorestore(glui32 *ramStreamTag, glui32 *miscStreamTag);
-extern void glem_window_close(glui32 wintag);
-extern void glem_window_get_arrangement(glui32 wintag, glui32 *methodptr, glui32 *sizeptr, glui32 *keywinptr);
-extern void glem_window_get_tree(glui32 wintag, glui32 *child1ptr, glui32 *child2ptr, glui32 *parentptr, glui32 *strptr);
-extern glui32 glem_window_iterate(glui32 wintag, glui32 *rockptr, int *type, int *line_request, int *unicode, void *buf, glui32 *buflen);
-
-
-/* A macro that I can't think of anywhere else to put it. */
-
-#define gli_event_clearevent(evp)  \
-    ((evp)->type = evtype_None,    \
-    (evp)->win = NULL,    \
-    (evp)->val1 = 0,   \
-    (evp)->val2 = 0)
+extern void glem_exit( void );
+extern void glem_fatal_error( char *msg );
+extern void glem_get_pending_unregister_arr( stream_t **objptr, glui32 **buf, glui32 *maxlenptr, int *unicodeptr );
+extern void glem_restore_glkapi( void );
+extern void glem_select( event_t *event );
+extern int glem_try_autorestore( stream_t **ramStreamPtr, stream_t **miscStreamPtr );
 
 /* A macro which reads and decodes one character of UTF-8. Needs no
    explanation, I'm sure.
