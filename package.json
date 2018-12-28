@@ -16,7 +16,7 @@
     "browserify": "^16.0.0",
     "glkote-term": "^0.4.0",
     "minimist": "^1.2.0",
-    "mute-stream": "0.0.7"
+    "mute-stream": "0.0.8"
   },
   "scripts": {
     "test": "make test"
