@@ -57,7 +57,7 @@ emglken.zip: git.js glulxe.js glulxe-profiler.js hugo.js
 	hugo.js hugo-core.js.bin hugo-core.js.mem
 
 # Run the test suite
-test: git.js glulxe.js glulxe-profiler.js
+test: git.js glulxe.js glulxe-profiler.js hugo.js
 	cd tests && python regtest.py -i "./testvm git" glulxercise.regtest
 	cd tests && python regtest.py -i "./testvm git -b" glulxercise.regtest
 	cd tests && python regtest.py -i "./testvm glulxe" glulxercise.regtest
