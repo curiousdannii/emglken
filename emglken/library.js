@@ -467,6 +467,16 @@ var emglken = {
 		Glk.glk_set_hyperlink_stream( _stream_from_ptr( str ), linkval )
 	},
 
+	garglk_set_reversevideo: function( reverse )
+	{
+		Glk.garglk_set_reversevideo( reverse )
+	},
+
+	garglk_set_reversevideo_stream: function( str, reverse )
+	{
+		Glk.garglk_set_reversevideo_stream( _stream_from_ptr( str ), reverse )
+	},
+
 	glk_set_style: function( style )
 	{
 		Glk.glk_set_style( style )
@@ -486,6 +496,16 @@ var emglken = {
 	glk_set_window: function( winptr )
 	{
 		Glk.glk_set_window( _window_from_ptr( winptr ) )
+	},
+
+	garglk_set_zcolors: function( fg, bg )
+	{
+		Glk.garglk_set_zcolors( fg, bg )
+	},
+
+	garglk_set_zcolors_stream: function( str, fg, bg )
+	{
+		Glk.garglk_set_zcolors_stream( _stream_from_ptr( str ), fg, bg )
 	},
 
 	glk_simple_time_to_date_local__deps: [ 'glem_date_box_to_struct' ],
@@ -593,6 +613,29 @@ var emglken = {
 	glk_stream_set_position: function( strptr, pos, seekmode )
 	{
 		Glk.glk_stream_set_position( _stream_from_ptr( strptr ), pos, seekmode )
+	},
+
+	glk_style_distinguish: function( win, style1, style2 )
+	{
+		return Glk.glk_style_distinguish( _window_from_ptr( win ), style1, style2 )
+	},
+
+	glk_stylehint_clear: function( wintype, style, hint)
+	{
+		Glk.glk_stylehint_clear( wintype, style, hint)
+	},
+
+	glk_stylehint_set: function( wintype, style, hint, value)
+	{
+		Glk.glk_stylehint_set( wintype, style, hint, value)
+	},
+
+	glk_style_measure: function( win, style, hint, resultptr )
+	{
+		var resultBox = new Glk.RefBox()
+		var retval = Glk.glk_style_measure( _window_from_ptr( win ), style, hint, resultBox )
+		{{{ makeSetValue( 'resultptr', '0', 'resultBox.value', 'i32' ) }}}
+		return retval
 	},
 
 	glk_time_to_date_local__deps: [ 'glem_date_box_to_struct', 'glem_time_box_from_struct' ],

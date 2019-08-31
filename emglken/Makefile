@@ -22,7 +22,7 @@ GLKLIB = libemglken.a
 
 EMGLKEN_OBJS = \
   main.o rgevent.o rgfref.o rggestal.o \
-  rgmisc.o rgstream.o rgstyle.o \
+  rgmisc.o rgstream.o \
   rgwindow.o rgschan.o rgblorb.o \
   gi_dispa.o gi_debug.o gi_blorb.o
 
