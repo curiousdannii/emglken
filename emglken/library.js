@@ -3,7 +3,7 @@
 Emglken Emscripten library
 ==========================
 
-Copyright (c) 2018 Dannii Willis
+Copyright (c) 2019 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -18,17 +18,17 @@ var emglken = {
 	// Use the struct's first entry, the tag, to find the JS objects
 	fileref_from_ptr: function( frefptr )
 	{
-		return GiDispa.class_obj_from_id( 'fileref', {{{ makeGetValue( 'frefptr', '0', 'i32' ) }}} )
+		return frefptr ? GiDispa.class_obj_from_id( 'fileref', {{{ makeGetValue( 'frefptr', '0', 'i32' ) }}} ) : null
 	},
 
 	stream_from_ptr: function( strptr )
 	{
-		return GiDispa.class_obj_from_id( 'stream', {{{ makeGetValue( 'strptr', '0', 'i32' ) }}} )
+		return strptr ? GiDispa.class_obj_from_id( 'stream', {{{ makeGetValue( 'strptr', '0', 'i32' ) }}} ) : null
 	},
 
 	window_from_ptr: function( winptr )
 	{
-		return GiDispa.class_obj_from_id( 'window', {{{ makeGetValue( 'winptr', '0', 'i32' ) }}} )
+		return winptr ? GiDispa.class_obj_from_id( 'window', {{{ makeGetValue( 'winptr', '0', 'i32' ) }}} ) : null
 	},
 
 	// Functions for filling time and date structs
