@@ -39,7 +39,7 @@ Make.emglken:
 	echo LINKLIBS = $(LIBDIRS) $(LIBS) > Make.emglken
 	echo GLKLIB = -lemglken >> Make.emglken
 
-$(EMGLKEN_OBJS): glk.h $(EMGLKEN_HEADERS)
+$(EMGLKEN_OBJS): glk.h $(EMGLKEN_HEADERS) Makefile
 
 clean:
 	rm -f *~ *.o $(GLKLIB) Make.emglken

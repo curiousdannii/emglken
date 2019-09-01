@@ -50,7 +50,7 @@ class EmglkenVM
 			const fs = require( 'fs' )
 
 			moduleoptions.locateFile = path => this.options.dirname + '/' + path
-			moduleoptions.memoryInitializerPrefixURL = this.options.dirname + '/'
+			//moduleoptions.memoryInitializerPrefixURL = this.options.dirname + '/'
 			fs.readFile( this.options.dirname + '/' + this.options.emptfile, ( err, data ) =>
 			{
 				if ( err )

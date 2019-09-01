@@ -183,7 +183,7 @@ var emglken = {
 
 	glem_fatal_error: function( msg )
 	{
-		Glk.fatal_error( Pointer_stringify( msg ) )
+		Glk.fatal_error( AsciiToString( msg ) )
 	},
 
 	glk_fileref_create_by_name: function( usage, name, rock )
@@ -634,7 +634,10 @@ var emglken = {
 	{
 		var resultBox = new Glk.RefBox()
 		var retval = Glk.glk_style_measure( _window_from_ptr( win ), style, hint, resultBox )
-		{{{ makeSetValue( 'resultptr', '0', 'resultBox.value', 'i32' ) }}}
+		if ( resultptr )
+		{
+			{{{ makeSetValue( 'resultptr', '0', 'resultBox.value', 'i32' ) }}}
+		}
 		return retval
 	},
 
@@ -721,7 +724,7 @@ var emglken = {
 		Glk.glk_window_flow_break( _window_from_ptr( window ) )
 	},
 
-	glk_window_get_arrangement: function( winptr, method, size, keywin )
+	glk_window_get_arrangement: function( winptr, methodptr, sizeptr, keywinptr )
 	{
 		var methodBox = new Glk.RefBox()
 		var sizeBox = new Glk.RefBox()

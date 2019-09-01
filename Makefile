@@ -50,7 +50,7 @@ hugo.js: $(EMGLKEN_INC) hugo/heglk/Makefile hugo/heglk/*.c hugo/heglk/*.h hugo/h
 emglken.zip: git.js glulxe.js glulxe-profiler.js hugo.js
 	zip -j emglken.zip \
 	LICENSE README.md versions.json \
-	emglken/emglken_dispatch.js \
+	emglken/include/dispatch.js \
 	git.js git-core.js.bin git-core.js.mem \
 	glulxe.js glulxe-core.js.bin glulxe-core.js.mem \
 	glulxe-profiler.js glulxe-profiler-core.js.bin glulxe-profiler-core.js.mem \
