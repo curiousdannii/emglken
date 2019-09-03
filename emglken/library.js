@@ -700,7 +700,7 @@ var emglken = {
 
 	glk_window_close: function( winptr, resultstruct )
 	{
-		var win = _stream_from_ptr( winptr )
+		var win = _window_from_ptr( winptr )
 		if ( win && resultstruct )
 		{
 			{{{ makeSetValue( 'resultstruct', '0', 'win.str.readcount', 'i32' ) }}}
@@ -786,7 +786,7 @@ var emglken = {
 	glk_window_get_stream: function( winptr )
 	{
 		var str = Glk.glk_window_get_stream( _window_from_ptr( winptr ) )
-		return str.addr
+		return str ? str.addr : 0
 	},
 
 	glk_window_get_type: function( winptr )
