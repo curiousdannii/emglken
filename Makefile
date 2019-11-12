@@ -30,7 +30,7 @@ git.js: $(EMGLKEN_INC) git/Makefile git/*.c git/*.h git/git.js
 
 git.min.js: git.js
 	echo '/* Git (Emglken) v$(shell jq -r .git -- versions.json) https://github.com/curiousdannii/emglken */' > $@
-	babili git.js >> $@
+	terser -c -m git.js >> $@
 
 glulxe.js: $(EMGLKEN_INC) glulxe/Makefile glulxe/*.c glulxe/*.h glulxe/glulxe.js
 	$(MAKE) -C glulxe glulxe-core.js
