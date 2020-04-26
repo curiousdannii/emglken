@@ -3,6 +3,7 @@
 // Test a VM
 
 import fs from 'fs'
+import { createRequire } from 'module'
 import readline from 'readline'
 
 import GiDispa from '../emglken/include/dispatch.js'
@@ -10,41 +11,15 @@ import GlkOte from 'glkote-term'
 import minimist from 'minimist'
 import MuteStream from 'mute-stream'
 
-import SourceGit from '../git/git.js'
-import BundledGit from '../git.js'
-import SourceGlulx from '../glulxe/glulxe.js'
-import BundledGlulx from '../glulxe.js'
-import SourceGlulxProfiler from '../glulxe/glulxe-profiler.js'
-import BundledGlulxProfiler from '../glulxe-profiler.js'
-import SourceHugo from '../hugo/heglk/hugo.js'
-import BundledHugo from '../hugo.js'
-
-// Position options: vm name, file
+// Position options: vm filename, file
 // Boolean options:
 // b: run the bundled version of the VM
 const argv = minimist( process.argv.slice( 2 ), { boolean: 'b' } )
 
+const require = createRequire(import.meta.url)
+
 // Load the requested VM
-let VM
-if ( argv._[0] === 'git' )
-{
-	VM = argv.b ? BundledGit : SourceGit
-}
-if ( argv._[0] === 'glulxe' )
-{
-	if ( argv.profile_filename )
-	{
-		VM = argv.b ? BundledGlulxProfiler : SourceGlulxProfiler
-	}
-	else
-	{
-		VM = argv.b ? BundledGlulx : SourceGlulx
-	}
-}
-if ( argv._[0] === 'hugo' )
-{
-	VM = argv.b ? BundledHugo : SourceHugo
-}
+let VM = require(argv._[0])
 
 const vm = new VM()
 const Glk = GlkOte.Glk
