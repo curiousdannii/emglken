@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  emscripten:
+    image: trzeci/emscripten:1.39.5-fastcomp
+    volumes:
+      - .:/src
+    command: make
