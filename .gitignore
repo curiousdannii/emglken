@@ -3,9 +3,9 @@
 *.mem
 *.zip
 /*.js
+build
 cheapglk
 emglken/libemglken.a
 emglken/Make.emglken
 garglk
 node_modules
-tests/regtest.py

@@ -15,4 +15,4 @@ before_install:
 
 script:
   - docker-compose run emscripten
-  - make test
+  - ./tests/runtests.sh
