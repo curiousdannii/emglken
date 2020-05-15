@@ -15,38 +15,41 @@ target_include_directories(emglken
 
 add_executable(glulxe-core)
 add_sources(glulxe-core "glulxe/"
-    SRCS accel.c debugger.c emglulxeen.c exec.c files.c float.c funcs.c
+    SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
     search.c serial.c string.c vm.c)
+add_sources(glulxe-core "emglken/" SRCS emglulxeen.c)
 emglken_vm(glulxe-core
     EMTERPRETIFY_FILE "glulxe-core.js.bin"
-    EMTERPRETIFY_WHITELIST "glulxe/whitelist.json"
+    EMTERPRETIFY_WHITELIST "emglken/glulxe-whitelist.json"
     EXPORTED_FUNCTIONS "[_emautosave,_emglulxeen]")
-target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
+target_compile_definitions(glulxe-core PRIVATE FLOAT_COMPILE_SAFER_POWF OS_UNIX)
 target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)
 
 add_executable(glulxe-profiler-core)
 add_sources(glulxe-profiler-core "glulxe/"
-    SRCS accel.c debugger.c emglulxeen.c exec.c files.c float.c funcs.c
+    SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
     search.c serial.c string.c vm.c)
+add_sources(glulxe-profiler-core "emglken/" SRCS emglulxeen.c)
 emglken_vm(glulxe-profiler-core
     EMTERPRETIFY_FILE "glulxe-profiler-core.js.bin"
-    EMTERPRETIFY_WHITELIST "glulxe/whitelist.json"
+    EMTERPRETIFY_WHITELIST "emglken/glulxe-whitelist.json"
     EXPORTED_FUNCTIONS "[_emautosave,_emglulxeen]")
-target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
+target_compile_definitions(glulxe-profiler-core PRIVATE FLOAT_COMPILE_SAFER_POWF OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 make_bundle(glulxe-profiler.js glulxe-profiler-core "Glulxe" emglken/glulxe-profiler.js)
 
 add_executable(git-core)
 add_sources(git-core "git/"
-    SRCS accel.c compiler.c emgiten.c gestalt.c git.c glkop.c heap.c
+    SRCS accel.c compiler.c gestalt.c git.c glkop.c heap.c
     memory.c opcodes.c operands.c peephole.c savefile.c saveundo.c
     search.c terp.c)
+add_sources(git-core "emglken/" SRCS emgiten.c)
 emglken_vm(git-core
     EMTERPRETIFY_FILE "git-core.js.bin"
-    EMTERPRETIFY_WHITELIST "git/whitelist.json"
+    EMTERPRETIFY_WHITELIST "emglken/git-whitelist.json"
     EXPORTED_FUNCTIONS "[_emgiten]"
     EXTRA_EXPORTED_RUNTIME_METHODS "[ccall]")
 target_compile_definitions(git-core PRIVATE USE_OWN_POWF)
