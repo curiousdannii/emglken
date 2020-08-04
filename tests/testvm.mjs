@@ -6,7 +6,6 @@ import fs from 'fs'
 import { createRequire } from 'module'
 import readline from 'readline'
 
-import GiDispa from '../emglken/include/dispatch.js'
 import GlkOte from 'glkote-term'
 import minimist from 'minimist'
 import MuteStream from 'mute-stream'
@@ -20,11 +19,7 @@ async function run()
     // r: run the VM in remglk mode
     const argv = minimist(process.argv.slice(2), {boolean: 'r'})
 
-    if (argv._.length != 2)
-    {
-        console.error('Wrong number of options')
-        return
-    }
+    const show_help = argv._.length < 2
 
     const Module = {
         arguments: [argv._[1]],
@@ -72,11 +67,12 @@ async function run()
             Dialog: new GlkOte.Dialog(rl_opts),
             Glk: {},
             GlkOte: new GlkOte(rl_opts),
+            show_help,
         }
 
         const VMmodule = (await import(argv._[0])).default
         const vm = new VMmodule()
-        vm.prepare(fs.readFileSync( argv._[1]), options)
+        vm.prepare(show_help ? null : fs.readFileSync(argv._[1]), options)
         vm.start()
     }
 }

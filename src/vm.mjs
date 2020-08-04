@@ -29,11 +29,11 @@ export default class EmglkenVM
         let buffer = ''
 
         const Module = {
-            arguments: this.options.arguments,
+            arguments: this.options.show_help ? ['-help'] : this.options.arguments,
             emglken_stdin_buffers: [],
             emglken_stdin_index: 0,
             emglken_stdin_ready() {},
-            print: (data) =>
+            print: this.options.show_help ? console.log : data =>
             {
                 buffer += data
                 if (data.endsWith('}'))
