@@ -2,7 +2,7 @@ version: '3'
 
 services:
   emscripten:
-    image: trzeci/emscripten:1.39.5-fastcomp
+    image: emscripten/emsdk:1.40.1
     volumes:
       - .:/src
     command: emglken/build.sh

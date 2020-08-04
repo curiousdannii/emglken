@@ -7,3 +7,6 @@
 [submodule "hugo"]
 	path = hugo
 	url = https://github.com/curiousdannii/hugo.git
+[submodule "remglk"]
+	path = remglk
+	url = https://github.com/erkyrath/remglk.git

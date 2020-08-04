@@ -10,20 +10,28 @@ endfunction()
 function(emglken_vm target)
     cmake_parse_arguments(PARSE_ARGV 1 VM_OPTS ""
         "EMTERPRETIFY_FILE;EMTERPRETIFY_WHITELIST;EXPORTED_FUNCTIONS;EXTRA_EXPORTED_RUNTIME_METHODS" "")
-    target_link_libraries(${target} emglken)
-    em_link_js_library(${target} "emglken/library.js")
+    #target_link_libraries(${target} emglken)
+    target_link_libraries(${target} remglk)
+    #em_link_js_library(${target} "emglken/library.js")
     target_link_options(${target} PRIVATE
+        -Wl,--wrap=getc,--wrap=ungetc
         "SHELL:-O3"
-        "SHELL:-s EMTERPRETIFY=1"
-        "SHELL:-s EMTERPRETIFY_ASYNC=1"
-        "SHELL:-s EMTERPRETIFY_FILE=${VM_OPTS_EMTERPRETIFY_FILE}"
-        "SHELL:-s EXPORTED_FUNCTIONS=${VM_OPTS_EXPORTED_FUNCTIONS}"
+        "SHELL:-s ASYNCIFY=1"
+        "SHELL:-s ASYNCIFY_IMPORTS=['emglken_getc']"
+        #"SHELL:-s EMTERPRETIFY=1"
+        #"SHELL:-s EMTERPRETIFY_ASYNC=1"
+        #"SHELL:-s EMTERPRETIFY_FILE=${VM_OPTS_EMTERPRETIFY_FILE}"
+        #"SHELL:-s EXIT_RUNTIME=1"
+        #"SHELL:-s EXPORT_ES6=1"
+        #"SHELL:-s EXPORTED_FUNCTIONS=${VM_OPTS_EXPORTED_FUNCTIONS}"
+        "SHELL:-s EXTRA_EXPORTED_RUNTIME_METHODS=['FS']"
         "SHELL:-s MODULARIZE=1"
-        "SHELL:-s WASM=0")
-    if (DEFINED VM_OPTS_EXTRA_EXPORTED_RUNTIME_METHODS)
-        target_link_options(${target} PRIVATE "SHELL:-s EXTRA_EXPORTED_RUNTIME_METHODS=${VM_OPTS_EXTRA_EXPORTED_RUNTIME_METHODS}")
-    endif()
-    emglken_whitelist(${target} ${VM_OPTS_EMTERPRETIFY_WHITELIST})
+        #"SHELL:-s WASM=0")
+        "SHELL:-s WASM=1")
+    #if (DEFINED VM_OPTS_EXTRA_EXPORTED_RUNTIME_METHODS)
+    #    target_link_options(${target} PRIVATE "SHELL:-s EXTRA_EXPORTED_RUNTIME_METHODS=${VM_OPTS_EXTRA_EXPORTED_RUNTIME_METHODS}")
+    #endif()
+    #emglken_whitelist(${target} ${VM_OPTS_EMTERPRETIFY_WHITELIST})
 endfunction()
 
 # Setup an EMTERPRETIFY whitelist file to be dependended on

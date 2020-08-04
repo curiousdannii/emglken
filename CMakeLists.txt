@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 
 project(Emglken
     VERSION 0.2.4
@@ -6,27 +6,43 @@ project(Emglken
 
 include(emglken/common.cmake)
 
+#[[
 add_library(emglken STATIC)
 add_sources(emglken "emglken/"
     SRCS gi_blorb.c gi_debug.c gi_dispa.c main.c rgblorb.c rgevent.c
     rgfref.c rggestal.c rgmisc.c rgschan.c rgstream.c rgwindow.c)
 target_include_directories(emglken
     PUBLIC emglken)
+]]
+
+add_library(remglk STATIC)
+add_sources(remglk "remglk/"
+    SRCS main.c rgevent.c rgfref.c rggestal.c
+    rgdata.c rgmisc.c rgauto.c rgstream.c rgstyle.c
+    rgwin_blank.c rgwin_buf.c rgwin_grid.c rgwin_pair.c rgwin_graph.c
+    rgwindow.c rgschan.c rgblorb.c
+    cgunicod.c cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
+    add_sources(remglk "src/" SRCS getc.c)
+target_compile_options(remglk PRIVATE -Wall)
+target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
+target_include_directories(remglk
+    PUBLIC remglk/)
 
 add_executable(glulxe-core)
 add_sources(glulxe-core "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
-    search.c serial.c string.c vm.c)
-add_sources(glulxe-core "emglken/" SRCS emglulxeen.c)
+    search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
+#add_sources(glulxe-core "emglken/" SRCS emglulxeen.c)
 emglken_vm(glulxe-core
     EMTERPRETIFY_FILE "glulxe-core.js.bin"
     EMTERPRETIFY_WHITELIST "emglken/glulxe-whitelist.json"
     EXPORTED_FUNCTIONS "[_emautosave,_emglulxeen]")
-target_compile_definitions(glulxe-core PRIVATE FLOAT_COMPILE_SAFER_POWF OS_UNIX)
+target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
 target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
-make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)
+#make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)
 
+#[[
 add_executable(glulxe-profiler-core)
 add_sources(glulxe-profiler-core "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
@@ -65,5 +81,6 @@ emglken_vm(hugo-core
     EMTERPRETIFY_WHITELIST "emglken/hugo-whitelist.json"
     EXPORTED_FUNCTIONS "[_emhugoen]")
 target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
-target_compile_options(glulxe-profiler-core PRIVATE -Wall)
+target_compile_options(hugo-core PRIVATE -Wall)
 make_bundle(hugo.js hugo-core "Hugo" emglken/hugo.js)
+]]
