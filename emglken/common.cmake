@@ -15,6 +15,7 @@ function(emglken_vm target)
     #em_link_js_library(${target} "emglken/library.js")
     target_link_options(${target} PRIVATE
         -Wl,--wrap=getc,--wrap=ungetc
+        --minify 0
         "SHELL:-O3"
         "SHELL:-s ASYNCIFY=1"
         "SHELL:-s ASYNCIFY_IMPORTS=['emglken_getc']"

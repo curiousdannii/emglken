@@ -19,6 +19,7 @@
     "terser": "^5.0.0"
   },
   "scripts": {
-    "test": "make test"
+    "build": "CURRENT_UID=$(id -u):$(id -g) docker-compose run emscripten",
+    "test": "./tests/runtests.sh"
   }
 }

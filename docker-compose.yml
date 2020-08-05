@@ -6,3 +6,4 @@ services:
     volumes:
       - .:/src
     command: emglken/build.sh
+    user: ${CURRENT_UID}

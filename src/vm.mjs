@@ -9,6 +9,8 @@ https://github.com/curiousdannii/emglken
 
 */
 
+import EmglkenFS from './emglkenfs.mjs'
+
 const base_options = {
     arguments: ['storyfile'],
 }
@@ -33,23 +35,34 @@ export default class EmglkenVM
             emglken_stdin_buffers: [],
             emglken_stdin_index: 0,
             emglken_stdin_ready() {},
-            print: this.options.show_help ? console.log : data =>
+            print: data =>
             {
-                buffer += data
-                if (data.endsWith('}'))
+                if (buffer === '' && data !== '' && !data.startsWith('{'))
                 {
-                    try
+                    console.log(data)
+                }
+                else
+                {
+                    buffer += data
+                    if (data.endsWith('}'))
                     {
-                        const obj = JSON.parse(buffer)
-                        buffer = ''
-                        this.options.GlkOte.update(obj)
+                        try
+                        {
+                            const obj = JSON.parse(buffer)
+                            buffer = ''
+                            this.options.GlkOte.update(obj)
+                        }
+                        catch (e) {}
                     }
-                    catch (e) {}
                 }
             },
-            preRun()
+            preRun: () =>
             {
-                
+                const FS = Module.FS
+                this.EFS = new EmglkenFS(this)
+                FS.mkdir('/emglken')
+                FS.mount(this.EFS, {}, '/emglken')
+                FS.chdir('/emglken')
             },
         }
         this.Module = Module
