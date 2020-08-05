@@ -1,4 +1,4 @@
-/* Intercept getc/ungetcs in Emscripten
+/* Intercept getc/ungetc in Emscripten
    To be linked with "-Wl,--wrap=getc,--wrap=ungetc" */
 
 #include <stdio.h>
@@ -7,36 +7,49 @@
 extern int __real_getc(FILE *f);
 extern int __real_ungetc(int c, FILE *f);
 
-EM_JS(int, emglken_getc, (), {
+#define EMGLKEN_STDIN_BUFFER_LENGTH 256
+static char emglken_stdin_buffer[EMGLKEN_STDIN_BUFFER_LENGTH];
+static int emglken_stdin_buffer_index = 0;
+static int emglken_stdin_buffer_contents_length = 0;
+static int emglken_stdin_ungetc_value = EOF;
+
+EM_JS(int, emglken_fill_stdin_buffer, (char *buffer, int maxlen), {
     return Asyncify.handleAsync(async () => {
         if (!Module.emglken_stdin_buffers.length)
         {
             await new Promise(resolve => { Module.emglken_stdin_ready = resolve });
         }
-        const val = Module.emglken_stdin_buffers[0][Module.emglken_stdin_index++];
-        if (Module.emglken_stdin_index === Module.emglken_stdin_buffers[0].length)
+        const input = Module.emglken_stdin_buffers[0];
+        const len = Math.min(input.length, maxlen);
+        HEAPU8.set(input.subarray(0, len), buffer);
+        if (len == input.length)
         {
             Module.emglken_stdin_buffers.shift();
-            Module.emglken_stdin_index = 0;
         }
-        return val;
+        else
+        {
+            Module.emglken_stdin_buffers[0] = input.subarray(len);
+        }
+        return len;
     });
-});
-
-EM_JS(int, emglken_ungetc, (int c), {
-    if (Module.emglken_stdin_buffers.length)
-    {
-        Module.emglken_stdin_buffers[0] = Module.emglken_stdin_buffers[0].slice(Module.emglken_stdin_index);
-        Module.emglken_stdin_index = 0;
-    }
-    Module.emglken_stdin_buffers.unshift([c]);
 });
 
 int __wrap_getc(FILE *f)
 {
     if (f == stdin)
     {
-        return emglken_getc();
+        if (emglken_stdin_ungetc_value != EOF)
+        {
+            int res = emglken_stdin_ungetc_value;
+            emglken_stdin_ungetc_value = EOF;
+            return res;
+        }
+        if (emglken_stdin_buffer_index == emglken_stdin_buffer_contents_length)
+        {
+            emglken_stdin_buffer_contents_length = emglken_fill_stdin_buffer(emglken_stdin_buffer, EMGLKEN_STDIN_BUFFER_LENGTH);
+            emglken_stdin_buffer_index = 0;
+        }
+        return emglken_stdin_buffer[emglken_stdin_buffer_index++];
     }
     else
     {
@@ -48,7 +61,11 @@ int __wrap_ungetc(int c, FILE *f)
 {
     if (f == stdin)
     {
-        emglken_ungetc(c);
+        if (emglken_stdin_ungetc_value != EOF)
+        {
+            return EOF;
+        }
+        emglken_stdin_ungetc_value = c;
         return c;
     }
     else

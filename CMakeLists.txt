@@ -22,22 +22,17 @@ add_sources(remglk "remglk/"
     rgwin_blank.c rgwin_buf.c rgwin_grid.c rgwin_pair.c rgwin_graph.c
     rgwindow.c rgschan.c rgblorb.c
     cgunicod.c cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
-    add_sources(remglk "src/" SRCS getc.c)
+target_sources(remglk PRIVATE src/getc.c)
 target_compile_options(remglk PRIVATE -Wall)
 target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
-target_include_directories(remglk
-    PUBLIC remglk/)
+target_include_directories(remglk PUBLIC remglk/)
 
 add_executable(glulxe-core)
 add_sources(glulxe-core "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
     search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
-#add_sources(glulxe-core "emglken/" SRCS emglulxeen.c)
-emglken_vm(glulxe-core
-    EMTERPRETIFY_FILE "glulxe-core.js.bin"
-    EMTERPRETIFY_WHITELIST "emglken/glulxe-whitelist.json"
-    EXPORTED_FUNCTIONS "[_emautosave,_emglulxeen]")
+emglken_vm(glulxe-core remglk)
 target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
 target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 #make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)

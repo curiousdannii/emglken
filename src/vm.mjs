@@ -33,7 +33,6 @@ export default class EmglkenVM
         const Module = {
             arguments: this.options.show_help ? ['-help'] : this.options.arguments,
             emglken_stdin_buffers: [],
-            emglken_stdin_index: 0,
             emglken_stdin_ready() {},
             print: data =>
             {
