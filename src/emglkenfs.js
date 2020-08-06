@@ -42,11 +42,12 @@ function convert_flags(flags)
     return 2
 }
 
-export default class EmglkenFS
+module.exports = class EmglkenFS
 {
     constructor(VM)
     {
         this.dialog = VM.options.Dialog
+        this.streaming = this.dialog.streaming
         this.FS = VM.Module.FS
         this.VM = VM
     }
@@ -57,7 +58,7 @@ export default class EmglkenFS
         {}
         else
         {
-            if (this.dialog.streaming)
+            if (this.streaming)
             {
                 stream.fstream.fclose()
             }
@@ -101,7 +102,7 @@ export default class EmglkenFS
             }
             else
             {
-                if (this.dialog.streaming)
+                if (this.streaming)
                 {
                     const curpos = stream.fstream.ftell()
                     stream.fstream.fseek(0, SEEK_END)
@@ -123,6 +124,13 @@ export default class EmglkenFS
 
     lookup(parent, name)
     {
+        if (name !== 'storyfile')
+        {
+            if (!this.dialog.file_ref_exists({filename: name}))
+            {
+                throw new this.FS.ErrnoError(ENOENT)
+            }
+        }
         return this.createNode(parent, name, FILE_MODE)
     }
 
@@ -156,7 +164,7 @@ export default class EmglkenFS
         else
         {
             const fmode = convert_flags(stream.flags)
-            if (this.dialog.streaming)
+            if (this.streaming)
             {
                 stream.fstream = this.dialog.file_fopen(fmode, {filename: stream.name})
             }
@@ -181,7 +189,7 @@ export default class EmglkenFS
         }
         else
         {
-            if (this.dialog.streaming)
+            if (this.streaming)
             {
                 stream.fstream.fseek(position, SEEK_SET)
                 const buf = stream.fstream.BufferClass.from(buffer.buffer, offset, length)
@@ -232,7 +240,7 @@ export default class EmglkenFS
 
     write(stream, buffer, offset, length, position)
     {
-        if (this.dialog.streaming)
+        if (this.streaming)
         {
             stream.fstream.fseek(position, SEEK_SET)
             const buf = stream.fstream.BufferClass.from(buffer).subarray(offset, offset + length)
