@@ -5,5 +5,5 @@ services:
     image: emscripten/emsdk:1.40.1
     volumes:
       - .:/src
-    command: emglken/build.sh
+    command: src/build.sh
     user: ${CURRENT_UID}
