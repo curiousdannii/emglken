@@ -7,8 +7,8 @@ function(add_sources target dir)
 endfunction()
 
 # Add common arguments and dependencies
-function(emglken_vm target glklibrary)
-    target_link_libraries(${target} ${glklibrary})
+function(emglken_vm target)
+    target_link_libraries(${target} remglk)
     target_link_options(${target} PRIVATE
         -Wl,--wrap=getc,--wrap=ungetc
         -O3

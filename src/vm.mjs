@@ -67,6 +67,12 @@ export default class EmglkenVM
         this.Module = Module
 
         this.options.accept = data => {
+            // Convert a Dialog.js provided fileref into something Remglk will understand
+            if (data.type === 'specialresponse' && data.response === 'fileref_prompt')
+            {
+                data.value = data.value.filename
+            }
+
             const json_data = JSON.stringify(data)
             const buffer = encoder.encode(json_data)
             Module.emglken_stdin_buffers.push(buffer)

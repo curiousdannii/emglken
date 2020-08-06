@@ -32,7 +32,7 @@ add_sources(glulxe-core "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
     search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
-emglken_vm(glulxe-core remglk)
+emglken_vm(glulxe-core)
 target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
 target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 #make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)

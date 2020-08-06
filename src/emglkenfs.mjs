@@ -11,6 +11,7 @@ https://github.com/curiousdannii/emglken
 
 const DIR_MODE = 16895 // 040777
 const FILE_MODE = 33206 // 100666
+const SEEK_SET = 0
 const SEEK_CUR = 1
 const SEEK_END = 2
 
@@ -23,7 +24,7 @@ export default class EmglkenFS
 {
     constructor(VM)
     {
-        this.dialog = VM.options.dialog
+        this.dialog = VM.options.Dialog
         this.FS = VM.Module.FS
         this.VM = VM
     }
@@ -34,7 +35,14 @@ export default class EmglkenFS
         {}
         else
         {
-            throw new Error('EmglkenFS.close')
+            if (this.dialog.streaming)
+            {
+                stream.fstream.fclose()
+            }
+            else
+            {
+                throw new Error('EmglkenFS.close: non-streaming Dialog')
+            }
         }
     }
 
@@ -83,11 +91,7 @@ export default class EmglkenFS
 
     lookup(parent, name)
     {
-        if (name === 'storyfile')
-        {
-            return this.createNode(parent, name, FILE_MODE)
-        }
-        throw this.FS.genericErrors[ENOENT]
+        return this.createNode(parent, name, FILE_MODE)
     }
 
     mknod()
@@ -119,27 +123,43 @@ export default class EmglkenFS
         }
         else
         {
-            throw new Error('EmglkenFS.open')
+            const fmode = stream.flags & 7
+            if (this.dialog.streaming)
+            {
+                stream.fstream = this.dialog.file_fopen(fmode, {filename: stream.name})
+            }
+            else
+            {
+                throw new Error('EmglkenFS.open: non-streaming Dialog')
+            }
         }
     }
 
     read(stream, buffer, offset, length, position)
     {
-        let size = 0
         if (length === 0)
         {
             return 0
         }
         if (stream.name === 'storyfile')
         {
-            size = Math.min(stream.data.length - position, length)
+            const size = Math.min(stream.data.length - position, length)
             buffer.set(stream.data.subarray(position, position + size), offset)
+            return size
         }
         else
         {
-            throw new Error('EmglkenFS.read')
+            if (this.dialog.streaming)
+            {
+                stream.fstream.fseek(position, SEEK_SET)
+                const buf = stream.fstream.BufferClass.from(buffer.buffer, offset, length)
+                return stream.fstream.fread(buf, length)
+            }
+            else
+            {
+                throw new Error('EmglkenFS.read: non-streaming Dialog')
+            }
         }
-        return size
     }
 
     readdir()
@@ -162,9 +182,10 @@ export default class EmglkenFS
         throw new Error('EmglkenFS.rmdir')
     }
 
-    setattr()
+    setattr(node, attr)
     {
-        throw new Error('EmglkenFS.setattr')
+        // I don't think we need to do anything here?
+        // Maybe truncate a file?
     }
 
     symlink()
@@ -177,8 +198,17 @@ export default class EmglkenFS
         throw new Error('EmglkenFS.unlink')
     }
 
-    write()
+    write(stream, buffer, offset, length, position)
     {
-        throw new Error('EmglkenFS.write')
+        if (this.dialog.streaming)
+        {
+            stream.fstream.fseek(position, SEEK_SET)
+            const buf = stream.fstream.BufferClass.from(buffer).subarray(offset, offset + length)
+            return stream.fstream.fwrite(buf, length)
+        }
+        else
+        {
+            throw new Error('EmglkenFS.write: non-streaming Dialog')
+        }
     }
 }
