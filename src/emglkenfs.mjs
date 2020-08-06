@@ -20,6 +20,28 @@ const SEEK_END = 2
 const EINVAL = 28
 const ENOENT = 44
 
+// Convert Linux flags to Glk flags
+function convert_flags(flags)
+{
+    // O_APPEND => filemode_WriteAppend
+    if (flags & 0x400)
+    {
+        return 5
+    }
+    // O_WRONLY => filemode_Write
+    if (flags & 1)
+    {
+        return 1
+    }
+    // O_RDWR => filemode_ReadWrite
+    if (flags & 2)
+    {
+        return 3
+    }
+    // O_RDONLY => filemode_Read
+    return 2
+}
+
 export default class EmglkenFS
 {
     constructor(VM)
@@ -79,7 +101,17 @@ export default class EmglkenFS
             }
             else
             {
-                throw new Error('EmglkenFS.llseek')
+                if (this.dialog.streaming)
+                {
+                    const curpos = stream.fstream.ftell()
+                    stream.fstream.fseek(0, SEEK_END)
+                    position += stream.fstream.ftell()
+                    stream.fstream.fseek(curpos, SEEK_SET)
+                }
+                else
+                {
+                    throw new Error('EmglkenFS.llseek: non-streaming Dialog')
+                }
             }
         }
         if (position < 0)
@@ -123,7 +155,7 @@ export default class EmglkenFS
         }
         else
         {
-            const fmode = stream.flags & 7
+            const fmode = convert_flags(stream.flags)
             if (this.dialog.streaming)
             {
                 stream.fstream = this.dialog.file_fopen(fmode, {filename: stream.name})
