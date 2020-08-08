@@ -12,8 +12,9 @@ add_sources(remglk "remglk/"
     rgdata.c rgmisc.c rgauto.c rgstream.c rgstyle.c
     rgwin_blank.c rgwin_buf.c rgwin_grid.c rgwin_pair.c rgwin_graph.c
     rgwindow.c rgschan.c rgblorb.c
-    cgunicod.c cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
-target_sources(remglk PRIVATE src/getc.c)
+    cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
+add_sources(remglk "src/"
+    SRCS cgunicod.c getc.c)
 target_compile_options(remglk PRIVATE -Wall)
 target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
 target_include_directories(remglk PUBLIC remglk/)
