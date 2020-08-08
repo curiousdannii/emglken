@@ -25,7 +25,7 @@ module.exports = class EmglkenVM
     }
 
     // Start GlkOte and the vmcore
-    start()
+    async start()
     {
         const encoder = new TextEncoder()
         let buffer = ''
@@ -63,6 +63,7 @@ module.exports = class EmglkenVM
                 FS.mount(this.EFS, {}, '/emglken')
                 FS.chdir('/emglken')
             },
+            wasmBinary: this.options.wasmBinary,
         }
         this.Module = Module
 
@@ -79,7 +80,7 @@ module.exports = class EmglkenVM
             Module.emglken_stdin_ready()
         }
 
-        this.options.vmcore(Module)
+        await this.options.vmcore(Module)
         this.options.GlkOte.init(this.options)
     }
 }

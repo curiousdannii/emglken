@@ -15,10 +15,13 @@ function(emglken_vm target)
         --minify 0
         -sASYNCIFY=1
         -sASYNCIFY_IMPORTS=['emglken_fill_stdin_buffer']
+        #-sENVIRONMENT=web
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
         -sEXTRA_EXPORTED_RUNTIME_METHODS=['FS']
         -sMODULARIZE=1
+        -sSTRICT=1
+        -sTEXTDECODER=2
         -sWASM=1)
     #emglken_whitelist(${target} ${VM_OPTS_EMTERPRETIFY_WHITELIST})
 endfunction()
