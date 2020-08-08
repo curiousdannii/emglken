@@ -21,25 +21,40 @@ const EINVAL = 28
 const ENOENT = 44
 
 // Convert Linux flags to Glk flags
+const filemode_Write = 1
+const filemode_Read = 2
+const filemode_ReadWrite = 3
+const filemode_WriteAppend = 5
 function convert_flags(flags)
 {
     // O_APPEND => filemode_WriteAppend
     if (flags & 0x400)
     {
-        return 5
+        return filemode_WriteAppend
     }
     // O_WRONLY => filemode_Write
     if (flags & 1)
     {
-        return 1
+        return filemode_Write
     }
     // O_RDWR => filemode_ReadWrite
     if (flags & 2)
     {
-        return 3
+        return filemode_ReadWrite
     }
     // O_RDONLY => filemode_Read
-    return 2
+    return filemode_Read
+}
+
+// Functions for storing Uint8Arrays in localStorage
+function String_to_Uint8Array(str)
+{
+    return Uint8Array.from(str, ch => ch.charCodeAt(0))
+}
+
+function Uint8Array_to_String(array)
+{
+    return array.reduce((prev, ch) => prev + String.fromCharCode(ch), '')
 }
 
 module.exports = class EmglkenFS
@@ -64,7 +79,10 @@ module.exports = class EmglkenFS
             }
             else
             {
-                throw new Error('EmglkenFS.close: non-streaming Dialog')
+                if (stream.fmode !== filemode_Read)
+                {
+                    this.dialog.file_write(stream.fref, Uint8Array_to_String(stream.data), true)
+                }
             }
         }
     }
@@ -85,6 +103,24 @@ module.exports = class EmglkenFS
     getattr()
     {
         throw new Error('EmglkenFS.getattr')
+    }
+
+    // Get a Dialog ref for non-streaming Dialogs
+    get_dialog_ref(filename)
+    {
+        let [name, usage] = filename.split('.')
+
+        // RemGlk sends usages starting with 'glk', but Dialog wants them without
+        usage = usage.replace('glk', '')
+
+        // Retrieve the game ID if opening a savefile
+        let gameid = ''
+        if (usage === 'save')
+        {
+            gameid = this.VM.Module.AsciiToString(this.VM.Module._gidispatch_get_game_id())
+        }
+
+        return this.dialog.file_construct_ref(name, usage, gameid)
     }
 
     llseek(stream, offset, whence)
@@ -111,7 +147,7 @@ module.exports = class EmglkenFS
                 }
                 else
                 {
-                    throw new Error('EmglkenFS.llseek: non-streaming Dialog')
+                    position += stream.data.length
                 }
             }
         }
@@ -126,7 +162,7 @@ module.exports = class EmglkenFS
     {
         if (name !== 'storyfile')
         {
-            if (!this.dialog.file_ref_exists({filename: name}))
+            if (!this.dialog.file_ref_exists(this.streaming ? {filename: name} : this.get_dialog_ref(name)))
             {
                 throw new this.FS.ErrnoError(ENOENT)
             }
@@ -134,9 +170,9 @@ module.exports = class EmglkenFS
         return this.createNode(parent, name, FILE_MODE)
     }
 
-    mknod()
+    mknod(parent, name, mode, dev)
     {
-        throw new Error('EmglkenFS.mknod')
+        return this.createNode(parent, name, mode)
     }
 
     mmap()
@@ -170,7 +206,30 @@ module.exports = class EmglkenFS
             }
             else
             {
-                throw new Error('EmglkenFS.open: non-streaming Dialog')
+                stream.fref = this.get_dialog_ref(stream.name)
+                stream.fmode = fmode
+
+                // Read the content if not overwriting
+                let data = null
+                if (fmode !== filemode_Write)
+                {
+                    data = this.dialog.file_read(stream.fref, true)
+                }
+
+                // If no file and not reading, create a blank file
+                if (data == null)
+                {
+                    stream.data = new Uint8Array(0)
+                    if (fmode !== filemode_Read)
+                    {
+                        this.dialog.file_write(stream.fref, '', true)
+                    }
+                }
+                else
+                {
+                    stream.data = String_to_Uint8Array(data)
+                }
+                //stream.position = fmode === filemode_WriteAppend ? data.length : 0
             }
         }
     }
@@ -197,7 +256,9 @@ module.exports = class EmglkenFS
             }
             else
             {
-                throw new Error('EmglkenFS.read: non-streaming Dialog')
+                const size = Math.min(stream.data.length - position, length)
+                buffer.set(stream.data.subarray(position, position + size), offset)
+                return size
             }
         }
     }
@@ -240,6 +301,10 @@ module.exports = class EmglkenFS
 
     write(stream, buffer, offset, length, position)
     {
+        if (stream.name === 'storyfile')
+        {
+            throw new Error('EmglkenFS.write: cannot write to storyfile')
+        }
         if (this.streaming)
         {
             stream.fstream.fseek(position, SEEK_SET)
@@ -248,7 +313,16 @@ module.exports = class EmglkenFS
         }
         else
         {
-            throw new Error('EmglkenFS.write: non-streaming Dialog')
+            position = position || stream.position
+            const end_of_write = length + position
+            if (end_of_write > stream.data.length)
+            {
+                const old_data = stream.data
+                stream.data = new Uint8Array(end_of_write)
+                stream.data.set(old_data)
+            }
+            stream.data.set(buffer.subarray(offset, offset + length), position)
+            return length
         }
     }
 }

@@ -18,7 +18,8 @@ function(emglken_vm target)
         #-sENVIRONMENT=web
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
-        -sEXTRA_EXPORTED_RUNTIME_METHODS=['FS']
+        -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
+        -sEXTRA_EXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
         -sMODULARIZE=1
         -sSTRICT=1
         -sTEXTDECODER=2

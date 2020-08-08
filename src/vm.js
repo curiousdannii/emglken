@@ -69,7 +69,7 @@ module.exports = class EmglkenVM
 
         this.options.accept = data => {
             // Convert a Dialog.js provided fileref into something Remglk will understand
-            if (data.type === 'specialresponse' && data.response === 'fileref_prompt')
+            if (data.type === 'specialresponse' && data.response === 'fileref_prompt' && data.value)
             {
                 data.value = data.value.filename
             }
