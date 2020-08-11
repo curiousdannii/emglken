@@ -175,7 +175,7 @@ glui32 gli_parse_utf8(unsigned char *buf, glui32 buflen,
 EM_JS(glui32, emglken_common_buffer_transformer, (glui32 buf, glui32 len, glui32 numchars, glui32 func, glui32 dont_reduce), {
     const index = buf >> 2;
     const utf32 = HEAPU32.subarray(index, index + numchars);
-    const data = dont_reduce ? utf32 : utf32.reduce((prev, ch) => prev + String.fromCharCode(ch), "");
+    const data = dont_reduce ? utf32 : utf32.reduce((prev, ch) => prev + String.fromCodePoint(ch), "");
     const new_str = func(data);
     const newbuf = Uint32Array.from(new_str, ch => ch.codePointAt(0));
     const newlen = newbuf.length;
@@ -202,7 +202,7 @@ EM_JS(glui32, glk_buffer_to_title_case_uni, (glui32 *buf, glui32 len, glui32 num
             ﬕ: 'Մի', ﬖ: 'Վն', ﬗ: 'Մխ',
         };
         const slightly_less_special_cases = ['ᾈᾉᾊᾋᾌᾍᾎᾏ', 'ᾘᾙᾚᾛᾜᾝᾞᾟ', 'ᾨᾩᾪᾫᾬᾭᾮᾯ'];
-        let thischar = String.fromCharCode(ch);
+        let thischar = String.fromCodePoint(ch);
         if (index === 0)
         {
             if (special_cases[thischar])
