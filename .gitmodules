@@ -1,3 +1,6 @@
+[submodule "cspiegel"]
+	path = cspiegel
+	url = https://github.com/cspiegel/terps.git
 [submodule "git"]
 	path = git
 	url = https://github.com/DavidKinder/Git.git
