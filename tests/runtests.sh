@@ -1,8 +1,8 @@
 #!/bin/sh
 
 cd "$(dirname "$0")"
-#echo 'Git'
-#python regtest.py -i "./testvm ../build/git.js" glulxercise.regtest
+echo 'Git'
+python regtest.py -i "./testvm ../src/git.js" glulxercise.regtest
 echo 'Glulxe'
 python regtest.py -i "./testvm ../src/glulxe.js" glulxercise.regtest
 #echo 'Glulxe (remglk mode)'

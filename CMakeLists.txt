@@ -39,6 +39,7 @@ emglken_vm(glulxe-profiler-core)
 target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 #make_bundle(glulxe-profiler.js glulxe-profiler-core "Glulxe" emglken/glulxe-profiler.js)
+]]
 
 add_executable(git-core)
 add_sources(git-core "git/"
@@ -48,6 +49,7 @@ add_sources(git-core "git/"
 emglken_vm(git-core)
 #make_bundle(git.js git-core "Git" emglken/git.js)
 
+#[[
 add_executable(hugo-core)
 add_sources(hugo-core "hugo/source/"
     SRCS he.c heexpr.c hemisc.c heobject.c heparse.c heres.c herun.c heset.c stringfn.c)
