@@ -177,7 +177,7 @@ EM_JS(glui32, emglken_common_buffer_transformer, (glui32 buf, glui32 len, glui32
     const utf32 = HEAPU32.subarray(index, index + numchars);
     const data = dont_reduce ? utf32 : utf32.reduce((prev, ch) => prev + String.fromCharCode(ch), "");
     const new_str = func(data);
-    const newbuf = Uint32Array.from(new_str, ch => ch.charCodeAt(0));
+    const newbuf = Uint32Array.from(new_str, ch => ch.codePointAt(0));
     const newlen = newbuf.length;
     HEAPU32.set(newbuf.subarray(0, Math.min(len, newlen)), index);
     return newlen;
@@ -192,11 +192,31 @@ EM_JS(glui32, glk_buffer_to_upper_case_uni, (glui32 *buf, glui32 len, glui32 num
 });
 
 EM_JS(glui32, glk_buffer_to_title_case_uni, (glui32 *buf, glui32 len, glui32 numchars, glui32 lowerrest), {
-    return emglken_common_buffer_transformer(buf, len, numchars, utf32 => utf32.reduce((prev, ch, index) => {
+    return emglken_common_buffer_transformer(buf, len, numchars, utf32 => utf32.reduce((prev, ch, index) =>
+    {
+        const special_cases = {
+            ß: 'Ss', Ǆ: 'ǅ', ǅ: 'ǅ', ǆ: 'ǅ', Ǉ: 'ǈ', ǈ: 'ǈ', ǉ: 'ǈ', Ǌ: 'ǋ', ǋ: 'ǋ', ǌ: 'ǋ',
+            Ǳ: 'ǲ', ǲ: 'ǲ', ǳ: 'ǲ', և: 'Եւ', ᾲ: 'Ὰͅ', ᾳ: 'ᾼ', ᾴ: 'Άͅ', ᾷ: 'ᾼ͂', ᾼ: 'ᾼ', ῂ: 'Ὴͅ',
+            ῃ: 'ῌ', ῄ: 'Ήͅ', ῇ: 'ῌ͂', ῌ: 'ῌ', ῲ: 'Ὼͅ', ῳ: 'ῼ', ῴ: 'Ώͅ', ῷ: 'ῼ͂', ῼ: 'ῼ', ﬀ: 'Ff',
+            ﬁ: 'Fi', ﬂ: 'Fl', ﬃ: 'Ffi', ﬄ: 'Ffl', ﬅ: 'St', ﬆ: 'St', ﬓ: 'Մն', ﬔ: 'Մե',
+            ﬕ: 'Մի', ﬖ: 'Վն', ﬗ: 'Մխ',
+        };
+        const slightly_less_special_cases = ['ᾈᾉᾊᾋᾌᾍᾎᾏ', 'ᾘᾙᾚᾛᾜᾝᾞᾟ', 'ᾨᾩᾪᾫᾬᾭᾮᾯ'];
         let thischar = String.fromCharCode(ch);
         if (index === 0)
         {
-            thischar = thischar.toUpperCase();
+            if (special_cases[thischar])
+            {
+                thischar = special_cases[thischar];
+            }
+            else if (ch >= 8064 && ch < 8112)
+            {
+                thischar = slightly_less_special_cases[((ch - 8064) / 16) | 0][ch % 8];
+            }
+            else
+            {
+                thischar = thischar.toUpperCase();
+            }
         }
         else if (lowerrest)
         {
