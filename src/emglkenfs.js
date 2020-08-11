@@ -97,12 +97,25 @@ module.exports = class EmglkenFS
         const node = FS.createNode(parent, name, mode)
         node.node_ops = this
         node.stream_ops = this
+        node.timestamp = Date.now()
         return node
     }
 
-    getattr()
+    getattr(node)
     {
-        throw new Error('EmglkenFS.getattr')
+        // Not sure what to return here, so only return stuff some of it
+        return {
+            atime: new Date(node.timestamp),
+            ctime: new Date(node.timestamp),
+            dev: 1,
+            gid: 0,
+            ino: node.id,
+            mode: node.mode,
+            mtime: new Date(node.timestamp),
+            nlink: 1,
+            rdev: node.rdev,
+            uid: 0,
+        }
     }
 
     // Get a Dialog ref for non-streaming Dialogs
