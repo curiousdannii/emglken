@@ -307,9 +307,9 @@ module.exports = class EmglkenFS
         throw new Error('EmglkenFS.symlink')
     }
 
-    unlink()
+    unlink(parent, name)
     {
-        throw new Error('EmglkenFS.unlink')
+        this.dialog.file_remove_ref(this.get_dialog_ref(name))
     }
 
     write(stream, buffer, offset, length, position)
