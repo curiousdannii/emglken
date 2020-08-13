@@ -27,7 +27,6 @@ add_sources(glulxe-core "glulxe/"
 emglken_vm(glulxe-core)
 target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
 target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
-#make_bundle(glulxe.js glulxe-core "Glulxe" emglken/glulxe.js)
 
 #[[
 add_executable(glulxe-profiler-core)
@@ -38,7 +37,6 @@ add_sources(glulxe-profiler-core "glulxe/"
 emglken_vm(glulxe-profiler-core)
 target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
-#make_bundle(glulxe-profiler.js glulxe-profiler-core "Glulxe" emglken/glulxe-profiler.js)
 ]]
 
 add_executable(git-core)
@@ -47,7 +45,8 @@ add_sources(git-core "git/"
     memory.c opcodes.c operands.c peephole.c savefile.c saveundo.c
     search.c terp.c git_unix.c)
 emglken_vm(git-core)
-#make_bundle(git.js git-core "Git" emglken/git.js)
+target_compile_definitions(git-core PRIVATE USE_DIRECT_THREADING USE_INLINE)
+target_compile_options(git-core PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign)
 
 #[[
 add_executable(hugo-core)
@@ -58,7 +57,6 @@ add_sources(hugo-core "hugo/heglk/"
 emglken_vm(hugo-core)
 target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
 target_compile_options(hugo-core PRIVATE -Wall)
-make_bundle(hugo.js hugo-core "Hugo" emglken/hugo.js)
 ]]
 
 add_executable(tads-core)
