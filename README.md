@@ -17,3 +17,12 @@ Glulxe | [erkyrath/glulxe](https://github.com/erkyrath/glulxe) | [MIT](https://g
 Hugo   | [curiousdannii/hugo](https://github.com/curiousdannii/hugo) | [BSD-2-Clause](https://github.com/curiousdannii/hugo/blob/master/LICENSE.txt)
 RemGlk | [erkyrath/remglk](https://github.com/erkyrath/remglk) | [MIT](https://github.com/erkyrath/remglk/blob/master/LICENSE)
 TADS   | [cspiegel/terps](https://github.com/cspiegel/terps) | [GPL-2.0](https://github.com/cspiegel/terps/blob/master/tads/COPYING)
+
+npm package and console app
+---------------------------
+
+Emglken has been published to the [npm package repository](https://www.npmjs.com/package/emglken). You can install the emglken package and use each interpreter as you wish. A basic console app is also provided, just run `emglken` with the path to the storyfile you want to run.
+
+```
+emglken storyfile.gblorb
+```
