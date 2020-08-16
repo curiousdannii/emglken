@@ -48,16 +48,14 @@ emglken_vm(git-core)
 target_compile_definitions(git-core PRIVATE USE_DIRECT_THREADING USE_INLINE)
 target_compile_options(git-core PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign)
 
-#[[
 add_executable(hugo-core)
 add_sources(hugo-core "hugo/source/"
     SRCS he.c heexpr.c hemisc.c heobject.c heparse.c heres.c herun.c heset.c stringfn.c)
 add_sources(hugo-core "hugo/heglk/"
-    SRCS heglk.c emhugoen.c)
+    SRCS heglk.c heglkunix.c)
 emglken_vm(hugo-core)
 target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
 target_compile_options(hugo-core PRIVATE -Wall)
-]]
 
 add_executable(tads-core)
 # remglk must be listed first so that our headers are used, not the ones from tads/tads2/glk

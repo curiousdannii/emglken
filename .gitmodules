@@ -9,7 +9,7 @@
 	url = https://github.com/erkyrath/glulxe.git
 [submodule "hugo"]
 	path = hugo
-	url = https://github.com/curiousdannii/hugo.git
+	url = https://github.com/0branch/hugo-unix.git
 [submodule "remglk"]
 	path = remglk
 	url = https://github.com/erkyrath/remglk.git
