@@ -14,7 +14,7 @@ Name   | Upstream repo | License
 ------ | ------------- | -------
 Git    | [DavidKinder/Git](https://github.com/DavidKinder/Git) | [MIT](https://github.com/DavidKinder/Git/blob/master/README.txt)
 Glulxe | [erkyrath/glulxe](https://github.com/erkyrath/glulxe) | [MIT](https://github.com/erkyrath/glulxe/blob/master/LICENSE)
-Hugo   | [curiousdannii/hugo](https://github.com/curiousdannii/hugo) | [BSD-2-Clause](https://github.com/curiousdannii/hugo/blob/master/LICENSE.txt)
+Hugo   | [0branch/hugo-unix](https://github.com/0branch/hugo-unix) | [BSD-2-Clause](https://github.com/0branch/hugo-unix/blob/master/License.txt)
 RemGlk | [erkyrath/remglk](https://github.com/erkyrath/remglk) | [MIT](https://github.com/erkyrath/remglk/blob/master/LICENSE)
 TADS   | [cspiegel/terps](https://github.com/cspiegel/terps) | [GPL-2.0](https://github.com/cspiegel/terps/blob/master/tads/COPYING)
 
