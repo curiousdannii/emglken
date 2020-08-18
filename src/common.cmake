@@ -11,6 +11,7 @@ function(emglken_vm target)
     target_link_libraries(${target} remglk)
     target_link_options(${target} PRIVATE
         # Required options
+        -sALLOW_MEMORY_GROWTH=1
         -sASYNCIFY=1
         -sASYNCIFY_IMPORTS=['emglken_fill_stdin_buffer']
         -sEXIT_RUNTIME=1
