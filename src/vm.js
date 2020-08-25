@@ -22,6 +22,8 @@ module.exports = class EmglkenVM
     {
         this.data = data
         this.options = Object.assign({}, base_options, this.default_options(), options)
+        const sig = data.subarray(0, 66)
+        this.autoid = typeof process === "object" ? Buffer.from(sig).toString('base64') : btoa(sig.reduce((prev, ch) => prev + String.fromCharCode(ch), ''))
     }
 
     // Start GlkOte and the vmcore
@@ -82,5 +84,13 @@ module.exports = class EmglkenVM
 
         await this.options.vmcore(Module)
         this.options.GlkOte.init(this.options)
+        if (this.restore_glk)
+        {
+            this.options.GlkOte.update({
+                autorestore: this.restore_glk,
+                generation: 0,
+                type: 'update',
+            })
+        }
     }
 }

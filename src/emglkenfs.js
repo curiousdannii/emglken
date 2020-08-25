@@ -46,16 +46,8 @@ function convert_flags(flags)
     return filemode_Read
 }
 
-// Functions for storing Uint8Arrays in localStorage
-function String_to_Uint8Array(str)
-{
-    return Uint8Array.from(str, ch => ch.charCodeAt(0))
-}
-
-function Uint8Array_to_String(array)
-{
-    return array.reduce((prev, ch) => prev + String.fromCharCode(ch), '')
-}
+const decoder = new TextDecoder()
+const encoder = new TextEncoder()
 
 module.exports = class EmglkenFS
 {
@@ -65,12 +57,40 @@ module.exports = class EmglkenFS
         this.streaming = this.dialog.streaming
         this.FS = VM.Module.FS
         this.VM = VM
+        this.autoid = VM.autoid
+        this.gameid = null
     }
 
     close(stream)
     {
         if (stream.name === 'storyfile')
         {}
+        else if (stream.name === 'autosave.glksave' || stream.name === 'autosave.json')
+        {
+            if (stream.fmode === filemode_Write)
+            {
+                if (stream.name === 'autosave.glksave')
+                {
+                    this.snapshot_ram = stream.data
+                }
+                else
+                {
+                    this.snapshot_json = stream.data
+                }
+
+                if (this.snapshot_ram && this.snapshot_json)
+                {
+                    const snapshot = {
+                        emglken: 1,
+                        glkote: this.VM.options.GlkOte.save_allstate(),
+                        ram: this.streaming ? this.snapshot_ram : decoder.decode(this.snapshot_ram),
+                        vm: JSON.parse(decoder.decode(this.snapshot_json)),
+                    }
+                    this.dialog.autosave_write(this.autoid, snapshot)
+                    this.snapshot_ram = this.snapshot_json = null
+                }
+            }
+        }
         else
         {
             if (this.streaming)
@@ -81,7 +101,7 @@ module.exports = class EmglkenFS
             {
                 if (stream.fmode !== filemode_Read)
                 {
-                    this.dialog.file_write(stream.fref, Uint8Array_to_String(stream.data), true)
+                    this.dialog.file_write(stream.fref, decoder.decode(stream.data), true)
                 }
             }
         }
@@ -130,7 +150,11 @@ module.exports = class EmglkenFS
         let gameid = ''
         if (usage === 'save')
         {
-            gameid = this.VM.Module.AsciiToString(this.VM.Module._gidispatch_get_game_id())
+            if (!this.gameid)
+            {
+                this.gameid = this.VM.Module.AsciiToString(this.VM.Module._gidispatch_get_game_id())
+            }
+            gameid = this.gameid
         }
 
         return this.dialog.file_construct_ref(name, usage, gameid)
@@ -145,23 +169,16 @@ module.exports = class EmglkenFS
         }
         else if (whence === SEEK_END)
         {
-            if (stream.name === 'storyfile')
+            if (stream.data)
             {
                 position += stream.data.length
             }
             else
             {
-                if (this.streaming)
-                {
-                    const curpos = stream.fstream.ftell()
-                    stream.fstream.fseek(0, SEEK_END)
-                    position += stream.fstream.ftell()
-                    stream.fstream.fseek(curpos, SEEK_SET)
-                }
-                else
-                {
-                    position += stream.data.length
-                }
+                const curpos = stream.fstream.ftell()
+                stream.fstream.fseek(0, SEEK_END)
+                position += stream.fstream.ftell()
+                stream.fstream.fseek(curpos, SEEK_SET)
             }
         }
         if (position < 0)
@@ -173,7 +190,15 @@ module.exports = class EmglkenFS
 
     lookup(parent, name)
     {
-        if (name !== 'storyfile')
+        if (name === 'autosave.glksave' || name === 'autosave.json')
+        {
+            const snapshot = this.dialog.autosave_read(this.autoid)
+            if (!snapshot || snapshot.emglken !== 1)
+            {
+                throw new this.FS.ErrnoError(ENOENT)
+            }
+        }
+        else if (name !== 'storyfile')
         {
             if (!this.dialog.file_ref_exists(this.streaming ? {filename: name} : this.get_dialog_ref(name)))
             {
@@ -206,13 +231,33 @@ module.exports = class EmglkenFS
     open(stream)
     {
         stream.name = stream.node.name
+        const fmode = convert_flags(stream.flags)
+        stream.fmode = fmode
+
         if (stream.name === 'storyfile')
         {
             stream.data = this.VM.data
         }
+        else if (stream.name === 'autosave.glksave' || stream.name === 'autosave.json')
+        {
+            if (fmode === filemode_Read)
+            {
+                const snapshot = this.dialog.autosave_read(this.autoid)
+                if (snapshot && snapshot.emglken === 1)
+                {
+                    stream.data = stream.name === 'autosave.glksave' ?
+                        (this.streaming ? Uint8Array.from(snapshot.ram) : encoder.encode(snapshot.ram)) :
+                        encoder.encode(JSON.stringify(snapshot.vm))
+                }
+            }
+
+            if (!stream.data)
+            {
+                stream.data = new Uint8Array(0)
+            }
+        }
         else
         {
-            const fmode = convert_flags(stream.flags)
             if (this.streaming)
             {
                 stream.fstream = this.dialog.file_fopen(fmode, {filename: stream.name})
@@ -232,16 +277,14 @@ module.exports = class EmglkenFS
                 // If no file and not reading, create a blank file
                 if (data == null)
                 {
-                    stream.data = new Uint8Array(0)
+                    data = ''
                     if (fmode !== filemode_Read)
                     {
                         this.dialog.file_write(stream.fref, '', true)
                     }
                 }
-                else
-                {
-                    stream.data = String_to_Uint8Array(data)
-                }
+
+                stream.data = encoder.encode(data)
                 //stream.position = fmode === filemode_WriteAppend ? data.length : 0
             }
         }
@@ -253,7 +296,7 @@ module.exports = class EmglkenFS
         {
             return 0
         }
-        if (stream.name === 'storyfile')
+        if (stream.data)
         {
             const size = Math.min(stream.data.length - position, length)
             buffer.set(stream.data.subarray(position, position + size), offset)
@@ -261,18 +304,9 @@ module.exports = class EmglkenFS
         }
         else
         {
-            if (this.streaming)
-            {
-                stream.fstream.fseek(position, SEEK_SET)
-                const buf = stream.fstream.BufferClass.from(buffer.buffer, offset, length)
-                return stream.fstream.fread(buf, length)
-            }
-            else
-            {
-                const size = Math.min(stream.data.length - position, length)
-                buffer.set(stream.data.subarray(position, position + size), offset)
-                return size
-            }
+            stream.fstream.fseek(position, SEEK_SET)
+            const buf = stream.fstream.BufferClass.from(buffer.buffer, offset, length)
+            return stream.fstream.fread(buf, length)
         }
     }
 
@@ -318,13 +352,7 @@ module.exports = class EmglkenFS
         {
             throw new Error('EmglkenFS.write: cannot write to storyfile')
         }
-        if (this.streaming)
-        {
-            stream.fstream.fseek(position, SEEK_SET)
-            const buf = stream.fstream.BufferClass.from(buffer).subarray(offset, offset + length)
-            return stream.fstream.fwrite(buf, length)
-        }
-        else
+        if (stream.data)
         {
             position = position || stream.position
             const end_of_write = length + position
@@ -336,6 +364,12 @@ module.exports = class EmglkenFS
             }
             stream.data.set(buffer.subarray(offset, offset + length), position)
             return length
+        }
+        else
+        {
+            stream.fstream.fseek(position, SEEK_SET)
+            const buf = stream.fstream.BufferClass.from(buffer).subarray(offset, offset + length)
+            return stream.fstream.fwrite(buf, length)
         }
     }
 }
