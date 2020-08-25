@@ -1,6 +1,6 @@
 {
   "name": "emglken",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Glk meets Emscripten",
   "author": "Dannii Willis <curiousdannii@gmail.com>",
   "license": "GPL-2.0",

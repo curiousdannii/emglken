@@ -65,6 +65,9 @@ module.exports = class EmglkenFS
         this.streaming = this.dialog.streaming
         this.FS = VM.Module.FS
         this.VM = VM
+
+        this.filename_map = {}
+        this.filename_counter = 0
     }
 
     close(stream)
@@ -175,7 +178,8 @@ module.exports = class EmglkenFS
     {
         if (name !== 'storyfile')
         {
-            if (!this.dialog.file_ref_exists(this.streaming ? {filename: name} : this.get_dialog_ref(name)))
+            const realname = this.filename_map[name] || name
+            if (!this.dialog.file_ref_exists(this.streaming ? {filename: realname} : this.get_dialog_ref(realname)))
             {
                 throw new this.FS.ErrnoError(ENOENT)
             }
@@ -213,13 +217,14 @@ module.exports = class EmglkenFS
         else
         {
             const fmode = convert_flags(stream.flags)
+            const realname = this.filename_map[stream.name] || name
             if (this.streaming)
             {
-                stream.fstream = this.dialog.file_fopen(fmode, {filename: stream.name})
+                stream.fstream = this.dialog.file_fopen(fmode, {filename: realname})
             }
             else
             {
-                stream.fref = this.get_dialog_ref(stream.name)
+                stream.fref = this.get_dialog_ref(realname)
                 stream.fmode = fmode
 
                 // Read the content if not overwriting
@@ -286,6 +291,26 @@ module.exports = class EmglkenFS
         throw new Error('EmglkenFS.readlink')
     }
 
+    // electrofs.js will give a full system path, which we can't handle. So store the full path and return a fake file name
+    register_filename(filename, usage)
+    {
+        const suffix = usage === 'save' ? '.glksave' : (usage === 'data' ? '.glkdata' : '.txt')
+        if (!/\.(glkdata|glksave|txt)$/.test(filename))
+        {
+            filename = filename + suffix
+        }
+
+        if (this.filename_map[filename])
+        {
+            return this.filename_map[filename]
+        }
+
+        const fakename = 'emglken_fake_file_' + this.filename_counter++
+        this.filename_map[filename] = fakename
+        this.filename_map[fakename + suffix] = filename
+        return fakename
+    }
+
     rename()
     {
         throw new Error('EmglkenFS.rename')
@@ -309,7 +334,8 @@ module.exports = class EmglkenFS
 
     unlink(parent, name)
     {
-        this.dialog.file_remove_ref(this.get_dialog_ref(name))
+        const realname = this.filename_map[name] || name
+        this.dialog.file_remove_ref(this.get_dialog_ref(realname))
     }
 
     write(stream, buffer, offset, length, position)

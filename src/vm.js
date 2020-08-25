@@ -68,10 +68,18 @@ module.exports = class EmglkenVM
         this.Module = Module
 
         this.options.accept = data => {
-            // Convert a Dialog.js provided fileref into something Remglk will understand
             if (data.type === 'specialresponse' && data.response === 'fileref_prompt' && data.value)
             {
-                data.value = data.value.filename
+                // electrofs.js returns a full path, so register it with EmglkenFS, and return a fake filename
+                if (this.EFS.streaming)
+                {
+                    data.value = this.EFS.register_filename(data.value.filename, data.value.usage)
+                }
+                // Convert a dialog.js provided fileref into something Remglk can understand
+                else
+                {
+                    data.value = data.value.filename
+                }
             }
 
             const json_data = JSON.stringify(data)
