@@ -87,7 +87,8 @@ add_sources(tads-core "cspiegel/tads/tads3/"
     vmtmpfil.cpp vmtobj.cpp vmtype.cpp vmtypedh.cpp vmtz.cpp vmtzobj.cpp
     vmundo.cpp vmvec.cpp vmconnom.cpp)
 emglken_vm(tads-core)
+set_property(TARGET tads-core PROPERTY CXX_STANDARD 98)
 target_compile_definitions(tads-core PRIVATE GARGOYLE VMGLOB_STRUCT GLK_UNICODE GLK_TIMERS TC_TARGET_T3 RUNTIME)
 # Define __GNU_LIBRARY__ so that tads3/sha2.cpp doesn't get confused when trying to load endian headers
 target_compile_definitions(tads-core PRIVATE __GNU_LIBRARY__)
-target_compile_options(tads-core PRIVATE -Wno-pointer-sign)
+target_compile_options(tads-core PRIVATE -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
