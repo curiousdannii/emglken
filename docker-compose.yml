@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  emscripten:
-    image: emscripten/emsdk:2.0.0
-    volumes:
-      - .:/src
-    command: src/build.sh
-    user: ${CURRENT_UID}
