@@ -19,8 +19,12 @@
     "glkote-term": "^0.4.1",
     "mute-stream": "0.0.8"
   },
+  "devDependencies": {
+    "eslint": "^7.6.0"
+  },
   "scripts": {
     "build": "CURRENT_UID=$(id -u):$(id -g) docker-compose run emscripten",
+    "lint": "eslint bin/ src/",
     "test": "./tests/runtests.sh"
   },
   "files": [

@@ -90,7 +90,7 @@ module.exports = class EmglkenFS
         }
     }
 
-    createNode(parent, name, mode, dev)
+    createNode(parent, name, mode/*, dev*/)
     {
         const FS = this.FS
         if (!FS.isDir(mode) && !FS.isFile(mode))
@@ -187,7 +187,7 @@ module.exports = class EmglkenFS
         return this.createNode(parent, name, FILE_MODE)
     }
 
-    mknod(parent, name, mode, dev)
+    mknod(parent, name, mode/*, dev*/)
     {
         return this.createNode(parent, name, mode)
     }
@@ -217,7 +217,7 @@ module.exports = class EmglkenFS
         else
         {
             const fmode = convert_flags(stream.flags)
-            const realname = this.filename_map[stream.name] || name
+            const realname = this.filename_map[stream.name] || stream.name
             if (this.streaming)
             {
                 stream.fstream = this.dialog.file_fopen(fmode, {filename: realname})
@@ -321,7 +321,7 @@ module.exports = class EmglkenFS
         throw new Error('EmglkenFS.rmdir')
     }
 
-    setattr(node, attr)
+    setattr(/*node, attr*/)
     {
         // I don't think we need to do anything here?
         // Maybe truncate a file?

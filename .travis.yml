@@ -14,5 +14,6 @@ before_install:
   - docker-compose pull
 
 script:
-  - docker-compose run emscripten
-  - ./tests/runtests.sh
+  - npm run lint
+  - npm run build
+  - npm run test
