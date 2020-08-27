@@ -15,13 +15,20 @@ const fs = require('fs')
 const readline = require('readline')
 
 const GlkOte = require('glkote-term')
+const minimist = require('minimist')
 const MuteStream = require('mute-stream')
 
 const formats = [
     {
-        id: 'glulx',
+        id: 'glulxe',
         extensions: /(gblorb|ulx)$/,
         engine: 'glulxe.js',
+    },
+
+    {
+        id: 'git',
+        extensions: /(gblorb|ulx)$/,
+        engine: 'git.js',
     },
 
     {
@@ -39,12 +46,14 @@ const formats = [
 
 function run()
 {
-    const storyfile = process.argv[2]
+    const argv = minimist(process.argv.slice(2))
+
+    const storyfile = argv._[0]
 
     let format
     for (const formatspec of formats)
     {
-        if (formatspec.extensions.test(storyfile))
+        if (formatspec.id === argv.vm || (!argv.vm && formatspec.extensions.test(storyfile)))
         {
             format = formatspec
             break
