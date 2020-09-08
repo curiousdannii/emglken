@@ -92,3 +92,5 @@ target_compile_definitions(tads-core PRIVATE GARGOYLE VMGLOB_STRUCT GLK_UNICODE 
 # Define __GNU_LIBRARY__ so that tads3/sha2.cpp doesn't get confused when trying to load endian headers
 target_compile_definitions(tads-core PRIVATE __GNU_LIBRARY__)
 target_compile_options(tads-core PRIVATE -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
+# Prevent warnings from some Glk functions not being used in TADS
+target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
