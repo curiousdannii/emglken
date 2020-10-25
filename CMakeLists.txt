@@ -94,3 +94,5 @@ target_compile_definitions(tads-core PRIVATE __GNU_LIBRARY__)
 target_compile_options(tads-core PRIVATE -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
 # Prevent warnings from some Glk functions not being used in TADS
 target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
+# Cannot run the ignore indirect optimisation on TADS, but maybe I can later determine which functions need instrumenting
+target_link_options(tads-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
