@@ -1,0 +1,23 @@
+** game: ditch3.t3
+
+* prologue
+
+Return to Ditch Day
+
+>
+This is the cramped control room of Government Power Plant #6.
+
+> x xojo
+> x guanmgon
+> x scu
+> say yes
+“Xojo!  Go fetch Mr. Mittling some Koffee.  Hurry!”  Xojo rushes off through the door.
+
+> x ct-22
+> take hv chip
+Taken.
+
+> x tester
+> read stickers
+> open tester
+(Your score has just increased by two points.)

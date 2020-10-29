@@ -1,11 +1,9 @@
 ** game: glulxercise.ulx
 
-* basic
+* all
 
 Glulxercise: A Glulx interpreter unit test
 Welcome to the test chamber.
-
-* all
 
 > all
 !FAIL

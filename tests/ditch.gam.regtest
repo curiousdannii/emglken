@@ -1,0 +1,17 @@
+** game: ditch.gam
+
+* prologue
+
+Ditch Day Drifter
+
+This is your room.  You live a fairly austere life, being a poor college student.
+
+> look under bed
+> open drawer
+> get all
+food:  Taken.
+waste basket:  Taken.
+
+> west
+> read sign
+This stack is a treasure hunt.
