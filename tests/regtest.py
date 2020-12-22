@@ -1,5 +1,5 @@
 # RegTest: a really simple IF regression tester.
-#   Version 1.7
+#   Version 1.8
 #   Andrew Plotkin <erkyrath@eblong.com>
 #   This script is in the public domain.
 #
@@ -39,7 +39,7 @@ import types
 gamefile = None
 terppath = None
 terpargs = []
-remformat = False
+terpformat = 'cheap'    # 'cheap', 'rem', 'remsingle'
 precommands = []
 
 checkclasses = []
@@ -64,9 +64,15 @@ popt.add_option('-p', '--pre', '--precommand',
 popt.add_option('-c', '--cc', '--checkclass',
                 action='append', dest='checkfiles', metavar='FILE',
                 help='module containing custom Check classes')
+popt.add_option('-f', '--format',
+                action='store', dest='terpformat',
+                help='the interpreter format: cheap, rem, remsingle')
 popt.add_option('-r', '--rem',
                 action='store_true', dest='remformat',
-                help='the interpreter uses RemGlk (JSON) format')
+                help='equivalent to --format rem')
+popt.add_option('-E', '--env',
+                action='append', dest='env',
+                help='environment variables to set before running interpreter')
 popt.add_option('-t', '--timeout',
                 dest='timeout_secs', type=float, default=10.0,
                 help='timeout interval (default: 10.0 sec)')
@@ -116,7 +122,17 @@ class Command:
         'func10':0xffffffe6, 'func11':0xffffffe5, 'func12':0xffffffe4,
     }
     
-    def __init__(self, cmd, type='line'):
+    def __init__(self, cmd, type=None):
+        if type is None:
+            # Peel off the "{...}" prefix, if found.
+            match = re.match('{([a-z_]*)}', cmd)
+            if not match:
+                type = 'line'
+                cmd = cmd.strip()
+            else:
+                type = match.group(1)
+                cmd = cmd[match.end() : ].strip()
+            
         self.type = type
         if self.type == 'line':
             self.cmd = cmd
@@ -481,6 +497,10 @@ class GameState:
     (the pipe in and out streams). It's responsible for sending commands
     to the interpreter, and receiving the game output back.
 
+    (The RemGlkSingle subclass doesn't maintain a running pipe-in and
+    pipe-out, so those arguments are not passed in. Instead, we pass a
+    set of interpreter arguments.)
+
     Currently this class is set up to manage exactly one each of story,
     status, and graphics windows. (A missing window is treated as blank.)
     This is not very general -- we should understand the notion of multiple
@@ -489,9 +509,10 @@ class GameState:
     This is a virtual base class. Subclasses should customize the
     initialize, perform_input, and accept_output methods.
     """
-    def __init__(self, infile, outfile):
+    def __init__(self, infile, outfile, args=None):
         self.infile = infile
         self.outfile = outfile
+        self.terpargs = args
         # Lists of strings
         self.statuswin = []
         self.graphicswin = []
@@ -562,7 +583,16 @@ class GameStateRemGlk(GameState):
         con = line.get('content')
         if not con:
             return ''
-        dat = [ val.get('text', '') for val in con ]
+        dat = []
+        i = 0
+        while i < len(con):
+            val = con[i]
+            i += 1
+            if type(val) is dict:
+                dat.append(val.get('text', ''))
+            else:
+                dat.append(con[i])
+                i += 1
         return ''.join(dat)
     
     @staticmethod
@@ -603,9 +633,48 @@ class GameStateRemGlk(GameState):
         self.charinputwin = None
         self.specialinput = None
         self.hyperlinkinputwin = None
-        
+
     def perform_input(self, cmd):
         import json
+        update = self.construct_remglk_input(cmd)
+        cmd = json.dumps(update)
+        self.infile.write((cmd+'\n').encode())
+        self.infile.flush()
+        
+    def accept_output(self):
+        import json
+        output = bytearray()
+        update = None
+
+        timeout_time = time.time() + opts.timeout_secs
+
+        # Read until a complete JSON object comes through the pipe (or
+        # we time out).
+        # We sneakily rely on the fact that RemGlk always uses dicts
+        # as the JSON object, so it always ends with "}".
+        while (select.select([self.outfile],[],[],opts.timeout_secs)[0] != []):
+            ch = self.outfile.read(1)
+            if ch == b'':
+                # End of stream. Hopefully we have a valid object.
+                dat = output.decode('utf-8')
+                update = json.loads(dat)
+                break
+            output += ch
+            if (output[-1] == ord('}')):
+                # Test and see if we have a valid object.
+                dat = output.decode('utf-8')
+                try:
+                    update = json.loads(dat)
+                    break
+                except:
+                    pass
+                
+        if time.time() >= timeout_time:
+            raise Exception('Timed out awaiting output')
+
+        self.parse_remglk_update(update)
+
+    def construct_remglk_input(self, cmd):
         if cmd.type == 'line':
             if not self.lineinputwin:
                 raise Exception('Game is not expecting line input')
@@ -651,41 +720,9 @@ class GameStateRemGlk(GameState):
         if opts.verbose >= 2:
             ObjPrint.pprint(update)
             print()
-        cmd = json.dumps(update)
-        self.infile.write((cmd+'\n').encode())
-        self.infile.flush()
-        
-    def accept_output(self):
-        import json
-        output = bytearray()
-        update = None
+        return update
 
-        timeout_time = time.time() + opts.timeout_secs
-
-        # Read until a complete JSON object comes through the pipe (or
-        # we time out).
-        # We sneakily rely on the fact that RemGlk always uses dicts
-        # as the JSON object, so it always ends with "}".
-        while (select.select([self.outfile],[],[],opts.timeout_secs)[0] != []):
-            ch = self.outfile.read(1)
-            if ch == b'':
-                # End of stream. Hopefully we have a valid object.
-                dat = output.decode('utf-8')
-                update = json.loads(dat)
-                break
-            output += ch
-            if (output[-1] == ord('}')):
-                # Test and see if we have a valid object.
-                dat = output.decode('utf-8')
-                try:
-                    update = json.loads(dat)
-                    break
-                except:
-                    pass
-                
-        if time.time() >= timeout_time:
-            raise Exception('Timed out awaiting output')
-
+    def parse_remglk_update(self, update):
         # Parse the update object. This is complicated. For the format,
         # see http://eblong.com/zarf/glk/glkote/docs.html
 
@@ -785,6 +822,59 @@ class GameStateRemGlk(GameState):
                 if input.get('hyperlink'):
                     self.hyperlinkinputwin = input.get('id')
 
+class GameStateRemGlkSingle(GameStateRemGlk):
+    """Wrapper for a RemGlk-based interpreter in single-turn mode. That is,
+    rather than keeping an interpreter open in the background, we launch
+    it once for each input. RemGlk will autosave each turn and autorestore
+    for the next turn.
+    This has the same limitations as GameStateRemGlk.
+    """
+    
+    def initialize(self):
+        import json
+        update = { 'type':'init', 'gen':0,
+                   'metrics': GameStateRemGlk.create_metrics(),
+                   'support': [ 'timer', 'hyperlinks', 'graphics', 'graphicswin' ],
+                   }
+        cmd = json.dumps(update)
+        
+        proc = subprocess.Popen(
+            self.terpargs + [ '-singleturn', '--autosave' ],
+            env=terpenv,
+            bufsize=0,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        (outdat, errdat) = proc.communicate((cmd+'\n').encode(), timeout=opts.timeout_secs)
+        self.pendingupdate = outdat.decode()
+        
+        self.generation = 0
+        self.windows = {}
+        # This doesn't track multiple-window input the way it should,
+        # nor distinguish hyperlink input state across multiple windows.
+        self.lineinputwin = None
+        self.charinputwin = None
+        self.specialinput = None
+        self.hyperlinkinputwin = None
+
+    def perform_input(self, cmd):
+        import json
+        update = self.construct_remglk_input(cmd)
+        cmd = json.dumps(update)
+        
+        proc = subprocess.Popen(
+            self.terpargs + [ '-singleturn', '-autometrics', '--autosave', '--autorestore' ],
+            env=terpenv,
+            bufsize=0,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        (outdat, errdat) = proc.communicate((cmd+'\n').encode(), timeout=opts.timeout_secs)
+        self.pendingupdate = outdat
+        
+    def accept_output(self):
+        import json
+        dat = self.pendingupdate
+        update = json.loads(dat)
+        self.pendingupdate = None
+
+        self.parse_remglk_update(update)
 
 class ObjPrint:
     NoneType = type(None)
@@ -899,21 +989,32 @@ class ObjPrint:
 checkfile_counter = 0
 
 def parse_checkfile(filename):
-    """Load a module containing extra Check subclasses. This is probably
-    a terrible abuse of the import mechanism.
+    """Load a module containing extra Check subclasses. This is a nuisance;
+    programmatic module loading is different in Py2 and Py3, and it's not
+    pleasant in either.
     """
-    import imp
     global checkfile_counter
     
     modname = '_cc_%d' % (checkfile_counter,)
     checkfile_counter += 1
 
-    fl = open(filename, 'U')
+    fl = open(filename)
     try:
-        mod = imp.load_module(modname, fl, filename, ('.py', 'U', imp.PY_SOURCE))
+        if sys.version_info.major == 2:
+            import imp
+            mod = imp.load_module(modname, fl, filename, ('.py', 'U', imp.PY_SOURCE))
+            # For checking the contents...
+            classtype = types.ClassType
+        else:  # Python3
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(modname, filename)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            # For checking the contents...
+            classtype = type
         for key in dir(mod):
             val = getattr(mod, key)
-            if type(val) is types.ClassType and issubclass(val, Check):
+            if type(val) is classtype and issubclass(val, Check):
                 if val is Check:
                     continue
                 if val in checkclasses:
@@ -926,7 +1027,7 @@ def parse_tests(filename):
     """Parse the test file. This fills out the testls array, and the
     other globals which will be used during testing.
     """
-    global gamefile, terppath, terpargs, remformat
+    global gamefile, terppath, terpargs, terpformat
     
     fl = open(filename)
     curtest = None
@@ -959,7 +1060,7 @@ def parse_tests(filename):
                     terppath = subls[0]
                     terpargs = subls[1:]
                 elif (key == 'remformat'):
-                    remformat = (val.lower() > 'og')
+                    terpformat = 'rem' if (val.lower() > 'og') else 'cheap'
                 elif (key == 'checkclass'):
                     parse_checkfile(val)
                 else:
@@ -986,15 +1087,7 @@ def parse_tests(filename):
             continue
 
         if (ln.startswith('>')):
-            # Peel off the "{...}" prefix, if found.
-            match = re.match('>{([a-z_]*)}', ln)
-            if not match:
-                cmdtype = 'line'
-                ln = ln[1:].strip()
-            else:
-                cmdtype = match.group(1)
-                ln = ln[match.end() : ].strip()
-            curcmd = Command(ln, type=cmdtype)
+            curcmd = Command(ln[1:])
             curtest.addcmd(curcmd)
             continue
 
@@ -1038,15 +1131,22 @@ def run(test):
     
     print('* ' + test.name)
     args = [ testterppath ] + testterpargs + [ testgamefile ]
-    proc = subprocess.Popen(args,
-                            bufsize=0,
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc = None
+    if terpformat != 'remsingle':
+        proc = subprocess.Popen(
+            args,
+            env=terpenv,
+            bufsize=0,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-    if (not remformat):
+    if terpformat == 'cheap':
         gamestate = GameStateCheap(proc.stdin, proc.stdout)
-    else:
+    elif terpformat == 'rem':
         gamestate = GameStateRemGlk(proc.stdin, proc.stdout)
-
+    elif terpformat == 'remsingle':
+        gamestate = GameStateRemGlkSingle(None, None, args=args)
+    else:
+        raise Exception('Unrecognized format: %s' % (terpformat,))
 
     cmdlist = list_commands(precommands + test.cmds)
 
@@ -1066,7 +1166,7 @@ def run(test):
         for cmd in cmdlist:
             if (opts.verbose):
                 if cmd.type == 'line':
-                    if (not remformat):
+                    if terpformat == 'cheap':
                         print('> %s' % (cmd.cmd,))
                     else:
                         # The input line is echoed by the game.
@@ -1091,12 +1191,15 @@ def run(test):
         totalerrors += 1
         val = '*** ' if opts.verbose else ''
         print('%s%s: %s' % (val, ex.__class__.__name__, ex))
+        import traceback
+        traceback.print_exc()
 
     gamestate = None
-    proc.stdin.close()
-    proc.stdout.close()
-    proc.kill()
-    proc.poll()
+    if proc:
+        proc.stdin.close()
+        proc.stdout.close()
+        proc.kill()
+        proc.poll()
     
     
 checkclasses.append(RegExpCheck)
@@ -1130,8 +1233,18 @@ if (not terppath):
     print('No interpreter path specified')
     sys.exit(-1)
 if (opts.remformat):
-    remformat = True
+    terpformat = 'rem'
+if (opts.terpformat):
+    terpformat = opts.terpformat
 
+terpenv = dict(os.environ)
+if (opts.env):
+    for val in opts.env:
+        key, _, val = val.partition('=')
+        if not val:
+            val = '1'
+        terpenv[key] = val
+    
 if (opts.precommands):
     for cmd in opts.precommands:
         precommands.append(Command(cmd))

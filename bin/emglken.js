@@ -14,7 +14,7 @@ https://github.com/curiousdannii/emglken
 const fs = require('fs')
 const readline = require('readline')
 
-const GlkOte = require('glkote-term')
+const GlkOteLib = require('glkote-term')
 const minimist = require('minimist')
 const MuteStream = require('mute-stream')
 
@@ -67,24 +67,38 @@ function run()
     }
 
     // Readline options
-    const stdin = process.stdin
-    const stdout = new MuteStream()
-    stdout.pipe(process.stdout)
-    const rl = readline.createInterface({
-        input: stdin,
-        output: stdout,
-        prompt: '',
-    })
-    const rl_opts = {
-        rl: rl,
-        stdin: stdin,
-        stdout: stdout,
+    let io_opts
+    if (argv.rem)
+    {
+        io_opts = {
+            stdin: process.stdin,
+            stdout: process.stdout,
+        }
+    }
+    else
+    {
+        const stdin = process.stdin
+        const stdout = new MuteStream()
+        stdout.pipe(process.stdout)
+        const rl = readline.createInterface({
+            input: stdin,
+            output: stdout,
+            prompt: '',
+        })
+        io_opts = {
+            rl: rl,
+            stdin: stdin,
+            stdout: stdout,
+        }
     }
 
+    // RemGlk or dumb mode GlkOte
+    const GlkOte = argv.rem ? GlkOteLib.RemGlkOte : GlkOteLib.DumbGlkOte
+
     const options = {
-        Dialog: new GlkOte.Dialog(rl_opts),
+        Dialog: new GlkOteLib.DumbGlkOte.Dialog(io_opts),
         Glk: {},
-        GlkOte: new GlkOte(rl_opts),
+        GlkOte: new GlkOte(io_opts),
     }
 
     const engine = require('../src/' + format.engine)

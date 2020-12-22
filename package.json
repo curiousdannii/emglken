@@ -16,7 +16,7 @@
     "emglken": "bin/emglken.js"
   },
   "dependencies": {
-    "glkote-term": "^0.4.1",
+    "glkote-term": "^0.4.4",
     "minimist": "^1.2.5",
     "mute-stream": "0.0.8"
   },
