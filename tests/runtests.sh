@@ -14,3 +14,5 @@ echo 'TADS 2'
 python regtest.py -i "../bin/emglken.js" ditch.gam.regtest
 echo 'TADS 3'
 python regtest.py -i "../bin/emglken.js" ditch3.t3.regtest
+
+rm hugotest.glksave

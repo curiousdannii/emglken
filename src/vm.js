@@ -49,6 +49,11 @@ module.exports = class EmglkenVM
                         {
                             const obj = JSON.parse(buffer)
                             buffer = ''
+                            // Store the usage of a fileref prompt request
+                            if (obj.specialinput && obj.specialinput.type === 'fileref_prompt')
+                            {
+                                this.last_fr_usage = obj.specialinput.filetype
+                            }
                             this.options.GlkOte.update(obj)
                         }
                         catch (e) {}
@@ -73,7 +78,7 @@ module.exports = class EmglkenVM
                 // electrofs.js returns a full path, so register it with EmglkenFS, and return a fake filename
                 if (this.EFS.streaming)
                 {
-                    data.value = this.EFS.register_filename(data.value.filename, data.value.usage)
+                    data.value = this.EFS.register_filename(data.value.filename, this.last_fr_usage)
                 }
                 // Convert a dialog.js provided fileref into something Remglk can understand
                 else
