@@ -1,6 +1,6 @@
-[submodule "cspiegel"]
-	path = cspiegel
-	url = https://github.com/cspiegel/terps.git
+[submodule "garglk"]
+	path = garglk
+	url = https://github.com/garglk/garglk.git
 [submodule "git"]
 	path = git
 	url = https://github.com/DavidKinder/Git.git
