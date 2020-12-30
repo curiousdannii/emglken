@@ -11,8 +11,8 @@ echo 'Hugo'
 python regtest.py -i "../bin/emglken.js" coretest.hex.regtest
 python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest
 echo 'TADS 2'
-python regtest.py -i "../bin/emglken.js" ditch.gam.regtest
+python regtest.py -i "../bin/emglken.js --rem=1" ditch.gam.regtest -t 20
 echo 'TADS 3'
-python regtest.py -i "../bin/emglken.js" ditch3.t3.regtest
+python regtest.py -i "../bin/emglken.js --rem=1" ditch3.t3.regtest -t 20
 
-rm hugotest.glksave
+rm hugotest.glksave tadstest.glksave

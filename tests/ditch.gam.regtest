@@ -1,4 +1,5 @@
 ** game: ditch.gam
+** remformat: yes
 
 * prologue
 
@@ -15,3 +16,24 @@ waste basket:  Taken.
 > west
 > read sign
 This stack is a treasure hunt.
+
+* save/restore
+
+>{include} prologue
+
+> save
+>{fileref_prompt} tadstest
+Saved.
+
+> restart
+> yes
+> i
+You are empty-handed.
+
+> restore
+>{fileref_prompt} tadstest
+Restored.
+Alley One
+
+> i
+You have a one dollar bill
