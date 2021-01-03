@@ -106,6 +106,9 @@ module.exports = class EmglkenFS
 
     getattr(node)
     {
+        // At present only the size of the storyfile will be returned, as needed by Bocfel
+        const size = node.name === 'storyfile' ? this.VM.data.length : 0
+
         // Not sure what to return here, so only return stuff some of it
         return {
             atime: new Date(node.timestamp),
@@ -117,6 +120,7 @@ module.exports = class EmglkenFS
             mtime: new Date(node.timestamp),
             nlink: 1,
             rdev: node.rdev,
+            size,
             uid: 0,
         }
     }

@@ -39,6 +39,19 @@ target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
 ]]
 
+add_executable(bocfel-core)
+add_sources(bocfel-core "garglk/terps/bocfel/"
+    SRCS blorb.c branch.c dict.c glkstart.c iff.c io.c math.c meta.c memory.c
+    objects.c osdep.c patches.c process.c random.c screen.c sound.c stack.c
+    unicode.c util.c zoom.c zterp.c)
+emglken_vm(bocfel-core)
+target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_UNIX)
+target_compile_options(bocfel-core PRIVATE -Wall)
+# Prevent warnings from some Glk functions not being used in Bocfel
+target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=['gli_get_buffer'])
+# Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
+target_link_options(bocfel-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
+
 add_executable(git-core)
 add_sources(git-core "git/"
     SRCS accel.c compiler.c gestalt.c git.c glkop.c heap.c

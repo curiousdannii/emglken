@@ -1,6 +1,8 @@
 #!/bin/sh
 
 cd "$(dirname "$0")"
+echo 'Bocfel'
+python regtest.py -i "../bin/emglken.js" praxix.z5.regtest
 echo 'Git'
 python regtest.py -i "../bin/emglken.js --vm=git" glulxercise.ulx.regtest
 echo 'Glulxe'

@@ -20,6 +20,12 @@ const MuteStream = require('mute-stream')
 
 const formats = [
     {
+        id: 'bocfel',
+        extensions: /z([3458]|blorb)$/,
+        engine: 'bocfel.js',
+    },
+
+    {
         id: 'glulxe',
         extensions: /(gblorb|ulx)$/,
         engine: 'glulxe.js',

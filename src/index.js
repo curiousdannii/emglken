@@ -10,6 +10,7 @@ https://github.com/curiousdannii/emglken
 */
 
 module.exports = {
+    Bocfel: require('./bocfel.js'),
     Git: require('./git.js'),
     Glulxe: require('./glulxe.js'),
     Hugo: require('./hugo.js'),
