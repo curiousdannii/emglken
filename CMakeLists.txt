@@ -6,6 +6,8 @@ project(Emglken
 
 include(src/common.cmake)
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 add_library(remglk STATIC)
 add_sources(remglk "remglk/"
     SRCS main.c rgevent.c rgfref.c rggestal.c
