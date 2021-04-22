@@ -45,7 +45,7 @@ add_executable(bocfel-core)
 add_sources(bocfel-core "garglk/terps/bocfel/"
     SRCS blorb.c branch.c dict.c glkstart.c iff.c io.c math.c meta.c memory.c
     objects.c osdep.c patches.c process.c random.c screen.c sound.c stack.c
-    unicode.c util.c zoom.c zterp.c)
+    stash.c unicode.c util.c zoom.c zterp.c)
 emglken_vm(bocfel-core)
 target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_UNIX)
 target_compile_options(bocfel-core PRIVATE -Wall)
