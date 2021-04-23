@@ -16,7 +16,7 @@ function(emglken_vm target)
         #-sASYNCIFY_ADVISE=1
         -sASYNCIFY_IGNORE_INDIRECT=1
         -sASYNCIFY_IMPORTS=['emglken_fill_stdin_buffer']
-        -sASYNCIFY_REMOVE=['gli_get_buffer','gli_get_char','gli_get_line']
+        -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
         -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']

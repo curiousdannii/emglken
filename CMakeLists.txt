@@ -50,7 +50,7 @@ emglken_vm(bocfel-core)
 target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_UNIX)
 target_compile_options(bocfel-core PRIVATE -Wall)
 # Prevent warnings from some Glk functions not being used in Bocfel
-target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=['gli_get_buffer'])
+target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=[])
 # Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
 target_link_options(bocfel-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
 
@@ -71,6 +71,8 @@ add_sources(hugo-core "hugo/heglk/"
 emglken_vm(hugo-core)
 target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
 target_compile_options(hugo-core PRIVATE -Wall)
+# Prevent warnings from some Glk functions being inlined and so no longer being removed
+target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 
 add_executable(tads-core)
 # Search for headers in the right order: emglken's glk.h first, then remglk's headers, then tads/tads2/glk
