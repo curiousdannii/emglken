@@ -17,7 +17,7 @@ add_sources(remglk "remglk/"
     cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
 add_sources(remglk "src/"
     SRCS cgunicod.c getc.c)
-target_compile_options(remglk PRIVATE -Wall)
+target_compile_options(remglk PRIVATE -Wall -Wno-unused-but-set-variable)
 target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
 target_include_directories(remglk PUBLIC remglk/)
 
@@ -70,7 +70,7 @@ add_sources(hugo-core "hugo/heglk/"
     SRCS heglk.c heglkunix.c)
 emglken_vm(hugo-core)
 target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
-target_compile_options(hugo-core PRIVATE -Wall)
+target_compile_options(hugo-core PRIVATE -Wall -Wno-unused-but-set-variable)
 # Prevent warnings from some Glk functions being inlined and so no longer being removed
 target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 

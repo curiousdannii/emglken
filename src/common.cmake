@@ -20,7 +20,7 @@ function(emglken_vm target)
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
         -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
-        -sEXTRA_EXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
+        -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
         -sMODULARIZE=1
         -sSTRICT=1
         -sWASM=1
