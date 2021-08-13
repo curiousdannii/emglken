@@ -13,25 +13,23 @@ static int emglken_stdin_buffer_index = 0;
 static int emglken_stdin_buffer_contents_length = 0;
 static int emglken_stdin_ungetc_value = EOF;
 
-EM_JS(int, emglken_fill_stdin_buffer, (char *buffer, int maxlen), {
-    return Asyncify.handleAsync(async () => {
-        if (!Module.emglken_stdin_buffers.length)
-        {
-            await new Promise(resolve => { Module.emglken_stdin_ready = resolve });
-        }
-        const input = Module.emglken_stdin_buffers[0];
-        const len = Math.min(input.length, maxlen);
+EM_ASYNC_JS(int, emglken_fill_stdin_buffer, (char *buffer, int maxlen), {
+    if (!Module.emglken_stdin_buffers.length)
+    {
+        await new Promise(resolve => { Module.emglken_stdin_ready = resolve });
+    }
+    const input = Module.emglken_stdin_buffers.shift();
+    const len = Math.min(input.length, maxlen);
+    if (len == input.length)
+    {
+        HEAPU8.set(input, buffer);
+    }
+    else
+    {
         HEAPU8.set(input.subarray(0, len), buffer);
-        if (len == input.length)
-        {
-            Module.emglken_stdin_buffers.shift();
-        }
-        else
-        {
-            Module.emglken_stdin_buffers[0] = input.subarray(len);
-        }
-        return len;
-    });
+        Module.emglken_stdin_buffers.unshift(input.subarray(len));
+    }
+    return len;
 });
 
 int __wrap_getc(FILE *f)

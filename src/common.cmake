@@ -15,7 +15,6 @@ function(emglken_vm target)
         -sASYNCIFY=1
         #-sASYNCIFY_ADVISE=1
         -sASYNCIFY_IGNORE_INDIRECT=1
-        -sASYNCIFY_IMPORTS=['emglken_fill_stdin_buffer']
         -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
