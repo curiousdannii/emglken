@@ -12,4 +12,4 @@
 	url = https://github.com/0branch/hugo-unix.git
 [submodule "remglk"]
 	path = remglk
-	url = https://github.com/erkyrath/remglk.git
+	url = https://github.com/curiousdannii/remglk.git
