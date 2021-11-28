@@ -77,16 +77,16 @@ target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 add_executable(tads-core)
 # Search for headers in the right order: emglken's glk.h first, then remglk's headers, then tads/tads2/glk
 target_include_directories(tads-core PRIVATE src/ remglk/)
-target_include_directories(tads-core PRIVATE garglk/tads/ garglk/tads/tads2/ garglk/tads/tads2/glk/ garglk/tads/tads3/)
-add_sources(tads-core "garglk/tads/"
+target_include_directories(tads-core PRIVATE tads/glk/ tads/tads2/ tads/tads3/)
+add_sources(tads-core "tads/glk/"
     SRCS memicmp.c osbuffer.c osextra.c osglk.c osglkban.c osmisc.c osparse.c
     osportable.cc t23run.cpp t2askf.c t2indlg.c t3askf.cpp t3indlg.cpp vmuni_cs.cpp)
-add_sources(tads-core "garglk/tads/tads2/"
+add_sources(tads-core "tads/tads2/"
     SRCS argize.c bif.c bifgdum.c cmap.c cmd.c dat.c dbgtr.c errmsg.c execmd.c
     fio.c fioxor.c getstr.c ler.c linfdum.c lst.c mch.c mcm.c mcs.c obj.c oem.c
     os0.c oserr.c osifc.c osnoui.c osrestad.c osstzprs.c ostzposix.c out.c output.c
     ply.c qas.c regex.c run.c runstat.c suprun.c trd.c voc.c vocab.c)
-add_sources(tads-core "garglk/tads/tads3/"
+add_sources(tads-core "tads/tads3/"
     SRCS charmap.cpp md5.cpp resldexe.cpp resload.cpp sha2.cpp std.cpp tcerr.cpp
     tcerrmsg.cpp tcgen.cpp tcglob.cpp tcmain.cpp tcprs.cpp tcprs_rt.cpp tcprsnf.cpp
     tcprsnl.cpp tcprsstm.cpp tcsrc.cpp tct3.cpp tct3_d.cpp tct3nl.cpp tct3stm.cpp
@@ -104,11 +104,11 @@ add_sources(tads-core "garglk/tads/tads3/"
     vmtmpfil.cpp vmtobj.cpp vmtype.cpp vmtypedh.cpp vmtz.cpp vmtzobj.cpp
     vmundo.cpp vmvec.cpp vmconnom.cpp)
 emglken_vm(tads-core)
-set_property(TARGET tads-core PROPERTY CXX_STANDARD 98)
+set_property(TARGET tads-core PROPERTY CXX_STANDARD 11)
 target_compile_definitions(tads-core PRIVATE GARGOYLE VMGLOB_STRUCT GLK_UNICODE GLK_TIMERS TC_TARGET_T3 RUNTIME)
 # Define __GNU_LIBRARY__ so that tads3/sha2.cpp doesn't get confused when trying to load endian headers
 target_compile_definitions(tads-core PRIVATE __GNU_LIBRARY__)
-target_compile_options(tads-core PRIVATE -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
+target_compile_options(tads-core PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
 # Prevent warnings from some Glk functions not being used in TADS
 target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
 # Cannot run the ignore indirect optimisation on TADS, but maybe I can later determine which functions need instrumenting
