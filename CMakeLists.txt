@@ -75,7 +75,7 @@ target_compile_options(hugo-core PRIVATE -Wall -Wno-unused-but-set-variable)
 target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 
 add_executable(tads-core)
-# Search for headers in the right order: emglken's glk.h first, then remglk's headers, then tads/tads2/glk
+# Search for headers in the right order: emglken's glk.h first, then remglk's headers, then tads/...
 target_include_directories(tads-core PRIVATE src/ remglk/)
 target_include_directories(tads-core PRIVATE tads/glk/ tads/tads2/ tads/tads3/)
 add_sources(tads-core "tads/glk/"
