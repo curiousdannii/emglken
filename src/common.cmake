@@ -16,6 +16,7 @@ function(emglken_vm target)
         #-sASYNCIFY_ADVISE=1
         -sASYNCIFY_IGNORE_INDIRECT=1
         -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
+        -sENVIRONMENT=web
         -sEXIT_RUNTIME=1
         #-sEXPORT_ES6=1
         -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
@@ -27,8 +28,6 @@ function(emglken_vm target)
         # Optimisations
         --minify 0
         -O3
-        # Building to just node and web saves about 1kb from the final JS
-        -sENVIRONMENT=node,web
         -sTEXTDECODER=2
     )
 endfunction()

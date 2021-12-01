@@ -105,9 +105,17 @@ function run()
         Dialog: new GlkOteLib.DumbGlkOte.Dialog(io_opts),
         Glk: {},
         GlkOte: new GlkOte(io_opts),
+        wasmBinary: fs.readFileSync(`${__dirname}/../build/${format.id}-core.wasm`),
     }
 
-    const engine = require('../src/' + format.engine)
+    process.on('unhandledRejection', error => {
+        if (error.name !== 'ExitStatus' || error.message !== 'Program terminated with exit(0)') {
+            console.log('Unhandled Rejection:', error)
+        }
+        process.exit()
+    })
+
+    const engine = require(`../src/${format.id}.js`)
     const vm = new engine()
     vm.prepare(fs.readFileSync(storyfile), options)
     vm.start()
