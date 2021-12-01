@@ -292,7 +292,7 @@ module.exports = class EmglkenFS
 
     readlink()
     {
-        throw new Error('EmglkenFS.readlink')
+        throw new this.FS.ErrnoError(EINVAL)
     }
 
     // electrofs.js will give a full system path, which we can't handle. So store the full path and return a fake file name

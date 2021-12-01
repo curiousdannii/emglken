@@ -6,7 +6,11 @@ project(Emglken
 
 include(src/common.cmake)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+# Thin LTO (as the CMAKE setting would turn on) results in an "undefined symbol: calloc" when linking Glulxe
+# https://github.com/emscripten-core/emscripten/issues/15676
+#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto=full")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=full")
 
 add_library(remglk STATIC)
 add_sources(remglk "remglk/"

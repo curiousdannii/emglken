@@ -12,6 +12,7 @@ function(emglken_vm target)
     target_link_options(${target} PRIVATE
         # Required options
         -sALLOW_MEMORY_GROWTH=1
+        -sALLOW_UNIMPLEMENTED_SYSCALLS
         -sASYNCIFY=1
         #-sASYNCIFY_ADVISE=1
         -sASYNCIFY_IGNORE_INDIRECT=1
