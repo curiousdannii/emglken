@@ -3,7 +3,7 @@
 Emglken VM
 ==========
 
-Copyright (c) 2020 Dannii Willis
+Copyright (c) 2022 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -45,9 +45,9 @@ module.exports = class EmglkenVM
                     buffer += data
                     if (data.endsWith('}'))
                     {
-                        try
-                        {
-                            const obj = JSON.parse(buffer)
+                        let obj
+                        try { obj = JSON.parse(buffer) } catch (e) {}
+                        if (obj) {
                             buffer = ''
                             // Store the usage of a fileref prompt request
                             if (obj.specialinput && obj.specialinput.type === 'fileref_prompt')
@@ -56,7 +56,6 @@ module.exports = class EmglkenVM
                             }
                             this.options.GlkOte.update(obj)
                         }
-                        catch (e) {}
                     }
                 }
             },
