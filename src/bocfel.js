@@ -9,10 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenVM = require('./vm.js')
-const BocfelCore = require('../build/bocfel-core.js')
+import EmglkenVM from './vm.js'
+import BocfelCore from '../build/bocfel-core.js'
 
-module.exports = class Bocfel extends EmglkenVM
+export default class Bocfel extends EmglkenVM
 {
     default_options()
     {

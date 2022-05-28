@@ -9,10 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenVM = require('./vm.js')
-const GitCore = require('../build/git-core.js')
+import EmglkenVM from './vm.js'
+import GitCore from '../build/git-core.js'
 
-module.exports = class Git extends EmglkenVM
+export default class Git extends EmglkenVM
 {
     default_options()
     {

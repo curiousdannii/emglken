@@ -57,7 +57,7 @@ function Uint8Array_to_String(array)
     return array.reduce((prev, ch) => prev + String.fromCharCode(ch), '')
 }
 
-module.exports = class EmglkenFS
+export default class EmglkenFS
 {
     constructor(VM)
     {

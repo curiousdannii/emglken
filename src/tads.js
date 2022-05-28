@@ -9,10 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenVM = require('./vm.js')
-const TADSCore = require('../build/tads-core.js')
+import EmglkenVM from './vm.js'
+import TADSCore from '../build/tads-core.js'
 
-module.exports = class TADS extends EmglkenVM
+export default class TADS extends EmglkenVM
 {
     default_options()
     {

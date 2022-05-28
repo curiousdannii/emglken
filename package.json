@@ -11,6 +11,7 @@
   "repository": "curiousdannii/emglken",
   "bugs": "https://github.com/curiousdannii/emglken/issues",
   "homepage": "https://github.com/curiousdannii/emglken",
+  "type": "module",
   "main": "src/index.js",
   "bin": {
     "emglken": "bin/emglken.js"

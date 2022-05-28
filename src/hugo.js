@@ -9,10 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenVM = require('./vm.js')
-const HugoCore = require('../build/hugo-core.js')
+import EmglkenVM from './vm.js'
+import HugoCore from '../build/hugo-core.js'
 
-module.exports = class Hugo extends EmglkenVM
+export default class Hugo extends EmglkenVM
 {
     default_options()
     {

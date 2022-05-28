@@ -9,13 +9,13 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenFS = require('./emglkenfs.js')
+import EmglkenFS from './emglkenfs.js'
 
 const base_options = {
     arguments: ['storyfile'],
 }
 
-module.exports = class EmglkenVM
+export default class EmglkenVM
 {
     // Store the data and options
     prepare(data, options)

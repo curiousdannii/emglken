@@ -9,7 +9,8 @@ module.exports = {
         'TextEncoder': 'readonly',
     },
     'parserOptions': {
-        'ecmaVersion': 12
+        ecmaVersion: 12,
+        sourceType: 'module',
     },
     'root': true,
     'rules': {

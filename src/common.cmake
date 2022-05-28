@@ -17,17 +17,17 @@ function(emglken_vm target)
         #-sASYNCIFY_ADVISE=1
         -sASYNCIFY_IGNORE_INDIRECT=1
         -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
-        -sENVIRONMENT=web
         -sEXIT_RUNTIME=1
-        #-sEXPORT_ES6=1
         -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
         -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
-        -sMODULARIZE=1
         -sSTRICT=1
-        -sWASM=1
         -Wl,--wrap=getc,--wrap=ungetc
-        # Optimisations
+        # Output options
         --minify 0
+        -sENVIRONMENT=web
+        -sEXPORT_ES6=1
+        -sMODULARIZE=1
+        # Optimisations
         -O3
         -sTEXTDECODER=2
     )

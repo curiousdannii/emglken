@@ -11,12 +11,13 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const fs = require('fs')
-const readline = require('readline')
+import fs from 'fs'
+import readline from 'readline'
 
-const GlkOteLib = require('glkote-term')
-const minimist = require('minimist')
-const MuteStream = require('mute-stream')
+import GlkOteLib from 'glkote-term'
+import minimist from 'minimist'
+import MuteStream from 'mute-stream'
+import { url } from 'inspector'
 
 const formats = [
     {
@@ -50,7 +51,7 @@ const formats = [
     },
 ]
 
-function run()
+async function run()
 {
     const argv = minimist(process.argv.slice(2))
 
@@ -105,7 +106,7 @@ function run()
         Dialog: new GlkOteLib.DumbGlkOte.Dialog(io_opts),
         Glk: {},
         GlkOte: new GlkOte(io_opts),
-        wasmBinary: fs.readFileSync(`${__dirname}/../build/${format.id}-core.wasm`),
+        wasmBinary: fs.readFileSync(new URL(`../build/${format.id}-core.wasm`, import.meta.url))
     }
 
     process.on('unhandledRejection', error => {
@@ -115,7 +116,7 @@ function run()
         process.exit()
     })
 
-    const engine = require(`../src/${format.id}.js`)
+    const engine = (await import(`../src/${format.id}.js`)).default
     const vm = new engine()
     vm.prepare(fs.readFileSync(storyfile), options)
     vm.start()

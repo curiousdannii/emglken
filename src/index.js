@@ -9,10 +9,16 @@ https://github.com/curiousdannii/emglken
 
 */
 
-module.exports = {
-    Bocfel: require('./bocfel.js'),
-    Git: require('./git.js'),
-    Glulxe: require('./glulxe.js'),
-    Hugo: require('./hugo.js'),
-    TADS: require('./tads.js'),
+import Bocfel from './bocfel.js'
+import Git from './git.js'
+import Glulxe from './glulxe.js'
+import Hugo from './hugo.js'
+import TADS from './tads.js'
+
+export default {
+    Bocfel,
+    Git,
+    Glulxe,
+    Hugo,
+    TADS,
 }

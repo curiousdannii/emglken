@@ -9,10 +9,10 @@ https://github.com/curiousdannii/emglken
 
 */
 
-const EmglkenVM = require('./vm.js')
-const GlulxCore = require('../build/glulxe-core.js')
+import EmglkenVM from './vm.js'
+import GlulxCore from '../build/glulxe-core.js'
 
-module.exports = class Glulxe extends EmglkenVM
+export default class Glulxe extends EmglkenVM
 {
     default_options()
     {
