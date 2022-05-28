@@ -17,7 +17,6 @@ import readline from 'readline'
 import GlkOteLib from 'glkote-term'
 import minimist from 'minimist'
 import MuteStream from 'mute-stream'
-import { url } from 'inspector'
 
 const formats = [
     {
@@ -118,7 +117,7 @@ async function run()
 
     const engine = (await import(`../src/${format.id}.js`)).default
     const vm = new engine()
-    vm.prepare(fs.readFileSync(storyfile), options)
+    vm.init(fs.readFileSync(storyfile), options)
     vm.start()
 }
 

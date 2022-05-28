@@ -18,7 +18,7 @@ const base_options = {
 export default class EmglkenVM
 {
     // Store the data and options
-    prepare(data, options)
+    init(data, options)
     {
         this.data = data
         this.options = Object.assign({}, base_options, this.default_options(), options)
