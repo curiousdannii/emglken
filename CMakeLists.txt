@@ -32,7 +32,7 @@ add_sources(glulxe-core "glulxe/"
     search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
 emglken_vm(glulxe-core)
 target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
-target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
+target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 
 #[[
 add_executable(glulxe-profiler-core)
@@ -42,7 +42,7 @@ add_sources(glulxe-profiler-core "glulxe/"
     search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
 emglken_vm(glulxe-profiler-core)
 target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
-target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused)
+target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 ]]
 
 add_executable(bocfel-core)
@@ -65,7 +65,7 @@ add_sources(git-core "git/"
     search.c terp.c git_unix.c)
 emglken_vm(git-core)
 target_compile_definitions(git-core PRIVATE USE_DIRECT_THREADING USE_INLINE)
-target_compile_options(git-core PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign)
+target_compile_options(git-core PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign -Wno-unused-but-set-variable)
 
 add_executable(hugo-core)
 add_sources(hugo-core "hugo/source/"
@@ -107,8 +107,6 @@ add_sources(tads-core "tads/tads3/"
 emglken_vm(tads-core)
 set_property(TARGET tads-core PROPERTY CXX_STANDARD 11)
 target_compile_definitions(tads-core PRIVATE GARGOYLE VMGLOB_STRUCT GLK_UNICODE GLK_TIMERS TC_TARGET_T3 RUNTIME)
-# Define __GNU_LIBRARY__ so that tads3/sha2.cpp doesn't get confused when trying to load endian headers
-target_compile_definitions(tads-core PRIVATE __GNU_LIBRARY__)
 target_compile_options(tads-core PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
 # Prevent warnings from some Glk functions not being used in TADS
 target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
