@@ -47,14 +47,18 @@ target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -
 
 add_executable(bocfel-core)
 add_sources(bocfel-core "garglk/terps/bocfel/"
-    SRCS blorb.c branch.c dict.c glkstart.c iff.c io.c math.c meta.c memory.c
-    objects.c osdep.c patches.c process.c random.c screen.c sound.c stack.c
-    stash.c unicode.c util.c zoom.c zterp.c)
+    SRCS blorb.cpp branch.cpp dict.cpp iff.cpp io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp
+    osdep.cpp patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp unicode.cpp
+    util.cpp zoom.cpp zterp.cpp glkstart.cpp)
 emglken_vm(bocfel-core)
-target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_UNIX)
+set_property(TARGET bocfel-core PROPERTY CXX_STANDARD 14)
+target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX ZTERP_UNIX)
 target_compile_options(bocfel-core PRIVATE -Wall)
+# Bocfel now uses exceptions, which takes a little bit to set up
+target_compile_options(bocfel-core PRIVATE -fexceptions)
+target_link_options(bocfel-core PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
 # Prevent warnings from some Glk functions not being used in Bocfel
-target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=[])
+target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 # Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
 target_link_options(bocfel-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
 
