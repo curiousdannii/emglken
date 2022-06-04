@@ -24,13 +24,10 @@ function(emglken_vm target)
         -Wl,--wrap=getc,--wrap=ungetc
         # Output options
         --minify 0
+        --profiling-funcs
         -sENVIRONMENT=web
         -sEXPORT_ES6=1
         -sMODULARIZE=1
-        # Source maps - unfortunately it doesn't seem possible to make a generic source-map-base
-        #-g
-        #-gsource-map
-        #--source-map-base=http://127.0.0.1:8080/dist/web/
         # Optimisations
         -O3
         -sTEXTDECODER=2
