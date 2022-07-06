@@ -34,6 +34,8 @@ export default class EmglkenVM
             arguments: this.options.show_help ? ['-help'] : this.options.arguments,
             emglken_stdin_buffers: [],
             emglken_stdin_ready() {},
+            // Fake locateFile so that Lectrote doesn't get tripped up on import.meta.url not being handled in CJS properly
+            locateFile() {},
             print: data =>
             {
                 if (buffer === '' && data !== '' && !data.startsWith('{'))
