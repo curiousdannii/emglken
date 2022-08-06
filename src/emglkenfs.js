@@ -46,17 +46,6 @@ function convert_flags(flags)
     return filemode_Read
 }
 
-// Functions for storing Uint8Arrays in localStorage
-function String_to_Uint8Array(str)
-{
-    return Uint8Array.from(str, ch => ch.charCodeAt(0))
-}
-
-function Uint8Array_to_String(array)
-{
-    return array.reduce((prev, ch) => prev + String.fromCharCode(ch), '')
-}
-
 export default class EmglkenFS
 {
     constructor(VM)
@@ -84,7 +73,7 @@ export default class EmglkenFS
             {
                 if (stream.fmode !== filemode_Read)
                 {
-                    this.dialog.file_write(stream.fref, Uint8Array_to_String(stream.data), true)
+                    this.dialog.file_write(stream.fref, stream.data)
                 }
             }
         }
@@ -232,24 +221,19 @@ export default class EmglkenFS
                 stream.fmode = fmode
 
                 // Read the content if not overwriting
-                let data = null
+                stream.data = null
                 if (fmode !== filemode_Write)
                 {
-                    data = this.dialog.file_read(stream.fref, true)
+                    stream.data = this.dialog.file_read(stream.fref)
                 }
 
                 // If no file and not reading, create a blank file
-                if (data == null)
-                {
+                if (stream.data == null) {
                     stream.data = new Uint8Array(0)
                     if (fmode !== filemode_Read)
                     {
                         this.dialog.file_write(stream.fref, '', true)
                     }
-                }
-                else
-                {
-                    stream.data = String_to_Uint8Array(data)
                 }
                 //stream.position = fmode === filemode_WriteAppend ? data.length : 0
             }

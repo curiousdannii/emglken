@@ -110,7 +110,7 @@ add_sources(tads-core "tads/tads3/"
     vmundo.cpp vmvec.cpp vmconnom.cpp)
 emglken_vm(tads-core)
 set_property(TARGET tads-core PROPERTY CXX_STANDARD 11)
-target_compile_definitions(tads-core PRIVATE GARGOYLE VMGLOB_STRUCT GLK_UNICODE GLK_TIMERS TC_TARGET_T3 RUNTIME)
+target_compile_definitions(tads-core PRIVATE GARGOYLE GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
 target_compile_options(tads-core PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
 # Prevent warnings from some Glk functions not being used in TADS
 target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
