@@ -3,16 +3,37 @@ name: build-and-test
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v2
+      - run: ./src/build.sh
+      - uses: actions/upload-artifact@v3
         with:
-          node-version: '18'
+          name: build
+          path: |
+            build/*.js
+            build/*.wasm
+          retention-days: 1
+
+  test:
+    needs: build
+    strategy:
+      matrix:
+        node: [14, 16, 18]
+    name: test (Node v${{ matrix.node }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build
       - run: npm install
       - run: npm run lint
-      - run: npm run build
       - run: npm test
