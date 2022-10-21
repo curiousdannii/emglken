@@ -16,13 +16,12 @@ jobs:
           path: |
             build/*.js
             build/*.wasm
-          retention-days: 1
 
   test:
     needs: build
     strategy:
       matrix:
-        node: [14, 16, 18]
+        node: [14, 16, 18, 19]
     name: test (Node v${{ matrix.node }})
     runs-on: ubuntu-latest
     steps:
