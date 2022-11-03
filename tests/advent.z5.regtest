@@ -1,0 +1,47 @@
+** game: advent.z5
+** remformat: yes
+
+* prologue
+
+ADVENTURE
+
+> east
+> get all
+set of keys: Taken.
+tasty food: Taken.
+brass lantern: Taken.
+small bottle: Taken.
+
+> west
+> south
+> south
+> south
+> unlock grate with keys
+> open it
+> down
+> west
+> west
+> turn on lamp
+A note on the wall says, "Magic word XYZZY."
+
+> xyzzy
+Inside Building
+
+* save/restore
+
+>{include} prologue
+
+> save
+>{fileref_prompt} adventtest
+Ok.
+
+> restart
+> yes
+At End Of Road
+
+> restore
+>{fileref_prompt} adventtest
+Ok.
+
+> look
+Inside Building
