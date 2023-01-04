@@ -22,7 +22,7 @@
   "dependencies": {
     "glkote-term": "^0.4.4",
     "minimist": "^1.2.6",
-    "mute-stream": "0.0.8"
+    "mute-stream": "1.0.0"
   },
   "devDependencies": {
     "eslint": "^8.16.0"
