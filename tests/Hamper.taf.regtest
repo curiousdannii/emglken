@@ -1,0 +1,52 @@
+** game: Hamper.taf
+** remformat: yes
+
+* prologue
+
+To Hell in a Hamper
+
+>{char} space
+>{char} space
+>{char} space
+> get box
+> get mallet
+> open box
+> get scissors
+> cut off buttons
+> look
+Also here is a large framed painting
+
+* save/restore
+
+>{include} prologue
+
+> save
+>{fileref_prompt} scaretest
+Ok.
+
+> restart
+>{char} y
+# Scare sends ten 0.1s timer events before restarting
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{timer}
+>{char} space
+>{char} space
+>{char} space
+
+The basket is otherwise completely empty.
+
+> restore
+>{char} y
+>{fileref_prompt} scaretest
+Ok.
+
+> look
+Also here is a large framed painting

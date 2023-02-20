@@ -5,7 +5,7 @@
 Emglken runner
 ==============
 
-Copyright (c) 2020 Dannii Willis
+Copyright (c) 2023 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -41,6 +41,12 @@ const formats = [
         id: 'hugo',
         extensions: /hex$/,
         engine: 'hugo.js',
+    },
+
+    {
+        id: 'scare',
+        extensions: /taf$/,
+        engine: 'scare.js',
     },
 
     {

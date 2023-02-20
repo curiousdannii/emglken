@@ -23,8 +23,10 @@ function(emglken_vm target)
         -sSTRICT=1
         -Wl,--wrap=getc,--wrap=ungetc
         # Debugging options
+        #-g
         #-sASSERTIONS
         #-sASYNCIFY_ADVISE
+        #-sINLINING_LIMIT=1
         # Output options
         --minify 0
         --profiling-funcs
@@ -32,7 +34,12 @@ function(emglken_vm target)
         -sEXPORT_ES6=1
         -sMODULARIZE=1
         # Optimisations
-        -O3
         -sTEXTDECODER=2
     )
+    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+        target_link_options(${target} PRIVATE -O3)
+    endif()
+    # For debugging "null function or function signature mismatch" errors (but this requires lots of RAM)
+    #target_compile_options(${target} PRIVATE -fsanitize=undefined)
+    #target_link_options(${target} PRIVATE -fsanitize=undefined)
 endfunction()

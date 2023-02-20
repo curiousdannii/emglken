@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 
 if [ ! -f regtest.py ]; then
-    wget https://github.com/erkyrath/plotex/raw/master/regtest.py
+    wget -q https://github.com/erkyrath/plotex/raw/master/regtest.py
 fi
 
 echo 'Bocfel'
@@ -18,6 +18,8 @@ python regtest.py -i "../bin/emglken.js --vm=glulxe" glulxercise.ulx.regtest -t 
 echo 'Hugo'
 python regtest.py -i "../bin/emglken.js" coretest.hex.regtest -t 10
 python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest -t 10
+echo 'Scare'
+python regtest.py -i "../bin/emglken.js --rem=1" Hamper.taf.regtest -t 10
 echo 'TADS 2'
 python regtest.py -i "../bin/emglken.js --rem=1" ditch.gam.regtest -t 20
 echo 'TADS 3'

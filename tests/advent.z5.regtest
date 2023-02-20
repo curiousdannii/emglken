@@ -45,3 +45,19 @@ Ok.
 
 > look
 Inside Building
+
+* menu
+
+> look
+> help
+>{char} return
+I know of places, actions, and things.
+
+>{char} space
+>{char} n
+>{char} return
+Perhaps the first adventurer was a mulatto slave named Stephen Bishop
+
+>{char} space
+>{char} q
+At End Of Road

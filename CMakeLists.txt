@@ -6,7 +6,12 @@ project(Emglken
 
 include(src/common.cmake)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 add_library(remglk STATIC)
 add_sources(remglk "remglk/"
@@ -77,6 +82,20 @@ target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR 
 target_compile_options(hugo-core PRIVATE -Wall -Wno-unused-but-set-variable)
 # Prevent warnings from some Glk functions being inlined and so no longer being removed
 target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
+
+add_executable(scare-core)
+add_sources(scare-core "garglk/terps/scare/"
+    SRCS os_glk.c scdebug.c scevents.c scexpr.c scgamest.c scinterf.c sclibrar.c
+    sclocale.c scmemos.c scnpcs.c scobjcts.c scparser.c scprintf.c scprops.c
+    scresour.c screstrs.c scrunner.c scserial.c sctaffil.c sctafpar.c sctasks.c
+    scutils.c scvars.c)
+emglken_vm(scare-core)
+target_compile_options(scare-core PRIVATE -sUSE_ZLIB)
+target_link_options(scare-core PRIVATE -sUSE_ZLIB)
+# Prevent warnings from some Glk functions being inlined and so no longer being removed
+target_link_options(scare-core PRIVATE -sASYNCIFY_REMOVE=[])
+# Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
+target_link_options(scare-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
 
 add_executable(tads-core)
 add_sources(tads-core "tads/glk/"
