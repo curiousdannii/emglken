@@ -1,6 +1,6 @@
 {
   "name": "emglken",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Glk meets Emscripten",
   "author": "Dannii Willis <curiousdannii@gmail.com>",
   "license": "GPL-2.0",
@@ -22,12 +22,12 @@
   "dependencies": {
     "glkote-term": "^0.4.4",
     "minimist": "^1.2.6",
-    "mute-stream": "0.0.8"
+    "mute-stream": "1.0.0"
   },
   "devDependencies": {
     "eslint": "^8.16.0"
   },
-  "emscripten-version": "3.1.22",
+  "emscripten-version": "3.1.32",
   "scripts": {
     "build": "./src/build.sh",
     "lint": "eslint bin/ src/",
