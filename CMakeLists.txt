@@ -53,7 +53,7 @@ add_sources(bocfel-core "garglk/terps/bocfel/"
     util.cpp zoom.cpp zterp.cpp glkstart.cpp)
 emglken_vm(bocfel-core)
 set_property(TARGET bocfel-core PROPERTY CXX_STANDARD 14)
-target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX ZTERP_UNIX)
+target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX)
 target_compile_options(bocfel-core PRIVATE -Wall)
 # Bocfel now uses exceptions, which takes a little bit to set up
 target_compile_options(bocfel-core PRIVATE -fexceptions)
