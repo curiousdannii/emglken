@@ -16,3 +16,5 @@ docker run --rm -t \
         emcmake cmake -DCMAKE_BUILD_TYPE=Release -S . -B build; \\
         emmake make -j$(nproc) --no-print-directory -C build \\
     "
+
+./tools/write-file-sizes.js

@@ -36,6 +36,7 @@
   "files": [
     "bin/emglken.js",
     "build/*.js",
+    "build/*.json",
     "build/*.wasm",
     "src/*.js"
   ]
