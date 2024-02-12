@@ -20,8 +20,7 @@ function(emglken_vm target)
         -sEXIT_RUNTIME=1
         -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
         -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
-        # See https://github.com/emscripten-core/emscripten/pull/16003#issuecomment-1449251509
-        -sLLD_REPORT_UNDEFINED=0
+        -sINCOMING_MODULE_JS_API=[arguments,emglken_stdin_buffers,emglken_stdin_ready,locateFile,preRun,print,wasmBinary]
         -sSTRICT=1
         -Wl,--wrap=getc,--wrap=ungetc
         # Debugging options
