@@ -11,8 +11,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set(REMGLK_RS_LIB_FOLDER remglk/target/wasm32-unknown-emscripten/release-wasm)
+else()
+    set(REMGLK_RS_LIB_FOLDER remglk/target/wasm32-unknown-emscripten/dev-wasm)
 endif()
 
+#[[
 add_library(remglk STATIC)
 add_sources(remglk "remglk/"
     SRCS main.c rgevent.c rgfref.c rggestal.c
@@ -25,6 +29,7 @@ add_sources(remglk "src/"
 target_compile_options(remglk PRIVATE -Wall -Wno-unused-but-set-variable)
 target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
 target_include_directories(remglk PUBLIC remglk/)
+]]
 
 add_executable(glulxe-core)
 add_sources(glulxe-core "glulxe/"
@@ -46,6 +51,7 @@ target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 ]]
 
+#[[
 add_executable(bocfel-core)
 add_sources(bocfel-core "garglk/terps/bocfel/"
     SRCS blorb.cpp branch.cpp dict.cpp iff.cpp io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp
@@ -131,3 +137,4 @@ target_compile_options(tads-core PRIVATE -Wno-deprecated-register -Wno-logical-n
 target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
 # Cannot run the ignore indirect optimisation on TADS, but maybe I can later determine which functions need instrumenting
 target_link_options(tads-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
+]]

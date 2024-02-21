@@ -1,19 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
 cd "$(dirname "$0")/.."
 
-EMVERSION=$(grep -oP '"emscripten-version":\s*"\K[\d.]+' package.json)
-
-echo "Building Emglken with Emscripten v$EMVERSION"
-
 mkdir -p build
+
+# Build the docker image if it doesn't exist
+DOCKER_TAG=$(sha1sum src/Dockerfile)
+DOCKER_TAG=${DOCKER_TAG:0:8}
+if [ -z "$(docker images -q emglken:$DOCKER_TAG 2> /dev/null)" ]; then
+    echo "Building Emglken Docker image"
+    docker build -f src/Dockerfile --tag emglken:$DOCKER_TAG .
+fi
 
 docker run --rm -t \
     -u $(id -u):$(id -g) \
     -v $(pwd):/src \
-    emscripten/emsdk:$EMVERSION \
+    emglken:$DOCKER_TAG \
     /bin/bash -c " \\
-        emcmake cmake -DCMAKE_BUILD_TYPE=Release -S . -B build; \\
+        cargo build \\
+            --manifest-path=remglk/Cargo.toml \\
+            --profile=dev-wasm \\
+            --target=wasm32-unknown-emscripten; \\
+        emcmake cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build; \\
         emmake make -j$(nproc) --no-print-directory -C build \\
     "
 

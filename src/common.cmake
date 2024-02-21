@@ -8,7 +8,9 @@ endfunction()
 
 # Add common arguments and dependencies
 function(emglken_vm target)
-    target_link_libraries(${target} remglk)
+    target_include_directories(${target} PRIVATE remglk/remglk_capi/src/glk)
+    target_link_directories(${target} PRIVATE ${REMGLK_RS_LIB_FOLDER})
+    target_link_libraries(${target} remglk_capi)
     target_link_options(${target} PRIVATE
         # Required options
         -sALLOW_MEMORY_GROWTH=1
@@ -18,7 +20,8 @@ function(emglken_vm target)
         -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
-        -sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
+        #-sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
+        -sEXPORTED_FUNCTIONS=['_main']
         -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
         -sINCOMING_MODULE_JS_API=[arguments,emglken_stdin_buffers,emglken_stdin_ready,locateFile,preRun,print,wasmBinary]
         -sSTRICT=1
