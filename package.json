@@ -13,7 +13,7 @@
   "homepage": "https://github.com/curiousdannii/emglken",
   "type": "module",
   "engines" : {
-    "node" : ">=18.0.0"
+    "node" : ">=20.0.0"
   },
   "main": "src/index.js",
   "bin": {

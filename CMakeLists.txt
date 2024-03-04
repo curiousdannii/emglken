@@ -11,9 +11,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-    set(REMGLK_RS_LIB_FOLDER remglk/target/wasm32-unknown-emscripten/release-wasm)
+    set(REMGLK_RS_LIB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/remglk/target/wasm32-unknown-emscripten/release)
 else()
-    set(REMGLK_RS_LIB_FOLDER remglk/target/wasm32-unknown-emscripten/dev-wasm)
+    set(REMGLK_RS_LIB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/remglk/target/wasm32-unknown-emscripten/debug)
 endif()
 
 #[[
@@ -31,14 +31,14 @@ target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
 target_include_directories(remglk PUBLIC remglk/)
 ]]
 
-add_executable(glulxe-core)
-add_sources(glulxe-core "glulxe/"
+add_executable(glulxe)
+add_sources(glulxe "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
     gestalt.c glkop.c heap.c main.c operand.c osdepend.c profile.c
     search.c serial.c string.c vm.c unixstrt.c unixautosave.c)
-emglken_vm(glulxe-core)
-target_compile_definitions(glulxe-core PRIVATE OS_UNIX)
-target_compile_options(glulxe-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
+emglken_vm(glulxe)
+target_compile_definitions(glulxe PRIVATE OS_UNIX)
+target_compile_options(glulxe PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 
 #[[
 add_executable(glulxe-profiler-core)

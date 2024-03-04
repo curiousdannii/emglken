@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 cd "$(dirname "$0")/.."
 
 mkdir -p build
@@ -19,7 +21,6 @@ docker run --rm -t \
     /bin/bash -c " \\
         cargo build \\
             --manifest-path=remglk/Cargo.toml \\
-            --profile=dev-wasm \\
             --target=wasm32-unknown-emscripten; \\
         emcmake cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build; \\
         emmake make -j$(nproc) --no-print-directory -C build \\

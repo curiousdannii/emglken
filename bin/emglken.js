@@ -5,7 +5,7 @@
 Emglken runner
 ==============
 
-Copyright (c) 2023 Dannii Willis
+Copyright (c) 2024 Dannii Willis
 MIT licenced
 https://github.com/curiousdannii/emglken
 
@@ -13,6 +13,7 @@ https://github.com/curiousdannii/emglken
 
 import fs from 'fs'
 import readline from 'readline'
+import path from 'path'
 
 import GlkOteLib from 'glkote-term'
 import minimist from 'minimist'
@@ -61,6 +62,7 @@ async function run()
     const argv = minimist(process.argv.slice(2))
 
     const storyfile = argv._[0]
+    const storyfile_name = path.basename(storyfile)
 
     let format
     for (const formatspec of formats)
@@ -108,11 +110,12 @@ async function run()
     const GlkOte = argv.rem ? GlkOteLib.RemGlkOte : GlkOteLib.DumbGlkOte
 
     const options = {
+        arguments: [storyfile_name],
         Dialog: new GlkOteLib.DumbGlkOte.Dialog(io_opts),
         Glk: {},
         GlkOte: new GlkOte(io_opts),
-        wasmBinary: fs.readFileSync(new URL(`../build/${format.id}-core.wasm`, import.meta.url))
     }
+    const wasmBinary = fs.readFileSync(new URL(`../build/${format.id}.wasm`, import.meta.url))
 
     process.on('unhandledRejection', error => {
         if (error.name !== 'ExitStatus' || error.message !== 'Program terminated with exit(0)') {
@@ -121,10 +124,15 @@ async function run()
         process.exit()
     })
 
-    const engine = (await import(`../src/${format.id}.js`)).default
-    const vm = new engine()
-    vm.init(fs.readFileSync(storyfile), options)
-    vm.start()
+    const engine = (await import(`../build/${format.id}.js`)).default
+    const vm = await engine({
+        wasmBinary,
+    })
+    const data = fs.readFileSync(storyfile)
+    vm.start({
+        data,
+        name: storyfile_name,
+    }, options)
 }
 
 run()

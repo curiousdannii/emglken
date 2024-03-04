@@ -6,12 +6,16 @@ import * as fs from 'fs'
 import {dirname, resolve} from 'path'
 import {fileURLToPath} from 'url'
 
-const results = {};
+const results = {
+    files: {},
+    files_gz: {},
+};
 
 const build_path = resolve(dirname(fileURLToPath(import.meta.url)), '../build')
 for (const file of fs.readdirSync(build_path)) {
     if (file.endsWith('.js') || file.endsWith('.wasm')) {
-        results[file] = fs.statSync(resolve(build_path, file)).size
+        results.files[file] = fs.statSync(resolve(build_path, file)).size
+        // TODO: gzipped size
     }
 }
 

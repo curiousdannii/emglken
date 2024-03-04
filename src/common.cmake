@@ -8,22 +8,25 @@ endfunction()
 
 # Add common arguments and dependencies
 function(emglken_vm target)
+    set_target_properties(${target} PROPERTIES LINKER_LANGUAGE CXX)
     target_include_directories(${target} PRIVATE remglk/remglk_capi/src/glk)
-    target_link_directories(${target} PRIVATE ${REMGLK_RS_LIB_FOLDER})
-    target_link_libraries(${target} remglk_capi)
+    target_link_libraries(${target} ${REMGLK_RS_LIB_FOLDER}/libremglk_capi.a)
+    em_link_js_library(${target} "remglk/remglk_capi/src/systems/library_emglken.js")
+    em_link_pre_js(${target} "src/preamble.js")
     target_link_options(${target} PRIVATE
         # Required options
         -sALLOW_MEMORY_GROWTH=1
         -sALLOW_UNIMPLEMENTED_SYSCALLS
         -sASYNCIFY=1
         -sASYNCIFY_IGNORE_INDIRECT=1
-        -sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
+        #-sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
         #-sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
         -sEXPORTED_FUNCTIONS=['_main']
         -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
         -sINCOMING_MODULE_JS_API=[arguments,emglken_stdin_buffers,emglken_stdin_ready,locateFile,preRun,print,wasmBinary]
+        -sINVOKE_RUN=0
         -sSTRICT=1
         -Wl,--wrap=getc,--wrap=ungetc
         # Debugging options
@@ -33,6 +36,7 @@ function(emglken_vm target)
         #-sINLINING_LIMIT=1
         # Output options
         --minify 0
+        # TODO: This might be a lot bigger with Rust, consider disabling in Release
         --profiling-funcs
         -sENVIRONMENT=web
         -sEXPORT_ES6=1
