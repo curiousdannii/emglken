@@ -18,9 +18,10 @@ python regtest.py -i "../bin/emglken.js --rem=1 --vm=glulxe" advent.ulx.regtest 
 rm adventtest
 #echo 'Glulxe profiler'
 #python regtest.py -i "../bin/emglken.js --profile_filename=glulxprof" glulxercise-profiler.regtest
-# echo 'Hugo'
-# python regtest.py -i "../bin/emglken.js" coretest.hex.regtest -t 10
-# python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest -t 10
+echo 'Hugo'
+python regtest.py -i "../bin/emglken.js" coretest.hex.regtest -t 20
+python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest -t 10
+rm hugotest
 # echo 'Scare'
 # python regtest.py -i "../bin/emglken.js --rem=1" Hamper.taf.regtest -t 10
 # echo 'TADS 2'

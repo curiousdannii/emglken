@@ -24,10 +24,11 @@ function(emglken_vm target)
         -sEXIT_RUNTIME=1
         #-sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
         #-sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
+        -sFILESYSTEM=0
         -sINCOMING_MODULE_JS_API=[arguments,locateFile,wasmBinary]
         -sINVOKE_RUN=0
         -sSTRICT=1
-        -Wl,--wrap=getc,--wrap=ungetc
+        #-Wl,--wrap=getc,--wrap=ungetc
         # Debugging options
         #-g
         #-sASSERTIONS

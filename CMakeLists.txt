@@ -39,7 +39,6 @@ add_sources(glulxe "glulxe/"
 emglken_vm(glulxe)
 target_compile_definitions(glulxe PRIVATE OS_UNIX)
 target_compile_options(glulxe PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
-target_link_options(glulxe PRIVATE -sFILESYSTEM=0)
 
 #[[
 add_executable(glulxe-profiler-core)
@@ -79,20 +78,17 @@ add_sources(git "git/"
 emglken_vm(git)
 target_compile_definitions(git PRIVATE USE_DIRECT_THREADING USE_INLINE)
 target_compile_options(git PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign -Wno-unused-but-set-variable)
-target_link_options(git PRIVATE -sFILESYSTEM=0)
+
+add_executable(hugo)
+add_sources(hugo "hugo/source/"
+    SRCS he.c heexpr.c hemisc.c heobject.c heparse.c heres.c herun.c heset.c stringfn.c)
+add_sources(hugo "hugo/heglk/"
+    SRCS heglk.c heglkunix.c)
+emglken_vm(hugo)
+target_compile_definitions(hugo PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
+target_compile_options(hugo PRIVATE -Wall -Wno-unused-but-set-variable)
 
 #[[
-add_executable(hugo-core)
-add_sources(hugo-core "hugo/source/"
-    SRCS he.c heexpr.c hemisc.c heobject.c heparse.c heres.c herun.c heset.c stringfn.c)
-add_sources(hugo-core "hugo/heglk/"
-    SRCS heglk.c heglkunix.c)
-emglken_vm(hugo-core)
-target_compile_definitions(hugo-core PRIVATE COMPILE_V25 GLK NO_KEYPRESS_CURSOR HUGO_INLINE=static\ inline)
-target_compile_options(hugo-core PRIVATE -Wall -Wno-unused-but-set-variable)
-# Prevent warnings from some Glk functions being inlined and so no longer being removed
-target_link_options(hugo-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
-
 add_executable(scare-core)
 add_sources(scare-core "garglk/terps/scare/"
     SRCS os_glk.c scdebug.c scevents.c scexpr.c scgamest.c scinterf.c sclibrar.c
