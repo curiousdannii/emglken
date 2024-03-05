@@ -21,8 +21,6 @@ let glkote_event_ready = () => {}
 let storyfile_data
 let storyfile_name
 
-const encoder = new TextEncoder()
-
 // Our main start function
 // We depart from the Quixe standard in these ways:
 // - combines `start` with the `init` function
@@ -39,7 +37,6 @@ Module['start'] = function(storyfile, options) {
 }
 
 function accept(data) {
-    // TODO: patch filepath?
     glkote_event_data = data
     glkote_event_ready()
 }
