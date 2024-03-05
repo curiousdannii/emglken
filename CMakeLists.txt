@@ -39,6 +39,7 @@ add_sources(glulxe "glulxe/"
 emglken_vm(glulxe)
 target_compile_definitions(glulxe PRIVATE OS_UNIX)
 target_compile_options(glulxe PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
+target_link_options(glulxe PRIVATE -sFILESYSTEM=0)
 
 #[[
 add_executable(glulxe-profiler-core)
@@ -68,16 +69,19 @@ target_link_options(bocfel-core PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
 target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
 # Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
 target_link_options(bocfel-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
+]]
 
-add_executable(git-core)
-add_sources(git-core "git/"
+add_executable(git)
+add_sources(git "git/"
     SRCS accel.c compiler.c gestalt.c git.c glkop.c heap.c
     memory.c opcodes.c operands.c peephole.c savefile.c saveundo.c
     search.c terp.c git_unix.c)
-emglken_vm(git-core)
-target_compile_definitions(git-core PRIVATE USE_DIRECT_THREADING USE_INLINE)
-target_compile_options(git-core PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign -Wno-unused-but-set-variable)
+emglken_vm(git)
+target_compile_definitions(git PRIVATE USE_DIRECT_THREADING USE_INLINE)
+target_compile_options(git PRIVATE -Wall -Wno-int-conversion -Wno-pointer-sign -Wno-unused-but-set-variable)
+target_link_options(git PRIVATE -sFILESYSTEM=0)
 
+#[[
 add_executable(hugo-core)
 add_sources(hugo-core "hugo/source/"
     SRCS he.c heexpr.c hemisc.c heobject.c heparse.c heres.c herun.c heset.c stringfn.c)

@@ -9,8 +9,9 @@ fi
 # echo 'Bocfel'
 # python regtest.py -i "../bin/emglken.js" praxix.z5.regtest -t 10
 # python regtest.py -i "../bin/emglken.js --rem=1" advent.z5.regtest -t 10
-# echo 'Git'
-# python regtest.py -i "../bin/emglken.js --vm=git" glulxercise.ulx.regtest -t 10
+echo 'Git'
+python regtest.py -i "../bin/emglken.js --vm=git" glulxercise.ulx.regtest -t 10
+python regtest.py -i "../bin/emglken.js --rem=1 --vm=git" advent.ulx.regtest -t 10
 echo 'Glulxe'
 python regtest.py -i "../bin/emglken.js --vm=glulxe" glulxercise.ulx.regtest -t 10
 python regtest.py -i "../bin/emglken.js --rem=1 --vm=glulxe" advent.ulx.regtest -t 10
