@@ -9,10 +9,19 @@ https://github.com/curiousdannii/emglken
 
 */
 
+// Make eslint happy
+/* eslint no-unused-vars: "off" */
+/* global callMain, Module */
+
 let Dialog
 let GlkOte
+let glkote_event_data
+// eslint-disable-next-line prefer-const
+let glkote_event_ready = () => {}
 let storyfile_data
 let storyfile_name
+
+const encoder = new TextEncoder()
 
 // Our main start function
 // We depart from the Quixe standard in these ways:
@@ -24,7 +33,15 @@ Module['start'] = function(storyfile, options) {
     GlkOte = options.GlkOte
     storyfile_data = storyfile.data
     storyfile_name = storyfile.name
+    options.accept = accept
     callMain(options.arguments)
+    GlkOte.init(options)
+}
+
+function accept(data) {
+    // TODO: patch filepath?
+    glkote_event_data = data
+    glkote_event_ready()
 }
 
 // Log output

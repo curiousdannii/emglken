@@ -18,14 +18,13 @@ function(emglken_vm target)
         -sALLOW_MEMORY_GROWTH=1
         -sALLOW_UNIMPLEMENTED_SYSCALLS
         -sASYNCIFY=1
-        -sASYNCIFY_IGNORE_INDIRECT=1
+        #-sASYNCIFY_IGNORE_INDIRECT=1
         #-sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
         #-sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
-        -sEXPORTED_FUNCTIONS=['_main']
-        -sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
-        -sINCOMING_MODULE_JS_API=[arguments,emglken_stdin_buffers,emglken_stdin_ready,locateFile,preRun,print,wasmBinary]
+        #-sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
+        -sINCOMING_MODULE_JS_API=[arguments,locateFile,wasmBinary]
         -sINVOKE_RUN=0
         -sSTRICT=1
         -Wl,--wrap=getc,--wrap=ungetc
