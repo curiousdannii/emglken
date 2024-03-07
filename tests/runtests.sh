@@ -22,8 +22,8 @@ echo 'Hugo'
 python regtest.py -i "../bin/emglken.js" coretest.hex.regtest -t 20
 python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest -t 10
 rm hugotest
-# echo 'Scare'
-# python regtest.py -i "../bin/emglken.js --rem=1" Hamper.taf.regtest -t 10
+echo 'Scare'
+python regtest.py -i "../bin/emglken.js --rem=1" Hamper.taf.regtest -t 10
 # echo 'TADS 2'
 # python regtest.py -i "../bin/emglken.js --rem=1" ditch.gam.regtest -t 20
 # echo 'TADS 3'
