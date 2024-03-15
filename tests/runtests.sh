@@ -24,6 +24,7 @@ python regtest.py -i "../bin/emglken.js --rem=1" colossal.hex.regtest -t 10
 rm hugotest
 echo 'Scare'
 python regtest.py -i "../bin/emglken.js --rem=1" Hamper.taf.regtest -t 10
+rm scaretest
 # echo 'TADS 2'
 # python regtest.py -i "../bin/emglken.js --rem=1" ditch.gam.regtest -t 20
 # echo 'TADS 3'

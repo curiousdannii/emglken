@@ -12,12 +12,11 @@ https://github.com/curiousdannii/emglken
 */
 
 import fs from 'fs'
-import readline from 'readline'
 import path from 'path'
 
-import GlkOteLib from 'glkote-term'
 import minimist from 'minimist'
-import MuteStream from 'mute-stream'
+
+import {CheapGlkOte, CheapStreamingDialog, RemGlk} from '../build/asyncglk.js'
 
 const formats = [
     {
@@ -80,40 +79,15 @@ async function run()
         return
     }
 
-    // Readline options
-    let io_opts
-    if (argv.rem)
-    {
-        io_opts = {
-            stdin: process.stdin,
-            stdout: process.stdout,
-        }
-    }
-    else
-    {
-        const stdin = process.stdin
-        const stdout = new MuteStream()
-        stdout.pipe(process.stdout)
-        const rl = readline.createInterface({
-            input: stdin,
-            output: stdout,
-            prompt: '',
-        })
-        io_opts = {
-            rl: rl,
-            stdin: stdin,
-            stdout: stdout,
-        }
-    }
-
     // RemGlk or dumb mode GlkOte
-    const GlkOte = argv.rem ? GlkOteLib.RemGlkOte : GlkOteLib.DumbGlkOte
-
+    const GlkOteClass = argv.rem ? RemGlk : CheapGlkOte
+    const Dialog = new CheapStreamingDialog()
+    const GlkOte = new GlkOteClass()
+    await new Promise(resolve => Dialog.init_async({GlkOte}, resolve))
     const options = {
         arguments: [storyfile_name],
-        Dialog: new GlkOteLib.DumbGlkOte.Dialog(io_opts),
-        Glk: {},
-        GlkOte: new GlkOte(io_opts),
+        Dialog,
+        GlkOte,
     }
     const wasmBinary = fs.readFileSync(new URL(`../build/${format.id}.wasm`, import.meta.url))
 

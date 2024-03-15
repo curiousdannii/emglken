@@ -16,21 +16,6 @@ else()
     set(REMGLK_RS_LIB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/remglk/target/wasm32-unknown-emscripten/debug)
 endif()
 
-#[[
-add_library(remglk STATIC)
-add_sources(remglk "remglk/"
-    SRCS main.c rgevent.c rgfref.c rggestal.c
-    rgdata.c rgmisc.c rgauto.c rgstream.c rgstyle.c
-    rgwin_blank.c rgwin_buf.c rgwin_grid.c rgwin_pair.c rgwin_graph.c
-    rgwindow.c rgschan.c rgblorb.c
-    cgdate.c gi_dispa.c gi_debug.c gi_blorb.c)
-add_sources(remglk "src/"
-    SRCS cgunicod.c getc.c)
-target_compile_options(remglk PRIVATE -Wall -Wno-unused-but-set-variable)
-target_link_options(remglk PRIVATE -Wl,--wrap=getc,--wrap=ungetc)
-target_include_directories(remglk PUBLIC remglk/)
-]]
-
 add_executable(glulxe)
 add_sources(glulxe "glulxe/"
     SRCS accel.c debugger.c exec.c files.c float.c funcs.c
@@ -52,22 +37,18 @@ target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -
 ]]
 
 #[[
-add_executable(bocfel-core)
-add_sources(bocfel-core "garglk/terps/bocfel/"
+add_executable(bocfel)
+add_sources(bocfel "garglk/terps/bocfel/"
     SRCS blorb.cpp branch.cpp dict.cpp iff.cpp io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp
     osdep.cpp patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp unicode.cpp
     util.cpp zoom.cpp zterp.cpp glkstart.cpp)
-emglken_vm(bocfel-core)
-set_property(TARGET bocfel-core PROPERTY CXX_STANDARD 14)
-target_compile_definitions(bocfel-core PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX)
-target_compile_options(bocfel-core PRIVATE -Wall)
+emglken_vm(bocfel)
+set_property(TARGET bocfel PROPERTY CXX_STANDARD 14)
+target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX)
+target_compile_options(bocfel PRIVATE -Wall)
 # Bocfel now uses exceptions, which takes a little bit to set up
-target_compile_options(bocfel-core PRIVATE -fexceptions)
-target_link_options(bocfel-core PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
-# Prevent warnings from some Glk functions not being used in Bocfel
-target_link_options(bocfel-core PRIVATE -sASYNCIFY_REMOVE=['glk_get_*'])
-# Cannot run the ignore indirect optimisation, but maybe I can later determine which functions need instrumenting
-target_link_options(bocfel-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
+target_compile_options(bocfel PRIVATE -fexceptions)
+target_link_options(bocfel PRIVATE -sFILESYSTEM=1 -sNO_DISABLE_EXCEPTION_CATCHING)
 ]]
 
 add_executable(git)
@@ -99,16 +80,16 @@ target_compile_options(scare PRIVATE --use-port=zlib)
 target_link_options(scare PRIVATE --use-port=zlib)
 
 #[[
-add_executable(tads-core)
-add_sources(tads-core "tads/glk/"
+add_executable(tads)
+add_sources(tads "tads/glk/"
     SRCS memicmp.c osbuffer.c osextra.c osglk.c osglkban.c osmisc.c osparse.c
     osportable.cc t23run.cpp t2askf.c t2indlg.c t3askf.cpp t3indlg.cpp vmuni_cs.cpp)
-add_sources(tads-core "tads/tads2/"
+add_sources(tads "tads/tads2/"
     SRCS argize.c bif.c bifgdum.c cmap.c cmd.c dat.c dbgtr.c errmsg.c execmd.c
     fio.c fioxor.c getstr.c ler.c linfdum.c lst.c mch.c mcm.c mcs.c obj.c oem.c
     os0.c oserr.c osifc.c osnoui.c osrestad.c osstzprs.c ostzposix.c out.c output.c
     ply.c qas.c regex.c run.c runstat.c suprun.c trd.c voc.c vocab.c)
-add_sources(tads-core "tads/tads3/"
+add_sources(tads "tads/tads3/"
     SRCS charmap.cpp md5.cpp resldexe.cpp resload.cpp sha2.cpp std.cpp tcerr.cpp
     tcerrmsg.cpp tcgen.cpp tcglob.cpp tcmain.cpp tcprs.cpp tcprs_rt.cpp tcprsnf.cpp
     tcprsnl.cpp tcprsstm.cpp tcsrc.cpp tct3.cpp tct3_d.cpp tct3nl.cpp tct3stm.cpp
@@ -125,12 +106,13 @@ add_sources(tads-core "tads/tads3/"
     vmsortv.cpp vmsrcf.cpp vmstack.cpp vmstr.cpp vmstrbuf.cpp vmstrcmp.cpp
     vmtmpfil.cpp vmtobj.cpp vmtype.cpp vmtypedh.cpp vmtz.cpp vmtzobj.cpp
     vmundo.cpp vmvec.cpp vmconnom.cpp)
-emglken_vm(tads-core)
-set_property(TARGET tads-core PROPERTY CXX_STANDARD 11)
-target_compile_definitions(tads-core PRIVATE GARGOYLE GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
-target_compile_options(tads-core PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
-# Prevent warnings from some Glk functions not being used in TADS
-target_link_options(tads-core PRIVATE -sASYNCIFY_REMOVE=[])
-# Cannot run the ignore indirect optimisation on TADS, but maybe I can later determine which functions need instrumenting
-target_link_options(tads-core PRIVATE -sASYNCIFY_IGNORE_INDIRECT=0)
+emglken_vm(tads)
+set_property(TARGET tads PROPERTY CXX_STANDARD 11)
+target_compile_definitions(tads PRIVATE GARGOYLE GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
+target_compile_options(tads PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
+if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    # In debug mode there are too many local variables, so optimise a little
+    target_compile_options(tads PRIVATE -O1)
+    target_link_options(tads PRIVATE -O1)
+endif()
 ]]

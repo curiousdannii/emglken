@@ -1,3 +1,6 @@
+[submodule "asyncglk"]
+	path = asyncglk
+	url = ../../curiousdannii/asyncglk.git
 [submodule "garglk"]
 	path = garglk
 	url = ../../garglk/garglk.git
