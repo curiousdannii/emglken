@@ -61,7 +61,6 @@ async function run()
     const argv = minimist(process.argv.slice(2))
 
     const storyfile = argv._[0]
-    const storyfile_name = path.basename(storyfile)
 
     let format
     for (const formatspec of formats)
@@ -85,7 +84,7 @@ async function run()
     const GlkOte = new GlkOteClass()
     await Dialog.init({GlkOte})
     const options = {
-        arguments: [storyfile_name],
+        arguments: [storyfile],
         Dialog,
         GlkOte,
     }
@@ -102,11 +101,7 @@ async function run()
     const vm = await engine({
         wasmBinary,
     })
-    const data = fs.readFileSync(storyfile)
-    vm.start({
-        data,
-        name: storyfile_name,
-    }, options)
+    vm.start(options)
 }
 
 run()

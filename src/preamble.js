@@ -18,22 +18,17 @@ let GlkOte
 let glkote_event_data
 // eslint-disable-next-line prefer-const
 let glkote_event_ready = () => {}
-let storyfile_data
-let storyfile_name
 
 // Our main start function
 // We depart from the Quixe standard in these ways:
-// - combines `start` with the `init` function
 // - `options.arguments` must be set in order to play a storyfile
-// - take a File-like object rather than just a Uint8Array (not an actual File, because we don't need it to be immutable, and it's more memory efficient to share the ArrayBuffer)
-Module['start'] = function(storyfile, options) {
+// - no longer receives the storyfile - the Dialog library will handle loading it
+Module['start'] = function(options) {
     Dialog = options.Dialog
     if (!Dialog.async) {
         throw new Error('Emglken requires an async Dialog library')
     }
     GlkOte = options.GlkOte
-    storyfile_data = storyfile.data
-    storyfile_name = storyfile.name
     options.accept = accept
     callMain(options.arguments)
     GlkOte.init(options)
