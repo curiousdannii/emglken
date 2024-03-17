@@ -1,5 +1,5 @@
 export {
+    CheapAsyncDialog,
     CheapGlkOte,
-    CheapStreamingDialog,
     RemGlk,
 } from '../asyncglk/src/index-node.js'

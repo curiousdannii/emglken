@@ -28,6 +28,9 @@ let storyfile_name
 // - take a File-like object rather than just a Uint8Array (not an actual File, because we don't need it to be immutable, and it's more memory efficient to share the ArrayBuffer)
 Module['start'] = function(storyfile, options) {
     Dialog = options.Dialog
+    if (!Dialog.async) {
+        throw new Error('Emglken requires an async Dialog library')
+    }
     GlkOte = options.GlkOte
     storyfile_data = storyfile.data
     storyfile_name = storyfile.name
@@ -37,6 +40,9 @@ Module['start'] = function(storyfile, options) {
 }
 
 function accept(data) {
+    if (glkote_event_data) {
+        console.warn('Already have GlkOte event when next event arrives')
+    }
     glkote_event_data = data
     glkote_event_ready()
 }

@@ -16,7 +16,7 @@ import path from 'path'
 
 import minimist from 'minimist'
 
-import {CheapGlkOte, CheapStreamingDialog, RemGlk} from '../build/asyncglk.js'
+import {CheapAsyncDialog, CheapGlkOte, RemGlk} from '../build/asyncglk.js'
 
 const formats = [
     {
@@ -81,9 +81,9 @@ async function run()
 
     // RemGlk or dumb mode GlkOte
     const GlkOteClass = argv.rem ? RemGlk : CheapGlkOte
-    const Dialog = new CheapStreamingDialog()
+    const Dialog = new CheapAsyncDialog()
     const GlkOte = new GlkOteClass()
-    await new Promise(resolve => Dialog.init_async({GlkOte}, resolve))
+    await Dialog.init({GlkOte})
     const options = {
         arguments: [storyfile_name],
         Dialog,
