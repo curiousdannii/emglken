@@ -79,10 +79,9 @@ emglken_vm(scare)
 target_compile_options(scare PRIVATE --use-port=zlib)
 target_link_options(scare PRIVATE --use-port=zlib)
 
-#[[
 add_executable(tads)
 add_sources(tads "tads/glk/"
-    SRCS memicmp.c osbuffer.c osextra.c osglk.c osglkban.c osmisc.c osparse.c
+    SRCS memicmp.c osbuffer.c osemglken.c osextra.c osglk.c osglkban.c osmisc.c osparse.c
     osportable.cc t23run.cpp t2askf.c t2indlg.c t3askf.cpp t3indlg.cpp vmuni_cs.cpp)
 add_sources(tads "tads/tads2/"
     SRCS argize.c bif.c bifgdum.c cmap.c cmd.c dat.c dbgtr.c errmsg.c execmd.c
@@ -108,11 +107,11 @@ add_sources(tads "tads/tads3/"
     vmundo.cpp vmvec.cpp vmconnom.cpp)
 emglken_vm(tads)
 set_property(TARGET tads PROPERTY CXX_STANDARD 11)
-target_compile_definitions(tads PRIVATE GARGOYLE GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
+target_compile_definitions(tads PRIVATE EMGLKEN GLK GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE
+    OSNOUI_OMIT_OS_FPRINT OSNOUI_OMIT_OS_FPRINTZ RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
 target_compile_options(tads PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    # In debug mode there are too many local variables, so optimise a little
-    target_compile_options(tads PRIVATE -O1)
-    target_link_options(tads PRIVATE -O1)
+    # TADS needs to be compiled in at least -O2, or else it will use 4GB+ of RAM and be very slow
+    target_compile_options(tads PRIVATE -O2)
+    target_link_options(tads PRIVATE -O2)
 endif()
-]]
