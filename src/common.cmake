@@ -18,17 +18,12 @@ function(emglken_vm target)
         -sALLOW_MEMORY_GROWTH=1
         -sALLOW_UNIMPLEMENTED_SYSCALLS
         -sASYNCIFY=1
-        #-sASYNCIFY_IGNORE_INDIRECT=1
-        #-sASYNCIFY_REMOVE=['gli_get_*','glk_get_*']
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
-        #-sEXPORTED_FUNCTIONS=['_main','_gidispatch_get_game_id']
-        #-sEXPORTED_RUNTIME_METHODS=['AsciiToString','FS']
         -sFILESYSTEM=0
-        -sINCOMING_MODULE_JS_API=[arguments,locateFile,wasmBinary]
+        -sINCOMING_MODULE_JS_API=[wasmBinary]
         -sINVOKE_RUN=0
         -sSTRICT=1
-        #-Wl,--wrap=getc,--wrap=ungetc
         # Debugging options
         #-g
         #-sASSERTIONS
@@ -36,7 +31,6 @@ function(emglken_vm target)
         #-sINLINING_LIMIT=1
         # Output options
         --minify 0
-        # TODO: This might be a lot bigger with Rust, consider disabling in Release
         --profiling-funcs
         -sENVIRONMENT=web
         -sEXPORT_ES6=1
@@ -44,9 +38,6 @@ function(emglken_vm target)
         # Optimisations
         -sTEXTDECODER=2
     )
-    if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-        target_link_options(${target} PRIVATE -O3)
-    endif()
     # For debugging "null function or function signature mismatch" errors (but this requires lots of RAM)
     #target_compile_options(${target} PRIVATE -fsanitize=undefined)
     #target_link_options(${target} PRIVATE -fsanitize=undefined)

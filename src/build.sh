@@ -29,8 +29,9 @@ docker run --rm -t \
     /bin/bash -c -e " \\
         cargo build \\
             --manifest-path=remglk/Cargo.toml \\
+            --release \\
             --target=wasm32-unknown-emscripten; \\
-        emcmake cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build; \\
+        emcmake cmake -DCMAKE_BUILD_TYPE=Release -S . -B build; \\
         emmake make -j$(nproc) --no-print-directory -C build \\
     "
 
