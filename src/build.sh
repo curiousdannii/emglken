@@ -18,7 +18,7 @@ DOCKER_TAG=$(sha1sum src/Dockerfile)
 DOCKER_TAG=${DOCKER_TAG:0:8}
 if [ -z "$(docker images -q emglken:$DOCKER_TAG 2> /dev/null)" ]; then
     echo "Building Emglken Docker image"
-    docker build -f src/Dockerfile --tag emglken:$DOCKER_TAG .
+    docker build -f src/Dockerfile --tag emglken:$DOCKER_TAG src
 fi
 
 docker run --rm -t \

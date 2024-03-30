@@ -21,7 +21,7 @@ function(emglken_vm target)
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
         -sFILESYSTEM=0
-        -sINCOMING_MODULE_JS_API=[wasmBinary]
+        -sINCOMING_MODULE_JS_API=[locateFile,wasmBinary]
         -sINVOKE_RUN=0
         -sSTRICT=1
         # Debugging options
