@@ -20,6 +20,8 @@ function(emglken_vm target)
         -sASYNCIFY=1
         -sASYNCIFY_STACK_SIZE=8192
         -sEXIT_RUNTIME=1
+        # Export _setThrew until https://github.com/emscripten-core/emscripten/issues/22227 is fixed
+        -sEXPORTED_FUNCTIONS=_main,_setThrew
         -sFILESYSTEM=0
         -sINCOMING_MODULE_JS_API=[locateFile,wasmBinary]
         -sINVOKE_RUN=0

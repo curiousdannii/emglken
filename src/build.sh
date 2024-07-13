@@ -17,8 +17,16 @@ npx esbuild src/asyncglk.ts \
 DOCKER_TAG=$(sha1sum src/Dockerfile)
 DOCKER_TAG=${DOCKER_TAG:0:8}
 if [ -z "$(docker images -q emglken:$DOCKER_TAG 2> /dev/null)" ]; then
-    echo "Building Emglken Docker image"
+    echo "Building Emglken Docker image emglken:$DOCKER_TAG"
     docker build -f src/Dockerfile --tag emglken:$DOCKER_TAG src
+fi
+
+DEBUG=
+if [[ $DEBUG ]]; then
+    CMAKE_TYPE="Debug"
+else
+    RUST_TARGET="--release"
+    CMAKE_TYPE="Release"
 fi
 
 docker run --rm -t \
@@ -29,9 +37,9 @@ docker run --rm -t \
     /bin/bash -c -e " \\
         cargo build \\
             --manifest-path=remglk/Cargo.toml \\
-            --release \\
+            $RUST_TARGET \\
             --target=wasm32-unknown-emscripten; \\
-        emcmake cmake -DCMAKE_BUILD_TYPE=Release -S . -B build; \\
+        emcmake cmake -DCMAKE_BUILD_TYPE=$CMAKE_TYPE -S . -B build; \\
         emmake make -j$(nproc) --no-print-directory -C build \\
     "
 
