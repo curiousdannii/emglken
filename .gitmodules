@@ -1,18 +1,18 @@
 [submodule "garglk"]
 	path = garglk
-	url = https://github.com/garglk/garglk.git
+	url = ../../garglk/garglk.git
 [submodule "git"]
 	path = git
-	url = https://github.com/DavidKinder/Git.git
+	url = ../../DavidKinder/Git.git
 [submodule "glulxe"]
 	path = glulxe
-	url = https://github.com/erkyrath/glulxe.git
+	url = ../../erkyrath/glulxe.git
 [submodule "hugo"]
 	path = hugo
-	url = https://github.com/hugoif/hugo-unix.git
+	url = ../../hugoif/hugo-unix.git
 [submodule "remglk"]
 	path = remglk
-	url = https://github.com/curiousdannii/remglk.git
+	url = ../../curiousdannii/remglk.git
 [submodule "tads"]
 	path = tads
-	url = https://github.com/tads-intfic/tads-runner.git
+	url = ../../tads-intfic/tads-runner.git
