@@ -6,9 +6,9 @@ if [ ! -f regtest.py ]; then
     wget -q https://github.com/erkyrath/plotex/raw/master/regtest.py
 fi
 
-# echo 'Bocfel'
-# python regtest.py -i "../bin/emglken.js" praxix.z5.regtest -t 10
-# python regtest.py -i "../bin/emglken.js --rem=1" advent.z5.regtest -t 10
+echo 'Bocfel'
+python regtest.py -i "../bin/emglken.js" praxix.z5.regtest -t 10
+python regtest.py -i "../bin/emglken.js --rem=1" advent.z5.regtest -t 10
 echo 'Git'
 python regtest.py -i "../bin/emglken.js --vm=git" glulxercise.ulx.regtest -t 10
 python regtest.py -i "../bin/emglken.js --rem=1 --vm=git" advent.ulx.regtest -t 10

@@ -8,8 +8,8 @@ ENV CARGO_HOME=/.cargo \
     PATH="/.cargo/bin:$PATH" \
     RUSTUP_HOME=/.rustup
 
-RUN embuilder --lto=thin build libc libc++abi-noexcept libc++-noexcept libcompiler_rt \
-    libdlmalloc libsockets libstubs zlib
+RUN embuilder --lto=thin build libc libc++ libc++abi libc++-noexcept libc++abi-noexcept \
+    libcompiler_rt libdlmalloc libsockets libstubs zlib
 
 # LLVM version: 17
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain 1.77.0 --target wasm32-unknown-emscripten -y && \

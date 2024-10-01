@@ -36,20 +36,20 @@ target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 ]]
 
-#[[
 add_executable(bocfel)
 add_sources(bocfel "garglk/terps/bocfel/"
-    SRCS blorb.cpp branch.cpp dict.cpp iff.cpp io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp
-    osdep.cpp patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp unicode.cpp
-    util.cpp zoom.cpp zterp.cpp glkstart.cpp)
+    SRCS blorb.cpp branch.cpp dict.cpp glkstart.cpp iff.cpp io.cpp mathop.cpp
+    meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp patches.cpp process.cpp
+    random.cpp screen.cpp sound.cpp stack.cpp stash.cpp unicode.cpp util.cpp
+    zoom.cpp zterp.cpp)
 emglken_vm(bocfel)
 set_property(TARGET bocfel PROPERTY CXX_STANDARD 14)
-target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX)
+target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX
+    ZTERP_NO_STDIO "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
 target_compile_options(bocfel PRIVATE -Wall)
 # Bocfel now uses exceptions, which takes a little bit to set up
 target_compile_options(bocfel PRIVATE -fexceptions)
-target_link_options(bocfel PRIVATE -sFILESYSTEM=1 -sNO_DISABLE_EXCEPTION_CATCHING)
-]]
+target_link_options(bocfel PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
 
 add_executable(git)
 add_sources(git "git/"
