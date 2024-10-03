@@ -35,7 +35,7 @@ docker run --rm -t \
     -v $HOME/.cargo/registry:/.cargo/registry \
     emglken:$DOCKER_TAG \
     /bin/bash -c -e " \\
-        cargo build \\
+        RUSTFLAGS=-Csymbol-mangling-version=v0 cargo build \\
             --manifest-path=remglk/Cargo.toml \\
             $RUST_TARGET \\
             --target=wasm32-unknown-emscripten; \\

@@ -9,7 +9,7 @@ https://github.com/curiousdannii/emglken
 
 */
 
-//export {default as Bocfel} from '../build/bocfel.js'
+export {default as Bocfel} from '../build/bocfel.js'
 export {default as Git} from '../build/git.js'
 export {default as Glulxe} from '../build/glulxe.js'
 export {default as Hugo} from '../build/hugo.js'
