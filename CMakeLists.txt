@@ -24,6 +24,9 @@ add_sources(glulxe "glulxe/"
 emglken_vm(glulxe)
 target_compile_definitions(glulxe PRIVATE OS_UNIX)
 target_compile_options(glulxe PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
+#target_link_options(glulxe PRIVATE -sASYNCIFY_IGNORE_INDIRECT)
+#target_link_options(glulxe PRIVATE -sASYNCIFY_ADD=@${CMAKE_CURRENT_LIST_DIR}/src/add-list-glulxe.txt)
+#target_link_options(glulxe PRIVATE -sASYNCIFY_REMOVE=@${CMAKE_CURRENT_LIST_DIR}/src/remove-list-glulxe.txt)
 
 #[[
 add_executable(glulxe-profiler-core)
