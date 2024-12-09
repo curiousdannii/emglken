@@ -22,7 +22,7 @@
   "dependencies": {
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.6",
-    "mute-stream": "1.0.0"
+    "mute-stream": "2.0.0"
   },
   "devDependencies": {
     "esbuild": "^0.20.0",
