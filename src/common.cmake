@@ -34,7 +34,7 @@ function(emglken_vm target)
         # Output options
         --minify 0
         --profiling-funcs
-        -sENVIRONMENT=web
+        -sENVIRONMENT=node,web
         -sEXPORT_ES6=1
         -sMODULARIZE=1
         # Optimisations

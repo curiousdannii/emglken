@@ -11,8 +11,6 @@ https://github.com/curiousdannii/emglken
 
 */
 
-import fs from 'fs'
-
 import minimist from 'minimist'
 
 import {CheapAsyncDialog, CheapGlkOte, RemGlk} from '../build/asyncglk.js'
@@ -87,7 +85,6 @@ async function run()
         Dialog,
         GlkOte,
     }
-    const wasmBinary = fs.readFileSync(new URL(`../build/${format.id}.wasm`, import.meta.url))
 
     process.on('unhandledRejection', error => {
         if (error.name !== 'ExitStatus' || error.message !== 'Program terminated with exit(0)') {
@@ -97,9 +94,7 @@ async function run()
     })
 
     const engine = (await import(`../build/${format.id}.js`)).default
-    const vm = await engine({
-        wasmBinary,
-    })
+    const vm = await engine()
     vm.start(options)
 }
 
