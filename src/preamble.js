@@ -45,8 +45,12 @@ function accept(data) {
 // Log output
 //Module['print'] = console.log
 
-// And now some things just to patch over Emscripten's lack of a none environment. These could probably be removed if https://github.com/emscripten-core/emscripten/issues/12184 ever gets implemented
-// Add an importScripts function to prevent an assertion error
-//function importScripts() {}
-// Fake locateFile so that Lectrote doesn't get tripped up on import.meta.url not being handled in CJS properly
-//Module['locateFile'] = function() {}
+// In single-file mode new URL constructor won't work
+Module['locateFile'] = function(filename) {
+    try {
+        return new URL(filename, import.meta.url).href
+    }
+    catch {
+        return filename
+    }
+}
