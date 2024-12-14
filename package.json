@@ -1,6 +1,6 @@
 {
   "name": "emglken",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Glk meets Emscripten",
   "author": "Dannii Willis <curiousdannii@gmail.com>",
   "license": "GPL-2.0",
@@ -38,6 +38,7 @@
     "build/*.js",
     "build/*.json",
     "build/*.wasm",
-    "src/*.js"
+    "src/index.js",
+    "versions.json"
   ]
 }
