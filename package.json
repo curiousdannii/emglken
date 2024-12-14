@@ -22,11 +22,11 @@
   "dependencies": {
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.6",
-    "mute-stream": "1.0.0"
+    "mute-stream": "2.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.20.0",
-    "eslint": "^8.16.0"
+    "esbuild": "^0.24.0",
+    "eslint": "^9.0.0"
   },
   "scripts": {
     "build": "./build.sh",

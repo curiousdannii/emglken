@@ -2,7 +2,7 @@
 # See https://doc.rust-lang.org/rustc/linker-plugin-lto.html
 
 # LLVM version: 18~19
-FROM emscripten/emsdk:3.1.63
+FROM emscripten/emsdk:3.1.74
 
 ENV CARGO_HOME=/.cargo \
     PATH="/.cargo/bin:$PATH" \

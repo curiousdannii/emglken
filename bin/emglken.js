@@ -53,24 +53,20 @@ const formats = [
     },
 ]
 
-async function run()
-{
+async function run() {
     const argv = minimist(process.argv.slice(2))
 
     const storyfile = argv._[0]
 
     let format
-    for (const formatspec of formats)
-    {
-        if (formatspec.id === argv.vm || (!argv.vm && formatspec.extensions.test(storyfile)))
-        {
+    for (const formatspec of formats) {
+        if (formatspec.id === argv.vm || (!argv.vm && formatspec.extensions.test(storyfile))) {
             format = formatspec
             break
         }
     }
 
-    if (!format)
-    {
+    if (!format) {
         console.error('Unknown storyfile format')
         return
     }
