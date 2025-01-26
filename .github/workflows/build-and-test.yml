@@ -9,11 +9,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - run: ./build.sh
+      - run: sudo ./build.sh
       - uses: actions/upload-artifact@v4
         with:
           name: build
           path: |
+            build/*.js
+            build/*.wasm
+      - name: Size compare
+        uses: Shopify/filediff@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          pre_diff_script: sudo ./build.sh
+          target_branch: master
+          dir_glob: |
             build/*.js
             build/*.wasm
 
