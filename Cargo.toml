@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "remglk/remglk",
+    "remglk/remglk_capi",
+]
+resolver = "2"
+
+[profile.release]
+lto = true

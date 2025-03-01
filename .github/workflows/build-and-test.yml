@@ -16,16 +16,6 @@ jobs:
           path: |
             build/*.js
             build/*.wasm
-      - name: Size compare
-        uses: Shopify/filediff@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          pre_diff_script: sudo ./build.sh
-          target_branch: master
-          dir_glob: |
-            build/*.js
-            build/*.wasm
 
   test:
     needs: build

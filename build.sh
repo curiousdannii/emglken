@@ -36,7 +36,6 @@ docker run --rm -t \
     emglken:$DOCKER_TAG \
     /bin/bash -c -e " \\
         RUSTFLAGS=-Csymbol-mangling-version=v0 cargo build \\
-            --manifest-path=remglk/Cargo.toml \\
             $RUST_TARGET \\
             --target=wasm32-unknown-emscripten; \\
         emcmake cmake -DCMAKE_BUILD_TYPE=$CMAKE_TYPE -S . -B build; \\
