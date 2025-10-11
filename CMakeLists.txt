@@ -41,14 +41,15 @@ target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -
 
 add_executable(bocfel)
 add_sources(bocfel "garglk/terps/bocfel/"
-    SRCS blorb.cpp branch.cpp dict.cpp glkstart.cpp iff.cpp io.cpp mathop.cpp
-    meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp patches.cpp process.cpp
-    random.cpp screen.cpp sound.cpp stack.cpp stash.cpp unicode.cpp util.cpp
-    zoom.cpp zterp.cpp)
+    SRCS blorb.cpp branch.cpp dict.cpp glkautosave.cpp glkstart.cpp iff.cpp
+    io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp
+    patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp
+    unicode.cpp util.cpp zoom.cpp zterp.cpp)
 emglken_vm(bocfel)
 set_property(TARGET bocfel PROPERTY CXX_STANDARD 14)
-target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB ZTERP_GLK_UNIX
-    ZTERP_NO_STDIO "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
+target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB
+    ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX
+    "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
 target_compile_options(bocfel PRIVATE -Wall)
 # Bocfel now uses exceptions, which takes a little bit to set up
 target_compile_options(bocfel PRIVATE -fexceptions)

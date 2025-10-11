@@ -22,7 +22,7 @@ Emglken, RemGlk-rs and AsyncGlk (used by the console app) are MIT licensed, as a
 Name   | Upstream repo | License
 ------ | ------------- | -------
 AsyncGlk | [curiousdannii/asyncglk](https://github.com/curiousdannii/asyncglk) | [MIT](https://github.com/curiousdannii/asyncglk/blob/master/LICENSE)
-Bocfel | [garglk/garglk](https://github.com/garglk/garglk) | [GPL-2.0](https://github.com/garglk/garglk/blob/master/terps/bocfel/COPYING.GPLv2)/[GPL-3.0](https://github.com/garglk/garglk/blob/master/terps/bocfel/COPYING.GPLv3)
+Bocfel | [garglk/garglk](https://github.com/garglk/garglk) | [MIT](https://github.com/garglk/garglk/blob/master/terps/bocfel/LICENSE)
 Git    | [DavidKinder/Git](https://github.com/DavidKinder/Git) | [MIT](https://github.com/DavidKinder/Git/blob/master/README.txt)
 Glulxe | [erkyrath/glulxe](https://github.com/erkyrath/glulxe) | [MIT](https://github.com/erkyrath/glulxe/blob/master/LICENSE)
 Hugo   | [hugoif/hugo-unix](https://github.com/hugoif/hugo-unix) | [BSD-2-Clause](https://github.com/hugoif/hugo-unix/blob/master/License.txt)
