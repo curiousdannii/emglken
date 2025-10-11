@@ -1,8 +1,8 @@
 # Cross-language LTO needs the Rust and Emscripten LLVM versions to be compatible
 # See https://doc.rust-lang.org/rustc/linker-plugin-lto.html
 
-# LLVM version: 18~19
-FROM emscripten/emsdk:3.1.74
+# LLVM version: 18~20
+FROM emscripten/emsdk:4.0.16
 
 ENV CARGO_HOME=/.cargo \
     PATH="/.cargo/bin:$PATH" \
