@@ -12,5 +12,5 @@ RUN embuilder --lto=thin build libc libc++ libc++abi libc++-noexcept libc++abi-n
     libcompiler_rt libdlmalloc libsockets libstubs zlib
 
 # LLVM version: 17
-RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain 1.77.0 --target wasm32-unknown-emscripten -y && \
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain 1.90.0 --target wasm32-unknown-emscripten -y && \
     chmod -R 777 /.cargo /.rustup /emsdk
