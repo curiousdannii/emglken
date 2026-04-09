@@ -42,11 +42,11 @@ add_sources(bocfel "garglk/terps/bocfel/"
     SRCS blorb.cpp branch.cpp dict.cpp glkautosave.cpp glkstart.cpp iff.cpp
     io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp
     patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp
-    unicode.cpp util.cpp zoom.cpp zterp.cpp)
+    unicode.cpp util.cpp zterp.cpp)
 emglken_vm(bocfel)
 set_property(TARGET bocfel PROPERTY CXX_STANDARD 14)
 target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB
-    ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX
+    ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX ZTERP_NO_V6
     "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
 target_compile_options(bocfel PRIVATE -Wall)
 # Bocfel now uses exceptions, which takes a little bit to set up
@@ -115,6 +115,8 @@ set_property(TARGET tads PROPERTY CXX_STANDARD 11)
 target_compile_definitions(tads PRIVATE EMGLKEN GLK GLK_TIMERS GLK_UNICODE NO_T2_COPYRIGHT_NOTICE
     OSNOUI_OMIT_OS_FPRINT OSNOUI_OMIT_OS_FPRINTZ RUNTIME TC_TARGET_T3 VMGLOB_STRUCT)
 target_compile_options(tads PRIVATE -Wno-deprecated-register -Wno-logical-not-parentheses -Wno-pointer-sign -Wno-string-concatenation)
+#target_link_options(tads PRIVATE -sASYNCIFY_ADVISE)
+#target_link_options(tads PRIVATE -sASYNCIFY_REMOVE=@${CMAKE_CURRENT_LIST_DIR}/src/asyncify-remove-list-tads.txt)
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
     # TADS needs to be compiled in at least -O2, or else it will use 4GB+ of RAM and be very slow
     target_compile_options(tads PRIVATE -O2)
