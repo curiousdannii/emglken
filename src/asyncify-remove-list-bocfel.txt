@@ -10,20 +10,20 @@ glk_put_*
 *remove_window
 *request_line_event
 *serde*
-std::panicking::rust_panic_with_hook*
+#std::panicking::rust_panic_with_hook*
 std::sys::sync::once::queue::Once::call*
 *::unregister
 
 _emscripten_timeout
 fclose
 fflush
-__fputwc_unlocked
+#__fputwc_unlocked
 fread
 __fseeko_unlocked
-__ftello_unlocked
+#__ftello_unlocked
 __fwritex
 *PadAdapter*
-std::__2::__shared_weak_count::__release_weak*
+#std::__2::__shared_weak_count::__release_weak*
 __toread
 __uflow
 vsnprintf
@@ -47,7 +47,7 @@ assert_fail*
 *basic_stringbuf*
 cheat_add*
 check_transcript*
-*chrono*
+#*chrono*
 cleanse_control*
 *collate_byname*
 __cxa_allocate_exception

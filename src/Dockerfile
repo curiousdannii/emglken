@@ -1,8 +1,8 @@
 # Cross-language LTO needs the Rust and Emscripten LLVM versions to be compatible
 # See https://doc.rust-lang.org/rustc/linker-plugin-lto.html
 
-# LLVM version: 18~20
-FROM emscripten/emsdk:4.0.16
+# LLVM version: 18~21
+FROM emscripten/emsdk:5.0.5
 
 ENV CARGO_HOME=/.cargo \
     PATH="/.cargo/bin:$PATH" \
@@ -12,5 +12,5 @@ RUN embuilder --lto=thin build libc libc++ libc++abi libc++-noexcept libc++abi-n
     libcompiler_rt libdlmalloc libsockets libstubs zlib
 
 # LLVM version: 17
-RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain 1.89.0 --target wasm32-unknown-emscripten -y && \
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain 1.94.0 --target wasm32-unknown-emscripten -y && \
     chmod -R 777 /.cargo /.rustup /emsdk
