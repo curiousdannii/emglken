@@ -37,21 +37,31 @@ target_compile_definitions(glulxe-profiler-core PRIVATE OS_UNIX VM_PROFILING)
 target_compile_options(glulxe-profiler-core PRIVATE -Wall -Wmissing-prototypes -Wno-unused)
 ]]
 
+# Common setup for our two Bocfel builds
+function(bocfel_common target)
+    add_sources(${target} "garglk/terps/bocfel/"
+        SRCS blorb.cpp branch.cpp dict.cpp glkautosave.cpp glkstart.cpp iff.cpp
+        io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp
+        patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp
+        unicode.cpp util.cpp zterp.cpp)
+    emglken_vm(${target})
+    set_property(TARGET ${target} PROPERTY CXX_STANDARD 14)
+    target_compile_definitions(${target} PRIVATE ZTERP_GLK ZTERP_GLK_BLORB
+        ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX
+        "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
+    target_compile_options(${target} PRIVATE -Wall)
+    # Bocfel now uses exceptions, which takes a little bit to set up
+    target_compile_options(${target} PRIVATE -fexceptions)
+    target_link_options(${target} PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
+endfunction()
+
+add_executable(bocfel-noz6)
+bocfel_common(bocfel-noz6)
+target_compile_definitions(bocfel-noz6 PRIVATE ZTERP_NO_V6)
+target_link_options(bocfel-noz6 PRIVATE -sASYNCIFY_REMOVE=@${CMAKE_CURRENT_LIST_DIR}/src/asyncify-remove-list-bocfel-noz6.txt)
+
 add_executable(bocfel)
-add_sources(bocfel "garglk/terps/bocfel/"
-    SRCS blorb.cpp branch.cpp dict.cpp glkautosave.cpp glkstart.cpp iff.cpp
-    io.cpp mathop.cpp meta.cpp memory.cpp objects.cpp options.cpp osdep.cpp
-    patches.cpp process.cpp random.cpp screen.cpp sound.cpp stack.cpp stash.cpp
-    unicode.cpp util.cpp zterp.cpp)
-emglken_vm(bocfel)
-set_property(TARGET bocfel PROPERTY CXX_STANDARD 14)
-target_compile_definitions(bocfel PRIVATE ZTERP_GLK ZTERP_GLK_BLORB
-    ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX ZTERP_NO_V6
-    "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
-target_compile_options(bocfel PRIVATE -Wall)
-# Bocfel now uses exceptions, which takes a little bit to set up
-target_compile_options(bocfel PRIVATE -fexceptions)
-target_link_options(bocfel PRIVATE -sNO_DISABLE_EXCEPTION_CATCHING)
+bocfel_common(bocfel)
 target_link_options(bocfel PRIVATE -sASYNCIFY_REMOVE=@${CMAKE_CURRENT_LIST_DIR}/src/asyncify-remove-list-bocfel.txt)
 
 add_executable(git)

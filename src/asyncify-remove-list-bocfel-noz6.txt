@@ -58,7 +58,7 @@ __divtf3
 *__dynamic_cast*
 __funcs_on_exit
 *__get_up_to_n_digits*
-GraphicsWindow*
+#GraphicsWindow*
 *__grow_by_*
 handle_token*
 *__hash_value_type*
@@ -99,7 +99,7 @@ read_undo_msav*
 *runtime_error*
 save_quetzal*
 *SaveState*
-scale_picture*
+#scale_picture*
 *__scan_keyword*
 screen_flush*
 screen_load_scale_info*
@@ -134,13 +134,13 @@ watch_check*
 *wchar_t*
 *__widen_and_group_float*
 *write_*
-zdraw_picture*
-zget_wind_prop*
+#zdraw_picture*
+#zget_wind_prop*
 zprint_*
 zrandom*
-zshogun_menu*
+#zshogun_menu*
 zshow_status*
-zterp_getenv*
+#zterp_getenv*
 zterp_os_aux_file*
 zterp_os_edit_file*
 
