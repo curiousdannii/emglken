@@ -33,7 +33,7 @@ vsnprintf
 addrstring*
 __addtf3
 *append*
-apply_user_patch*
+#apply_user_patch*
 assert_fail*
 *backup*
 *basic_filebuf*
@@ -62,7 +62,7 @@ GraphicsWindow*
 *__grow_by_*
 handle_token*
 *__hash_value_type*
-*_helper*
+#*_helper*
 IFF::*
 IO::File::~File*
 IO::getc*
@@ -84,7 +84,7 @@ meta_read_bfnt*
 __multf3
 *numpunct*
 operator new(unsigned long)
-*Options*
+#*Options*
 *ostreambuf_iterator*
 output_stream*
 *patch_load_file*
@@ -140,7 +140,7 @@ zprint_*
 zrandom*
 zshogun_menu*
 zshow_status*
-zterp_getenv*
+#zterp_getenv*
 zterp_os_aux_file*
 zterp_os_edit_file*
 

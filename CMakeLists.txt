@@ -47,7 +47,7 @@ function(bocfel_common target)
     emglken_vm(${target})
     set_property(TARGET ${target} PROPERTY CXX_STANDARD 14)
     target_compile_definitions(${target} PRIVATE ZTERP_GLK ZTERP_GLK_BLORB
-        ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX
+        ZTERP_GLK_NO_STDIO ZTERP_GLK_UNIX ZTERP_NO_OPTIONS
         "ZTERP_STATIC_PATCH_FILE=\"static-patches.h\"")
     target_compile_options(${target} PRIVATE -Wall)
     # Bocfel now uses exceptions, which takes a little bit to set up
