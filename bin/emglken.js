@@ -13,7 +13,7 @@ https://github.com/curiousdannii/emglken
 
 import minimist from 'minimist'
 
-import {CheapAsyncDialog, CheapGlkOte, RemGlk} from '../build/asyncglk.js'
+import {CheapAsyncDialog, CheapGlkOte, path_native_to_posix, RemGlk} from '../build/asyncglk.js'
 
 const formats = [
     {
@@ -77,7 +77,7 @@ async function run() {
     const GlkOte = new GlkOteClass()
     await Dialog.init({GlkOte})
     const options = {
-        arguments: [storyfile],
+        arguments: [path_native_to_posix(storyfile)],
         Dialog,
         GlkOte,
     }
