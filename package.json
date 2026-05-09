@@ -33,7 +33,7 @@
   "scripts": {
     "build": "./build.sh",
     "lint": "eslint bin/ src/",
-    "test": "./tests/runtests.sh"
+    "test": "sh ./tests/runtests.sh"
   },
   "files": [
     "bin/emglken.js",
