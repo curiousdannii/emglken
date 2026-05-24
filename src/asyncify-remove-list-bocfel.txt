@@ -86,7 +86,6 @@ __multf3
 operator new(unsigned long)
 #*Options*
 *ostreambuf_iterator*
-output_stream*
 *patch_load_file*
 *persistent_transcript*
 *PersistentTranscriptStasher*
@@ -151,6 +150,7 @@ zterp_os_edit_file*
 #*__function*
 #open_savefile*
 #*operator*
+#output_stream*
 #process_instructions*
 #process_loop*
 #*StreamRock*
