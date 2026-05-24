@@ -1,6 +1,6 @@
 {
   "name": "emglken",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Glk meets Emscripten",
   "author": "Dannii Willis <curiousdannii@gmail.com>",
   "license": "GPL-2.0",
@@ -12,22 +12,22 @@
   "bugs": "https://github.com/curiousdannii/emglken/issues",
   "homepage": "https://github.com/curiousdannii/emglken",
   "type": "module",
-  "engines" : {
-    "node" : ">=20.0.0"
+  "engines": {
+    "node": ">=20.0.0"
   },
   "main": "src/index.js",
   "bin": {
     "emglken": "bin/emglken.js"
   },
   "dependencies": {
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.18.1",
     "minimist": "^1.2.6",
     "mute-stream": "3.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
-    "eslint": "^10.0.0",
     "@eslint/js": "^10.0.0",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.4.0",
     "globals": "^17.0.0"
   },
   "scripts": {
